@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Botão de 40dp (área de toque) com moldura visível de 22dp, no tamanho do Chrome. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:inset="9dp">
+    <shape android:shape="rectangle">
+        <solid android:color="#00000000" />
+        <corners android:radius="4dp" />
+        <stroke
+            android:width="1.75dp"
+            android:color="#5F6368" />
+    </shape>
+</inset>

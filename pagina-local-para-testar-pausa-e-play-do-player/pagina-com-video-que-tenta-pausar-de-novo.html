@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Teste de pausa e play</title>
+</head>
+<body style="margin:48px;background:#111;color:#fff;font-family:sans-serif">
+  <button id="tocar_o_video" type="button" style="position:fixed;left:40px;top:40px;width:280px;height:88px;font-size:28px;z-index:5">Tocar o vídeo</button>
+  <video id="video_do_teste" src="clipe-sem-extensao" width="800" controls></video>
+  <p id="relato_do_tempo">aguardando</p>
+  <script>
+    var video = document.getElementById("video_do_teste");
+    document.getElementById("tocar_o_video").addEventListener("click", function () {
+      video.play();
+    });
+    var siteQuerManterPausado = false;
+    video.addEventListener("pause", function () { siteQuerManterPausado = true; });
+    video.addEventListener("play", function () {
+      if (siteQuerManterPausado) video.pause();
+    });
+    setInterval(function () {
+      document.getElementById("relato_do_tempo").textContent =
+        (video.paused ? "pausado " : "tocando ") + video.currentTime.toFixed(2);
+    }, 200);
+  </script>
+</body>
+</html>

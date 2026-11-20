@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fundo_arredondado_da_caixa_de_dialogo_do_editor_de_imagem"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/titulo_do_menu_do_video_do_visualizador_de_midia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="middle"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:singleLine="true"
+        android:text="@string/titulo_do_menu_do_video_do_visualizador_de_midia"
+        android:textColor="#F4F7FB"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/botao_reproduzir_video_do_visualizador_no_player_embutido"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/menu_video_do_visualizador_reproduzir_aqui"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_abrir_video_do_visualizador_em_janela_flutuante"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/menu_video_do_visualizador_abrir_em_janela_flutuante"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_abrir_video_do_visualizador_em_tela_cheia"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/menu_video_do_visualizador_abrir_em_tela_cheia"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_mover_video_do_visualizador_para_a_galeria"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/menu_midia_do_componente_mover_para_a_galeria"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/botao_excluir_video_do_visualizador"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/menu_video_do_visualizador_excluir"
+        android:textAllCaps="false"
+        android:textColor="#F28B82"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_cancelar_menu_do_video_do_visualizador"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:stateListAnimator="@null"
+        android:text="@string/cancelar_caixa_do_editor"
+        android:textAllCaps="false"
+        android:textColor="#8A9099"
+        android:textSize="15sp" />
+</LinearLayout>

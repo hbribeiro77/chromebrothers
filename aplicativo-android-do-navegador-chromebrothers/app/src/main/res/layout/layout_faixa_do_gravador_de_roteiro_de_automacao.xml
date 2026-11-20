@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/faixa_do_gravador_de_roteiro_de_automacao"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="#E61A1D23"
+    android:elevation="12dp"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/campo_nome_do_gravador_de_roteiro"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/nome_do_roteiro_no_gravador"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="#F4F7FB"
+            android:textColorHint="#8A9099"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/botao_play_do_gravador_de_roteiro"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/rodar_roteiro_de_automacao_do_chat"
+            android:src="@drawable/icone_de_reproduzir_do_player_de_video" />
+
+        <ImageButton
+            android:id="@+id/botao_salvar_do_gravador_de_roteiro"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/salvar_roteiro_no_gravador"
+            android:src="@drawable/icone_de_guardar_componente_da_carcaca_da_colecao" />
+
+        <ImageButton
+            android:id="@+id/botao_fechar_do_gravador_de_roteiro"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/fechar_gravador_de_roteiro"
+            android:src="@drawable/icone_de_fechar_o_player_de_video" />
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/campo_url_do_gravador_de_roteiro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/url_inicial_do_gravador_de_roteiro"
+        android:inputType="textUri"
+        android:maxLines="1"
+        android:textColor="#F4F7FB"
+        android:textColorHint="#8A9099"
+        android:textSize="13sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/chips_do_gravador_de_roteiro"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingTop="6dp"
+            android:paddingBottom="4dp" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/aviso_do_pick_do_gravador_de_roteiro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="4dp"
+        android:textColor="#8AB4F8"
+        android:textSize="12sp"
+        android:visibility="gone" />
+
+    <ScrollView
+        android:id="@+id/rolagem_dos_passos_do_gravador_de_roteiro"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:paddingTop="4dp">
+
+        <LinearLayout
+            android:id="@+id/lista_de_passos_do_gravador_de_roteiro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+</LinearLayout>

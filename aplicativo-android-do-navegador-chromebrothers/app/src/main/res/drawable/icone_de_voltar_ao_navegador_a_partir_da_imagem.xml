@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Marca ChromeBrothers: dois anéis (mesmo desenho do ícone do app), escala 24dp. -->
+    <path
+        android:fillColor="#F4F7FB"
+        android:fillType="evenOdd"
+        android:pathData="M6.93,7.07a5.43,5.43 0,1 0,0.01 0zM6.93,9.06a3.44,3.44 0,1 1,-0.01 0zM17.07,7.07a5.43,5.43 0,1 0,0.01 0zM17.07,9.06a3.44,3.44 0,1 1,-0.01 0z" />
+    <path
+        android:fillColor="#F5C518"
+        android:pathData="M12,10.69a1.81,1.81 0,1 0,0.01 0z" />
+</vector>

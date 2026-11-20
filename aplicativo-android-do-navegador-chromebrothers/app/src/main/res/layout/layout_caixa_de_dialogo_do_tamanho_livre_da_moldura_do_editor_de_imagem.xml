@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fundo_arredondado_da_caixa_de_dialogo_do_editor_de_imagem"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/titulo_da_caixa_do_tamanho_livre_da_moldura"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/titulo_tamanho_da_moldura"
+        android:textColor="#F4F7FB"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/linha_de_proporcoes_da_caixa_da_moldura"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/botao_proporcao_um_por_um_da_caixa_da_moldura"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:text="@string/moldura_um_por_um" />
+
+            <Button
+                android:id="@+id/botao_proporcao_quatro_por_tres_da_caixa_da_moldura"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:text="@string/moldura_quatro_por_tres" />
+
+            <Button
+                android:id="@+id/botao_proporcao_dezesseis_por_nove_da_caixa_da_moldura"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:text="@string/moldura_dezesseis_por_nove" />
+
+            <Button
+                android:id="@+id/botao_proporcao_nove_por_dezesseis_da_caixa_da_moldura"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:text="@string/moldura_nove_por_dezesseis" />
+
+            <Button
+                android:id="@+id/botao_proporcao_original_da_caixa_da_moldura"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:text="@string/moldura_proporcao_original" />
+
+            <Button
+                android:id="@+id/botao_proporcao_livre_da_caixa_da_moldura"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:text="@string/moldura_livre" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <EditText
+        android:id="@+id/campo_da_largura_livre_da_moldura"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+        android:hint="@string/largura_da_moldura"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:singleLine="true"
+        android:textColor="#F4F7FB"
+        android:textColorHint="#8A9099"
+        android:textSize="16sp" />
+
+    <EditText
+        android:id="@+id/campo_da_altura_livre_da_moldura"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+        android:hint="@string/altura_da_moldura"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:paddingStart="14dp"
+        android:paddingEnd="14dp"
+        android:singleLine="true"
+        android:textColor="#F4F7FB"
+        android:textColorHint="#8A9099"
+        android:textSize="16sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/botao_cancelar_do_tamanho_livre_da_moldura"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@android:color/transparent"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:stateListAnimator="@null"
+            android:text="@string/cancelar_caixa_do_editor"
+            android:textAllCaps="false"
+            android:textColor="#8A9099"
+            android:textSize="15sp" />
+
+        <Button
+            android:id="@+id/botao_confirmar_do_tamanho_livre_da_moldura"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp"
+            android:stateListAnimator="@null"
+            android:text="@string/concluir_caixa_do_editor"
+            android:textAllCaps="false"
+            android:textColor="#8AB4F8"
+            android:textSize="15sp" />
+    </LinearLayout>
+</LinearLayout>

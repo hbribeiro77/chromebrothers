@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <queries>
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <intent>
+            <action android:name="android.media.action.VIDEO_CAPTURE" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".AplicativoDoNavegadorChromebrothers"
+        android:allowBackup="true"
+        android:hardwareAccelerated="true"
+        android:icon="@drawable/icone_do_navegador_chromebrothers"
+        android:label="@string/nome_do_aplicativo_chromebrothers"
+        android:supportsRtl="true"
+        android:theme="@style/TemaDoNavegadorChromebrothers"
+        android:usesCleartextTraffic="true">
+
+        <!-- Android 15/16: System UI libera outra instância no split. -->
+        <property
+            android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+            android:value="true" />
+
+        <!-- Samsung Multi Window / multi-instância (espelhado do Samsung Internet). -->
+        <uses-library
+            android:name="com.sec.android.app.multiwindow"
+            android:required="false" />
+        <meta-data
+            android:name="com.samsung.android.sdk.multiwindow.enable"
+            android:value="true" />
+        <meta-data
+            android:name="com.samsung.android.sdk.multiwindow.multiinstance.enable"
+            android:value="true" />
+        <meta-data
+            android:name="com.samsung.android.dex.multiinstance.enable"
+            android:value="true" />
+        <!-- singleInstancePerTask: a taskbar/AOSP aplica MULTIPLE_TASK no drag; singleTask recusa. -->
+        <meta-data
+            android:name="com.samsung.android.sdk.multiwindow.multiinstance.launchmode"
+            android:value="singleInstancePerTask" />
+        <meta-data
+            android:name="com.sec.android.support.multiwindow"
+            android:value="true" />
+
+        <activity
+            android:name=".AtividadePrincipalDoNavegadorChromebrothers"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|density|uiMode"
+            android:exported="true"
+            android:launchMode="singleInstancePerTask"
+            android:maxRecents="3"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustNothing">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+            <property
+                android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
+            <meta-data
+                android:name="android.allow_multiple_resumed_activities"
+                android:value="true" />
+            <!-- Samsung: ao pedir 2ª instância no split, vai para o trampolim. -->
+            <meta-data
+                android:name="com.samsung.android.multiwindow.activity.alias.targetactivity"
+                android:value="com.chromebrothers.navegador.AtividadeDeMultiInstanciaDoNavegadorChromebrothers" />
+        </activity>
+
+        <!-- Trampolim Samsung: cede a task do split (relinquish); excludeFromRecents evita fantasma preto. -->
+        <activity
+            android:name=".AtividadeDeMultiInstanciaDoNavegadorChromebrothers"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|density|uiMode"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:noHistory="true"
+            android:relinquishTaskIdentity="true"
+            android:resizeableActivity="true"
+            android:taskAffinity=""
+            android:theme="@style/TemaDoNavegadorChromebrothers">
+            <property
+                android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
+            <meta-data
+                android:name="com.samsung.android.dex.specificactivity.ignore"
+                android:value="true" />
+        </activity>
+
+        <activity
+            android:name=".AtividadePrincipalSecundariaDoNavegadorChromebrothers"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|density|uiMode"
+            android:exported="true"
+            android:launchMode="singleInstancePerTask"
+            android:resizeableActivity="true"
+            android:taskAffinity="com.chromebrothers.navegador.janela.secundaria"
+            android:windowSoftInputMode="adjustNothing">
+            <property
+                android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
+            <meta-data
+                android:name="android.allow_multiple_resumed_activities"
+                android:value="true" />
+            <meta-data
+                android:name="com.samsung.android.multiwindow.activity.alias.targetactivity"
+                android:value="com.chromebrothers.navegador.AtividadeDeMultiInstanciaDoNavegadorChromebrothers" />
+        </activity>
+
+        <activity
+            android:name=".AtividadePrincipalTerciariaDoNavegadorChromebrothers"
+            android:alwaysRetainTaskState="true"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|density|uiMode"
+            android:exported="true"
+            android:launchMode="singleInstancePerTask"
+            android:resizeableActivity="true"
+            android:taskAffinity="com.chromebrothers.navegador.janela.terciaria"
+            android:windowSoftInputMode="adjustNothing">
+            <property
+                android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
+                android:value="true" />
+            <meta-data
+                android:name="android.allow_multiple_resumed_activities"
+                android:value="true" />
+            <meta-data
+                android:name="com.samsung.android.multiwindow.activity.alias.targetactivity"
+                android:value="com.chromebrothers.navegador.AtividadeDeMultiInstanciaDoNavegadorChromebrothers" />
+        </activity>
+
+        <activity
+            android:name=".AtividadeDoPlayerNativoComVelocidadeECapturaDeQuadro"
+            android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboard|keyboardHidden|density|uiMode"
+            android:exported="false"
+            android:resizeableActivity="true" />
+
+        <service
+            android:name=".ServicoDeDownloadDeMidiaDetectadaNaPaginaDoNavegador"
+            android:exported="false"
+            android:foregroundServiceType="dataSync" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.arquivos"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/caminhos_de_arquivo_do_quadro_copiado_chromebrothers" />
+        </provider>
+
+        <!-- exported=true: adb shell am broadcast (UID shell) precisa alcançar o receptor de diagnóstico. -->
+        <receiver
+            android:name=".ReceptorDeDiagnosticoDoHiggsfieldMcpNoChromebrothers"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.chromebrothers.navegador.DIAGNOSTICO_HIGGSFIELD_MCP" />
+            </intent-filter>
+        </receiver>
+        <!-- Só leitura; permission=DUMP: o shell do adb tem, apps comuns não. -->
+        <receiver
+            android:name=".ReceptorDeDiagnosticoDoMagnificMcpNoChromebrothers"
+            android:exported="true"
+            android:permission="android.permission.DUMP">
+            <intent-filter>
+                <action android:name="com.chromebrothers.navegador.DIAGNOSTICO_MAGNIFIC_MCP" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

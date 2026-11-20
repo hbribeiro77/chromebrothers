@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <cache-path name="quadros_copiados" path="quadros/" />
+    <cache-path name="capturas_da_camera_pedidas_pela_pagina" path="capturas-da-camera-pedidas-pela-pagina/" />
+    <cache-path name="arquivos_enviados_pela_pagina" path="arquivos-enviados-pela-pagina/" />
+    <cache-path name="capturas_nativas_de_tela" path="capturas-nativas-de-tela/" />
+    <files-path name="imagens_capturadas" path="biblioteca-de-imagens-capturadas/" />
+    <files-path name="biblioteca_de_videos_higgsfield" path="biblioteca-de-videos-higgsfield/" />
+    <files-path name="refs_de_geracao_da_biblioteca" path="refs-de-geracao-da-biblioteca/" />
+    <cache-path name="arraste_da_biblioteca" path="arraste-da-biblioteca/" />
+</paths>

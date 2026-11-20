@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Alça-pílula compartilhada do chrome (campo de texto / coleção / …). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="56dp"
+    android:layout_height="match_parent"
+    android:importantForAccessibility="no">
+
+    <View
+        android:layout_width="48dp"
+        android:layout_height="5dp"
+        android:layout_gravity="center"
+        android:background="@drawable/fundo_da_alca_de_largura_do_campo_de_texto" />
+</FrameLayout>

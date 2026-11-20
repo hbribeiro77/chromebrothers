@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raiz_do_player_embutido_da_colecao"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/visor_do_player_embutido_da_colecao"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:show_buffering="when_playing"
+        app:surface_type="texture_view"
+        app:use_controller="true" />
+
+    <ImageView
+        android:id="@+id/capa_do_player_embutido_da_colecao"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="fitCenter"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/barra_superior_do_player_embutido_da_colecao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:orientation="vertical"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fundo_da_barra_superior_do_player"
+            android:gravity="center_vertical"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/posicao_do_player_embutido_da_colecao"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="8dp"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/lista_de_velocidades_do_player_embutido_da_colecao"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <ImageButton
+                    android:id="@+id/botao_salvar_quadro_do_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/salvar_quadro"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_salvar_quadro_do_player_de_video" />
+
+                <ImageButton
+                    android:id="@+id/botao_copiar_quadro_do_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/copiar_quadro"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_copiar_quadro_do_player_de_video" />
+
+                <ImageButton
+                    android:id="@+id/botao_favoritar_video_do_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/favoritar_video"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_video_favorito_contorno" />
+
+                <ImageButton
+                    android:id="@+id/botao_configurar_incremento_do_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/configurar_incremento_do_video"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_configuracao_do_player_de_video" />
+
+                <ImageButton
+                    android:id="@+id/botao_janela_flutuante_do_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/abrir_em_janela_flutuante_o_player_de_video"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_janela_flutuante_do_player_de_video_sobre_a_navegacao" />
+
+                <ImageButton
+                    android:id="@+id/botao_tela_cheia_do_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/abrir_em_tela_cheia_no_player_embutido_da_colecao"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_abrir_em_tela_cheia_do_player_embutido_da_colecao" />
+
+                <ImageButton
+                    android:id="@+id/botao_fechar_player_embutido_da_colecao"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/fechar_player_embutido_da_colecao"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_fechar_o_player_de_video" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lista_de_incrementos_do_player_embutido_da_colecao"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/seta_video_anterior_do_player_embutido_da_colecao"
+        android:layout_width="44dp"
+        android:layout_height="88dp"
+        android:layout_gravity="start|center_vertical"
+        android:background="@drawable/fundo_da_barra_superior_do_player"
+        android:contentDescription="@string/video_anterior_no_player_embutido_da_colecao"
+        android:gravity="center"
+        android:text="‹"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp" />
+
+    <TextView
+        android:id="@+id/seta_proximo_video_do_player_embutido_da_colecao"
+        android:layout_width="44dp"
+        android:layout_height="88dp"
+        android:layout_gravity="end|center_vertical"
+        android:background="@drawable/fundo_da_barra_superior_do_player"
+        android:contentDescription="@string/proximo_video_no_player_embutido_da_colecao"
+        android:gravity="center"
+        android:text="›"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp" />
+
+    <TextView
+        android:id="@+id/aviso_do_deslocamento_do_player_embutido_da_colecao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:shadowColor="#CC000000"
+        android:shadowDx="0"
+        android:shadowDy="2"
+        android:shadowRadius="8"
+        android:textColor="#FFFFFF"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/inclusao_da_faixa_de_scrub_fino_do_player_embutido_da_colecao"
+        layout="@layout/layout_faixa_de_scrub_fino_por_toque_longo_do_player_de_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="72dp" />
+</FrameLayout>

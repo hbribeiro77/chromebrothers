@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp">
+
+        <ImageView
+            android:id="@+id/favicon_do_cartao_da_aba"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginEnd="8dp"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter" />
+
+        <TextView
+            android:id="@+id/titulo_do_cartao_da_aba"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#E8EAED"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/botao_fechar_cartao_da_aba"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/fechar_aba"
+            android:padding="8dp"
+            android:src="@drawable/icone_fechar_aba_do_navegador_chromebrothers" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/miniatura_do_cartao_da_aba"
+        android:layout_width="match_parent"
+        android:layout_height="168dp"
+        android:background="#111111"
+        android:contentDescription="@string/miniatura_da_aba"
+        android:scaleType="centerCrop" />
+</LinearLayout>

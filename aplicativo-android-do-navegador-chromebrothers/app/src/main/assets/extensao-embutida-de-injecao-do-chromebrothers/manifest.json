@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+  "name": "ChromeBrothers",
+  "version": "1.5",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "chromebrothers@navegador"
+    }
+  },
+  "permissions": [
+    "nativeMessaging",
+    "nativeMessagingFromContent",
+    "geckoViewAddons",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["fundo-de-bloqueio-de-anuncio-do-chromebrothers.js"]
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["execucao-na-pagina-do-chromebrothers.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "world": "MAIN"
+    },
+    {
+      "matches": ["*://*/*"],
+      "js": ["ponte-de-javascript-da-pagina-no-motor-do-firefox.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    }
+  ]
+}

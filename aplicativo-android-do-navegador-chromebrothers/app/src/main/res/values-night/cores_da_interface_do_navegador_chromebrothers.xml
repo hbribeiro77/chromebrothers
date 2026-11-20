@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="fundo_da_faixa_do_navegador_chromebrothers">#202124</color>
+    <color name="fundo_da_barra_do_navegador_chromebrothers">#2D2E31</color>
+    <color name="fundo_da_pagina_do_navegador_chromebrothers">#202124</color>
+    <color name="fundo_do_campo_do_navegador_chromebrothers">#3C4043</color>
+</resources>

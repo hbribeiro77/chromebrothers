@@ -1,0 +1,331 @@
+NO GIT Task2 re-review 2
+===== regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\IndiceDasConversasDoChatDaOpenRouter.kt =====
+package com.chromebrothers.navegador.regras
+
+data class EntradaDoIndiceDaConversaDoChat(
+    val id: String,
+    val titulo: String,
+    val criadaEm: Long,
+    val atualizadaEm: Long,
+    val bytesAproximados: Long,
+    val resumida: Boolean = false,
+)
+
+object IndiceDasConversasDoChatDaOpenRouter {
+    const val MAXIMO_DE_CONVERSAS = 40
+    const val TETO_DE_BYTES_TOTAIS = 200L * 1024 * 1024
+    const val TETO_DURO_POR_CONVERSA = 50L * 1024 * 1024
+
+    fun escrever(entradas: List<EntradaDoIndiceDaConversaDoChat>): String {
+        val itens = entradas.joinToString(",") { jsonDaEntrada(it) }
+        return """{"conversas":[$itens]}"""
+    }
+
+    fun ler(bruto: String): List<EntradaDoIndiceDaConversaDoChat> {
+        if (!delimitadoresBalanceados(bruto)) return emptyList()
+        val objetos = TextoJsonDoChat.objetosDaChave(bruto, "conversas") ?: return emptyList()
+        return objetos.map { lerEntrada(it) ?: return emptyList() }
+    }
+
+    private fun delimitadoresBalanceados(bruto: String): Boolean {
+        val abertos = ArrayDeque<Char>()
+        var dentroDeTexto = false
+        var indice = 0
+        while (indice < bruto.length) {
+            val caractere = bruto[indice]
+            if (dentroDeTexto) {
+                when (caractere) {
+                    '\\' -> indice += 2
+                    '"' -> {
+                        dentroDeTexto = false
+                        indice++
+                    }
+                    else -> indice++
+                }
+                continue
+            }
+            when (caractere) {
+                '"' -> dentroDeTexto = true
+                '{', '[' -> abertos.addLast(caractere)
+                '}' -> if (abertos.removeLastOrNull() != '{') return false
+                ']' -> if (abertos.removeLastOrNull() != '[') return false
+            }
+            indice++
+        }
+        return !dentroDeTexto && abertos.isEmpty()
+    }
+
+    fun criar(
+        entradas: List<EntradaDoIndiceDaConversaDoChat>,
+        id: String,
+        titulo: String,
+        agoraMs: Long,
+        bytes: Long,
+    ): List<EntradaDoIndiceDaConversaDoChat> {
+        val nova = EntradaDoIndiceDaConversaDoChat(
+            id = id,
+            titulo = titulo,
+            criadaEm = agoraMs,
+            atualizadaEm = agoraMs,
+            bytesAproximados = bytes,
+        )
+        return listOf(nova) + entradas
+    }
+
+    fun atualizar(
+        entradas: List<EntradaDoIndiceDaConversaDoChat>,
+        id: String,
+        titulo: String? = null,
+        atualizadaEm: Long,
+        bytes: Long,
+        resumida: Boolean? = null,
+    ): List<EntradaDoIndiceDaConversaDoChat> {
+        if (entradas.none { it.id == id }) return entradas
+        return entradas.map { entrada ->
+            if (entrada.id != id) {
+                entrada
+            } else {
+                entrada.copy(
+                    titulo = titulo ?: entrada.titulo,
+                    atualizadaEm = atualizadaEm,
+                    bytesAproximados = bytes,
+                    resumida = resumida ?: entrada.resumida,
+                )
+            }
+        }
+    }
+
+    fun excluir(
+        entradas: List<EntradaDoIndiceDaConversaDoChat>,
+        id: String,
+    ): List<EntradaDoIndiceDaConversaDoChat> = entradas.filter { it.id != id }
+
+    fun bytesTotais(entradas: List<EntradaDoIndiceDaConversaDoChat>): Long =
+        entradas.sumOf { it.bytesAproximados }
+
+    fun ultrapassouQuantidade(entradas: List<EntradaDoIndiceDaConversaDoChat>): Boolean =
+        entradas.size >= MAXIMO_DE_CONVERSAS
+
+    fun ultrapassouBytesTotais(entradas: List<EntradaDoIndiceDaConversaDoChat>): Boolean =
+        bytesTotais(entradas) >= TETO_DE_BYTES_TOTAIS
+
+    fun ultrapassouTetoDuroDaConversa(bytes: Long): Boolean =
+        bytes > TETO_DURO_POR_CONVERSA
+
+    private fun jsonDaEntrada(entrada: EntradaDoIndiceDaConversaDoChat): String {
+        val id = TextoJsonDoChat.escapar(entrada.id)
+        val titulo = TextoJsonDoChat.escapar(entrada.titulo)
+        val resumida = if (entrada.resumida) "true" else "false"
+        return """{"id":"$id","titulo":"$titulo","criadaEm":${entrada.criadaEm},"atualizadaEm":${entrada.atualizadaEm},"bytesAproximados":${entrada.bytesAproximados},"resumida":$resumida}"""
+    }
+
+    private fun lerEntrada(objeto: String): EntradaDoIndiceDaConversaDoChat? {
+        val id = TextoJsonDoChat.valorDaChave(objeto, "id") ?: return null
+        if (id.isBlank()) return null
+        val titulo = TextoJsonDoChat.valorDaChave(objeto, "titulo") ?: return null
+        return EntradaDoIndiceDaConversaDoChat(
+            id = id,
+            titulo = titulo,
+            criadaEm = longoDaChave(objeto, "criadaEm"),
+            atualizadaEm = longoDaChave(objeto, "atualizadaEm"),
+            bytesAproximados = longoDaChave(objeto, "bytesAproximados"),
+            resumida = booleanoDaChave(objeto, "resumida") ?: false,
+        )
+    }
+
+    private fun longoDaChave(json: String, chave: String): Long =
+        TextoJsonDoChat.numeroDaChave(json, chave)?.toLong() ?: 0L
+
+    private fun booleanoDaChave(json: String, chave: String): Boolean? {
+        val marca = "\"$chave\""
+        var indice = 0
+        while (indice < json.length) {
+            val achou = json.indexOf(marca, indice)
+            if (achou < 0) return null
+            var cursor = achou + marca.length
+            while (cursor < json.length && json[cursor].isWhitespace()) cursor++
+            if (cursor >= json.length || json[cursor] != ':') {
+                indice = achou + 1
+                continue
+            }
+            cursor++
+            while (cursor < json.length && json[cursor].isWhitespace()) cursor++
+            if (json.startsWith("true", cursor)) return true
+            if (json.startsWith("false", cursor)) return false
+            indice = achou + 1
+        }
+        return null
+    }
+}
+
+===== regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDoIndiceDasConversasDoChatDaOpenRouter.kt =====
+package com.chromebrothers.navegador.regras
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+
+class TesteDoIndiceDasConversasDoChatDaOpenRouter {
+    @Test
+    fun criarAtualizarExcluirEBytes() {
+        var idx = emptyList<EntradaDoIndiceDaConversaDoChat>()
+        idx = IndiceDasConversasDoChatDaOpenRouter.criar(idx, "a", "T1", 10L, 100L)
+        assertEquals(1, idx.size)
+        assertEquals(100L, IndiceDasConversasDoChatDaOpenRouter.bytesTotais(idx))
+        idx = IndiceDasConversasDoChatDaOpenRouter.atualizar(idx, "a", atualizadaEm = 20L, bytes = 200L, resumida = true)
+        assertEquals(200L, idx.single().bytesAproximados)
+        assertTrue(idx.single().resumida)
+        idx = IndiceDasConversasDoChatDaOpenRouter.excluir(idx, "a")
+        assertTrue(idx.isEmpty())
+    }
+
+    @Test
+    fun roundtripJsonDoIndice() {
+        val original = listOf(EntradaDoIndiceDaConversaDoChat("id1", "Oi", 1L, 2L, 3L, false))
+        val json = IndiceDasConversasDoChatDaOpenRouter.escrever(original)
+        assertEquals(original, IndiceDasConversasDoChatDaOpenRouter.ler(json))
+    }
+
+    @Test
+    fun criarColocaANovaConversaNoInicio() {
+        var idx = IndiceDasConversasDoChatDaOpenRouter.criar(emptyList(), "a", "A", 1L, 10L)
+        idx = IndiceDasConversasDoChatDaOpenRouter.criar(idx, "b", "B", 2L, 20L)
+        assertEquals(listOf("b", "a"), idx.map { it.id })
+        assertEquals("B", idx.first().titulo)
+        assertEquals(2L, idx.first().criadaEm)
+        assertEquals(2L, idx.first().atualizadaEm)
+        assertFalse(idx.first().resumida)
+        assertEquals(30L, IndiceDasConversasDoChatDaOpenRouter.bytesTotais(idx))
+    }
+
+    @Test
+    fun atualizarMantemTituloCriadaEmEResumidaQuandoOmitidos() {
+        val idx = IndiceDasConversasDoChatDaOpenRouter.criar(emptyList(), "a", "T1", 10L, 100L)
+        val atualizado = IndiceDasConversasDoChatDaOpenRouter.atualizar(
+            idx,
+            "a",
+            atualizadaEm = 20L,
+            bytes = 200L,
+        )
+        assertEquals("T1", atualizado.single().titulo)
+        assertEquals(10L, atualizado.single().criadaEm)
+        assertEquals(20L, atualizado.single().atualizadaEm)
+        assertEquals(false, atualizado.single().resumida)
+        val ausente = IndiceDasConversasDoChatDaOpenRouter.atualizar(
+            idx,
+            "z",
+            atualizadaEm = 99L,
+            bytes = 1L,
+        )
+        assertEquals(idx, ausente)
+    }
+
+    @Test
+    fun excluirRemoveSoOIdPedido() {
+        var idx = IndiceDasConversasDoChatDaOpenRouter.criar(emptyList(), "a", "A", 1L, 10L)
+        idx = IndiceDasConversasDoChatDaOpenRouter.criar(idx, "b", "B", 2L, 20L)
+        idx = IndiceDasConversasDoChatDaOpenRouter.excluir(idx, "a")
+        assertEquals(listOf("b"), idx.map { it.id })
+        assertEquals(20L, IndiceDasConversasDoChatDaOpenRouter.bytesTotais(idx))
+    }
+
+    @Test
+    fun escreverUsaAChaveConversasEEscapaTitulo() {
+        val original = listOf(
+            EntradaDoIndiceDaConversaDoChat("id\"1", "Oi\n\"mundo\"", 1L, 2L, 3L, true),
+        )
+        val json = IndiceDasConversasDoChatDaOpenRouter.escrever(original)
+        assertTrue(json.contains("\"conversas\""))
+        assertEquals(original, IndiceDasConversasDoChatDaOpenRouter.ler(json))
+    }
+
+    @Test
+    fun roundtripComInstanteEBytesMaioresQueInt() {
+        val original = listOf(
+            EntradaDoIndiceDaConversaDoChat(
+                id = "id",
+                titulo = "t",
+                criadaEm = Int.MAX_VALUE.toLong() + 10L,
+                atualizadaEm = 50L * 1024 * 1024,
+                bytesAproximados = 200L * 1024 * 1024,
+                resumida = true,
+            ),
+        )
+        assertEquals(
+            original,
+            IndiceDasConversasDoChatDaOpenRouter.ler(
+                IndiceDasConversasDoChatDaOpenRouter.escrever(original),
+            ),
+        )
+    }
+
+    @Test
+    fun jsonInvalidoDoIndiceDevolveListaVazia() {
+        assertEquals(emptyList(), IndiceDasConversasDoChatDaOpenRouter.ler("{}"))
+        assertEquals(emptyList(), IndiceDasConversasDoChatDaOpenRouter.ler("lixo"))
+    }
+
+    @Test
+    fun jsonTruncadoSemFecharOObjetoRaizDevolveListaVazia() {
+        assertEquals(
+            emptyList(),
+            IndiceDasConversasDoChatDaOpenRouter.ler("{\"conversas\":[{\"id\":\"x\",\"titulo\":\"T\"}]"),
+        )
+    }
+
+    @Test
+    fun objetoSemIdOuComIdEmBrancoInvalidaODocumentoInteiro() {
+        assertEquals(
+            emptyList(),
+            IndiceDasConversasDoChatDaOpenRouter.ler("""{"conversas":[{}]}"""),
+        )
+        assertEquals(
+            emptyList(),
+            IndiceDasConversasDoChatDaOpenRouter.ler("""{"conversas":[{"id":"","titulo":"T"}]}"""),
+        )
+        assertEquals(
+            emptyList(),
+            IndiceDasConversasDoChatDaOpenRouter.ler("""{"conversas":[{"id":"   ","titulo":"T"}]}"""),
+        )
+        assertEquals(
+            emptyList(),
+            IndiceDasConversasDoChatDaOpenRouter.ler("""{"conversas":[{"id":"x"}]}"""),
+        )
+        assertEquals(
+            emptyList(),
+            IndiceDasConversasDoChatDaOpenRouter.ler(
+                """{"conversas":[{"id":"ok","titulo":"A","criadaEm":1,"atualizadaEm":2,"bytesAproximados":3},{}]}""",
+            ),
+        )
+        assertEquals(
+            listOf(EntradaDoIndiceDaConversaDoChat("x", "T", 1L, 2L, 3L)),
+            IndiceDasConversasDoChatDaOpenRouter.ler(
+                """{"conversas":[{"id":"x","titulo":"T","criadaEm":1,"atualizadaEm":2,"bytesAproximados":3}]}""",
+            ),
+        )
+    }
+
+    @Test
+    fun tetosDeQuantidadeBytesTotaisEConversa() {
+        assertEquals(40, IndiceDasConversasDoChatDaOpenRouter.MAXIMO_DE_CONVERSAS)
+        assertEquals(200L * 1024 * 1024, IndiceDasConversasDoChatDaOpenRouter.TETO_DE_BYTES_TOTAIS)
+        assertEquals(50L * 1024 * 1024, IndiceDasConversasDoChatDaOpenRouter.TETO_DURO_POR_CONVERSA)
+
+        val noMaximo = List(IndiceDasConversasDoChatDaOpenRouter.MAXIMO_DE_CONVERSAS) { indice ->
+            EntradaDoIndiceDaConversaDoChat("id$indice", "t", 1L, 1L, 1L)
+        }
+        assertTrue(IndiceDasConversasDoChatDaOpenRouter.ultrapassouQuantidade(noMaximo))
+        assertFalse(IndiceDasConversasDoChatDaOpenRouter.ultrapassouQuantidade(noMaximo.drop(1)))
+
+        val tetoTotal = IndiceDasConversasDoChatDaOpenRouter.TETO_DE_BYTES_TOTAIS
+        val cheio = listOf(EntradaDoIndiceDaConversaDoChat("x", "t", 1L, 1L, tetoTotal))
+        val quase = listOf(EntradaDoIndiceDaConversaDoChat("x", "t", 1L, 1L, tetoTotal - 1L))
+        assertTrue(IndiceDasConversasDoChatDaOpenRouter.ultrapassouBytesTotais(cheio))
+        assertFalse(IndiceDasConversasDoChatDaOpenRouter.ultrapassouBytesTotais(quase))
+
+        val tetoDuro = IndiceDasConversasDoChatDaOpenRouter.TETO_DURO_POR_CONVERSA
+        assertFalse(IndiceDasConversasDoChatDaOpenRouter.ultrapassouTetoDuroDaConversa(tetoDuro))
+        assertTrue(IndiceDasConversasDoChatDaOpenRouter.ultrapassouTetoDuroDaConversa(tetoDuro + 1L))
+    }
+}

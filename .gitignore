@@ -1,0 +1,30 @@
+# Binários (APKs de outros apps e do próprio build não vão para o repositório)
+*.apk
+*.aab
+
+# Build e caches do Gradle/Kotlin/IDE
+**/build/
+**/.gradle/
+**/.kotlin/
+**/.idea/
+*.iml
+**/captures/
+**/.cxx/
+
+# Caminho local do SDK (tem o nome do usuário da máquina)
+local.properties
+
+# Artefatos de depuração soltos na pasta do app (capturas de tela, dumps de UI, scripts temporários,
+# dados obtidos da conta no tablet) — podem conter dados pessoais
+aplicativo-android-do-navegador-chromebrothers/*.png
+aplicativo-android-do-navegador-chromebrothers/*.xml
+aplicativo-android-do-navegador-chromebrothers/tmp_*.py
+aplicativo-android-do-navegador-chromebrothers/*-do-tablet.txt
+aplicativo-android-do-navegador-chromebrothers/docs/superpowers/*.png
+**/.superpowers/**/*.png
+**/.superpowers/**/*.jpg
+
+# Página local de teste do player: fica só a página e o clipe
+pagina-local-para-testar-pausa-e-play-do-player/*.png
+pagina-local-para-testar-pausa-e-play-do-player/*.xml
+pagina-local-para-testar-pausa-e-play-do-player/clipe-sem-extensao

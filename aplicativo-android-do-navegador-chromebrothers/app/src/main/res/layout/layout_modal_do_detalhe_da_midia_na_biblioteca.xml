@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fundo_arredondado_da_caixa_de_dialogo_do_editor_de_imagem"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        android:id="@+id/titulo_do_modal_do_detalhe_da_midia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/titulo_do_detalhe_da_midia_na_biblioteca"
+        android:textColor="#F4F7FB"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/origem_e_modelo_do_detalhe_da_midia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textColor="#8AB4F8"
+        android:textSize="14sp" />
+
+    <ScrollView
+        android:id="@+id/rolagem_do_prompt_do_detalhe_da_midia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:fadeScrollbars="false">
+
+        <TextView
+            android:id="@+id/prompt_do_detalhe_da_midia"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#C4C7CE"
+            android:textIsSelectable="true"
+            android:textSize="15sp" />
+    </ScrollView>
+
+    <HorizontalScrollView
+        android:id="@+id/linha_refs_do_detalhe"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/conteudo_das_refs_do_detalhe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
+    <TextView
+        android:id="@+id/caminho_do_detalhe_da_midia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:textColor="#8A9099"
+        android:textSize="13sp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/botao_fechar_do_detalhe_da_midia"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:stateListAnimator="@null"
+                android:text="@string/fechar_detalhe_da_midia_na_biblioteca"
+                android:textAllCaps="false"
+                android:textColor="#8A9099"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/botao_copiar_prompt_do_detalhe_da_midia"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:stateListAnimator="@null"
+                android:text="@string/copiar_prompt_do_detalhe_da_midia"
+                android:textAllCaps="false"
+                android:textColor="#8AB4F8"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/botao_copiar_caminho_do_detalhe_da_midia"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:stateListAnimator="@null"
+                android:text="@string/copiar_caminho_do_detalhe_da_midia"
+                android:textAllCaps="false"
+                android:textColor="#8AB4F8"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/botao_usar_de_novo_do_detalhe_da_midia"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:stateListAnimator="@null"
+                android:text="@string/usar_de_novo_do_detalhe_da_midia"
+                android:textAllCaps="false"
+                android:textColor="#8AB4F8"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/botao_baixar_do_detalhe_da_midia"
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:stateListAnimator="@null"
+                android:text="@string/baixar_do_detalhe_da_midia"
+                android:textAllCaps="false"
+                android:textColor="#8AB4F8"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

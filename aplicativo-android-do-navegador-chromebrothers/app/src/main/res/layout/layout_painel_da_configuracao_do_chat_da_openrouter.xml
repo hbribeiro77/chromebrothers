@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Overlay de configuração do chat: seções com linha-resumo + detalhe colapsável. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/painel_da_chave_da_openrouter"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1A1D24"
+    android:fillViewport="true"
+    android:visibility="gone">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <!-- Conta / OpenRouter -->
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_conta_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/secao_conta_da_configuracao_do_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_conta_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_conta_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▾"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_conta_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/linha_da_chave_da_openrouter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/campo_da_chave_da_openrouter"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                    android:hint="@string/chave_da_openrouter"
+                    android:importantForAutofill="no"
+                    android:inputType="textPassword"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:singleLine="true"
+                    android:textColor="#F4F7FB"
+                    android:textColorHint="#8A9099"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/botao_guardar_chave_da_openrouter"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/guardar_chave_da_openrouter"
+                    android:textColor="#8AB4F8" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/linha_da_chave_guardada_da_openrouter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/chave_da_openrouter_guardada"
+                    android:textColor="#C4C7CE"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/botao_trocar_chave_da_openrouter"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/trocar_chave_da_openrouter"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_apagar_chave_da_openrouter"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/apagar_chave_da_openrouter"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <!-- Integrações -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/secao_integracoes_da_configuracao_do_chat"
+            android:textColor="#8A9099"
+            android:textSize="12sp"
+            android:textAllCaps="true" />
+
+        <!-- Higgsfield -->
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_higgsfield_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/higgsfield_no_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_higgsfield_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_higgsfield_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_higgsfield_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/rotulo_do_estado_do_higgsfield_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#C4C7CE"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_ligar_higgsfield_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/ligar_higgsfield_no_chat"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_desligar_higgsfield_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/desligar_higgsfield_no_chat"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/botao_revogar_liberacao_do_higgsfield_no_chat"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:layout_marginTop="4dp"
+                android:text="@string/revogar_liberacao_do_higgsfield_no_chat"
+                android:textColor="#81C995" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <!-- Topview -->
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_topview_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/topview_no_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_topview_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_topview_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_topview_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/rotulo_do_estado_do_topview_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#C4C7CE"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_ligar_topview_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/ligar_topview_no_chat"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_desligar_topview_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/desligar_topview_no_chat"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/botao_revogar_liberacao_do_topview_no_chat"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:layout_marginTop="4dp"
+                android:text="@string/revogar_liberacao_do_topview_no_chat"
+                android:textColor="#81C995" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <!-- Magnific -->
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_magnific_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/magnific_no_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_magnific_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_magnific_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_magnific_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/rotulo_do_estado_do_magnific_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#C4C7CE"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_ligar_magnific_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/ligar_magnific_no_chat"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_desligar_magnific_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/desligar_magnific_no_chat"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <!-- Sjinn -->
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_sjinn_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/sjinn_no_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_sjinn_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_sjinn_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_sjinn_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/rotulo_do_estado_do_sjinn_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#C4C7CE"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/campo_do_token_do_sjinn_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                android:hint="@string/token_do_sjinn_no_chat"
+                android:importantForAutofill="no"
+                android:inputType="textPassword"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:textColor="#F4F7FB"
+                android:textColorHint="#8A9099"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_guardar_token_do_sjinn_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/guardar_token_do_sjinn_no_chat"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_apagar_token_do_sjinn_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/apagar_token_do_sjinn_no_chat"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <!-- Vivix W1 -->
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_vivix_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/vivix_no_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_vivix_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_vivix_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_vivix_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/rotulo_do_estado_do_vivix_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="#C4C7CE"
+                android:textSize="13sp" />
+
+            <EditText
+                android:id="@+id/campo_do_token_do_vivix_no_chat"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                android:hint="@string/token_do_vivix_no_chat"
+                android:importantForAutofill="no"
+                android:inputType="textPassword"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:textColor="#F4F7FB"
+                android:textColorHint="#8A9099"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_guardar_token_do_vivix_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/guardar_token_do_sjinn_no_chat"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_apagar_token_do_vivix_no_chat"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/apagar_token_do_sjinn_no_chat"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/botao_revogar_liberacao_do_vivix_no_chat"
+                style="@style/BotaoDaMolduraDaComposicao"
+                android:layout_marginTop="4dp"
+                android:text="@string/revogar_liberacao_do_vivix_no_chat"
+                android:textColor="#FDD663"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <!-- Sites -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="4dp"
+            android:text="@string/secao_sites_da_configuracao_do_chat"
+            android:textColor="#8A9099"
+            android:textSize="12sp"
+            android:textAllCaps="true" />
+
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_notas_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/notas_dos_sites_do_chat"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_notas_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_notas_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_notas_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/campo_do_site_da_nota_do_chat"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                android:hint="@string/site_da_nota_do_chat"
+                android:importantForAutofill="no"
+                android:inputType="textUri"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:textColor="#F4F7FB"
+                android:textColorHint="#8A9099"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/campo_do_texto_da_nota_do_site"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                android:gravity="top"
+                android:hint="@string/texto_da_nota_do_site"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:minLines="2"
+                android:padding="10dp"
+                android:textColor="#F4F7FB"
+                android:textColorHint="#8A9099"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_guardar_nota_do_site"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/guardar_nota_do_site"
+                    android:textColor="#8AB4F8" />
+
+                <Button
+                    android:id="@+id/botao_apagar_nota_do_site"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/apagar_nota_do_site"
+                    android:textColor="#F28B82" />
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/rolagem_das_notas_dos_sites"
+                android:layout_width="match_parent"
+                android:layout_height="140dp"
+                android:layout_marginTop="4dp">
+
+                <LinearLayout
+                    android:id="@+id/lista_de_notas_dos_sites"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_navegacao_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/navegacao_liberada_dos_sites"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_navegacao_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_navegacao_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_navegacao_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/campo_do_site_com_navegacao_liberada"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                android:hint="@string/site_com_navegacao_liberada"
+                android:importantForAutofill="no"
+                android:inputType="textUri"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:textColor="#F4F7FB"
+                android:textColorHint="#8A9099"
+                android:textSize="14sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_liberar_navegacao_do_site"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/liberar_navegacao_do_site"
+                    android:textColor="#81C995" />
+            </LinearLayout>
+
+            <ScrollView
+                android:id="@+id/rolagem_dos_sites_com_navegacao_liberada"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginTop="4dp">
+
+                <LinearLayout
+                    android:id="@+id/lista_de_sites_com_navegacao_liberada"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </ScrollView>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2A2F38" />
+
+        <LinearLayout
+            android:id="@+id/cabecalho_da_secao_armazenamento_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/armazenamento_do_aplicativo"
+                    android:textColor="#F4F7FB"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/resumo_da_secao_armazenamento_do_chat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#8A9099"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/seta_da_secao_armazenamento_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="8dp"
+                android:text="▸"
+                android:textColor="#8A9099"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/detalhe_da_secao_armazenamento_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="8dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/explicacao_do_armazenamento_do_aplicativo"
+                android:textColor="#8A9099"
+                android:textSize="13sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_gerenciar_armazenamento_do_aplicativo"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:text="@string/gerenciar_armazenamento_do_aplicativo"
+                    android:textColor="#8AB4F8" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

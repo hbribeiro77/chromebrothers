@@ -1,0 +1,1620 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/raiz_do_navegador"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_da_faixa_do_navegador_chromebrothers">
+
+    <LinearLayout
+        android:id="@+id/coluna_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/faixa_superior_das_abas"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipChildren="true"
+        android:clipToPadding="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp">
+
+        <HorizontalScrollView
+            android:id="@+id/rolagem_da_faixa_de_abas"
+            android:layout_width="0dp"
+            android:layout_height="46dp"
+            android:layout_weight="1"
+            android:clipChildren="true"
+            android:clipToPadding="true"
+            android:fillViewport="false"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/faixa_de_abas_do_navegador"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:clipChildren="true"
+                android:clipToPadding="true"
+                android:gravity="bottom"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <ImageButton
+            android:id="@+id/botao_nova_aba"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="4dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/nova_aba"
+            android:elevation="8dp"
+            android:src="@drawable/icone_nova_aba_do_navegador_chromebrothers" />
+
+        <View
+            android:id="@+id/espaco_antes_do_contador_de_abas"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="0" />
+
+        <TextView
+            android:id="@+id/botao_gerenciador_de_abas"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="2dp"
+            android:background="@drawable/fundo_do_contador_de_abas_do_navegador_chromebrothers"
+            android:clickable="true"
+            android:contentDescription="@string/gerenciador_de_abas"
+            android:elevation="8dp"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:gravity="center"
+            android:includeFontPadding="false"
+            android:minWidth="40dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
+            android:text="1"
+            android:textColor="#5F6368"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/barra_de_navegacao"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="@color/fundo_da_barra_do_navegador_chromebrothers"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="2dp"
+        android:paddingEnd="8dp">
+
+        <ImageButton
+            android:id="@+id/botao_voltar_na_pagina"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/voltar_na_pagina"
+            android:src="@drawable/icone_voltar_da_barra_do_navegador_chromebrothers" />
+
+        <ImageButton
+            android:id="@+id/botao_avancar_na_pagina"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/avancar_na_pagina"
+            android:src="@drawable/icone_avancar_da_barra_do_navegador_chromebrothers" />
+
+        <ImageButton
+            android:id="@+id/botao_recarregar_pagina"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/recarregar_pagina"
+            android:src="@drawable/icone_recarregar_da_barra_do_navegador_chromebrothers" />
+
+        <ImageButton
+            android:id="@+id/botao_ir_para_pagina_inicial"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/pagina_inicial"
+            android:src="@drawable/icone_da_pagina_inicial_do_navegador_chromebrothers" />
+
+        <LinearLayout
+            android:id="@+id/caixa_da_barra_de_endereco"
+            android:layout_width="0dp"
+            android:layout_height="42dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:background="@drawable/fundo_da_barra_de_endereco"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <EditText
+                android:id="@+id/campo_endereco_da_pagina"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:autofillHints="url"
+                android:background="@null"
+                android:hint="@string/endereco_da_pagina"
+                android:imeOptions="actionGo"
+                android:inputType="textUri|textNoSuggestions"
+                android:paddingStart="16dp"
+                android:paddingEnd="4dp"
+                android:selectAllOnFocus="true"
+                android:singleLine="true"
+                android:textColor="#202124"
+                android:textColorHint="#5F6368"
+                android:textSize="16sp" />
+
+            <ImageButton
+                android:id="@+id/botao_ir_ao_endereco_da_barra"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/acessar_o_endereco_digitado"
+                android:padding="6dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icone_de_ir_ao_endereco_da_barra_do_navegador_chromebrothers" />
+
+            <ImageButton
+                android:id="@+id/botao_copiar_endereco_da_barra"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/copiar_endereco_da_barra"
+                android:padding="6dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/icone_de_copiar_endereco_da_barra_do_navegador_chromebrothers" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/botao_fixar_atalho_da_pagina"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/fixar_atalho"
+            android:src="@drawable/icone_fixar_atalho_da_pagina_inicial"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/botao_versao_para_computador"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/versao_para_computador"
+            android:src="@drawable/icone_versao_para_computador_da_aba" />
+
+        <TextView
+            android:id="@+id/botao_abrir_campo_de_texto_do_navegador"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/abrir_campo_de_texto_do_navegador"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Aa"
+            android:textColor="#202124"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/interruptor_de_bloqueio_de_anuncio"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:contentDescription="@string/bloquear_anuncios"
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp"
+            android:text="@string/rotulo_curto_do_bloqueio_de_anuncio"
+            android:textColor="#202124"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/botao_de_captura_nativa_de_tela_do_navegador"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/captura_nativa_de_tela"
+            android:src="@drawable/icone_de_captura_nativa_de_tela_do_navegador_chromebrothers" />
+
+        <ImageButton
+            android:id="@+id/botao_buscar_na_pagina_do_navegador"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/buscar_na_pagina_do_navegador"
+            android:src="@drawable/icone_de_buscar_na_pagina_do_navegador_chromebrothers" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/interruptor_de_captura_de_midia_para_download"
+            android:layout_width="wrap_content"
+            android:layout_height="44dp"
+            android:contentDescription="@string/capturar_midia_para_download"
+            android:paddingStart="8dp"
+            android:paddingEnd="4dp"
+            android:text="@string/rotulo_curto_da_captura_de_midia"
+            android:textColor="#202124"
+            android:textSize="14sp" />
+
+        <ImageButton
+            android:id="@+id/botao_de_extensoes_do_navegador"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/extensoes"
+            android:src="@drawable/icone_de_extensoes_do_navegador_chromebrothers" />
+
+        <ImageButton
+            android:id="@+id/botao_abrir_biblioteca_de_videos_na_barra_de_navegacao"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/abrir_biblioteca_de_videos"
+            android:src="@drawable/icone_da_gaveta_da_biblioteca_de_videos" />
+
+        <ImageButton
+            android:id="@+id/botao_abrir_chat_da_openrouter"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/abrir_chat_da_openrouter"
+            android:src="@drawable/icone_de_chat_da_openrouter_do_navegador" />
+
+        <ImageButton
+            android:id="@+id/botao_do_menu_overflow_da_barra_do_navegador"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/menu_overflow_da_barra_do_navegador"
+            android:src="@drawable/icone_do_menu_overflow_da_barra_do_navegador_chromebrothers"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/faixa_de_botoes_de_extensao"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="@color/fundo_da_barra_do_navegador_chromebrothers"
+        android:scrollbars="none"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/botoes_de_acao_das_extensoes"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+    </HorizontalScrollView>
+
+    <ProgressBar
+        android:id="@+id/progresso_do_carregamento_da_pagina"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:max="100"
+        android:progressBackgroundTint="#00000000"
+        android:progressTint="#1A73E8"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/faixa_de_busca_na_pagina_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/fundo_da_barra_do_navegador_chromebrothers"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="4dp"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/campo_de_busca_na_pagina_do_navegador"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:background="@android:color/transparent"
+            android:hint="@string/dica_da_busca_na_pagina_do_navegador"
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textColor="#202124"
+            android:textColorHint="#5F6368"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/texto_da_contagem_da_busca_na_pagina"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="56dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="0 de 0"
+            android:textColor="#5F6368"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/botao_diferenciar_maiusculas_na_busca_na_pagina"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:contentDescription="@string/diferenciar_maiusculas_na_busca_na_pagina"
+            android:focusable="true"
+            android:gravity="center"
+            android:text="Aa"
+            android:textColor="#5F6368"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/botao_ocorrencia_anterior_da_busca_na_pagina"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ocorrencia_anterior_da_busca_na_pagina"
+            android:src="@drawable/icone_de_ocorrencia_anterior_da_busca_na_pagina_do_navegador" />
+
+        <ImageButton
+            android:id="@+id/botao_ocorrencia_seguinte_da_busca_na_pagina"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ocorrencia_seguinte_da_busca_na_pagina"
+            android:src="@drawable/icone_de_ocorrencia_seguinte_da_busca_na_pagina_do_navegador" />
+
+        <ImageButton
+            android:id="@+id/botao_fechar_busca_na_pagina_do_navegador"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/fechar_busca_na_pagina_do_navegador"
+            android:src="@drawable/icone_de_fechar_o_player_de_video" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/faixa_da_pagina_e_do_chat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/fundo_da_pagina_do_navegador_chromebrothers"
+        android:orientation="horizontal">
+
+    <FrameLayout
+        android:id="@+id/area_visivel_das_paginas"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@color/fundo_da_pagina_do_navegador_chromebrothers">
+
+        <FrameLayout
+            android:id="@+id/area_das_paginas"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <ImageButton
+            android:id="@+id/botao_flutuante_abrir_player_nativo"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:background="@drawable/fundo_do_botao_flutuante_do_player"
+            android:contentDescription="@string/abrir_no_player_nativo"
+            android:elevation="8dp"
+            android:padding="16dp"
+            android:src="@drawable/icone_de_play_do_botao_flutuante"
+            android:visibility="gone" />
+
+        <ImageButton
+            android:id="@+id/botao_baixar_midia_da_pagina"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:background="@drawable/fundo_do_botao_flutuante_do_player"
+            android:contentDescription="@string/baixar_midia_da_pagina"
+            android:elevation="8dp"
+            android:padding="14dp"
+            android:src="@drawable/icone_de_baixar_midia_da_pagina"
+            android:visibility="gone" />
+
+        <!-- Cobre a página no modo pick do gravador: toque não chega no site.
+             invisible (não gone): mantém largura/altura medidas p/ mapear o toque em CSS. -->
+        <View
+            android:id="@+id/camada_do_pick_do_gravador_de_roteiro"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#330A84FF"
+            android:clickable="true"
+            android:elevation="22dp"
+            android:focusable="true"
+            android:visibility="invisible" />
+
+        <!-- Só cobre a página: abas e barra de endereço continuam usáveis. -->
+        <FrameLayout
+            android:id="@+id/painel_da_janela_de_login"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/fundo_da_pagina_do_navegador_chromebrothers"
+            android:clickable="true"
+            android:elevation="24dp"
+            android:focusable="true"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/botao_fechar_janela_de_login"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:background="@drawable/fundo_da_barra_superior_do_player"
+                android:contentDescription="@string/fechar_janela_de_login"
+                android:elevation="4dp"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_fechar_o_player_de_video" />
+        </FrameLayout>
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/gaveta_do_chat_da_openrouter"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:background="#1A1D24"
+        android:orientation="vertical"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/chrome_superior_da_gaveta_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/titulo_da_gaveta_do_chat_da_openrouter"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/titulo_do_chat_da_openrouter"
+                android:textColor="#F4F7FB"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <ImageButton
+                android:id="@+id/botao_configurar_chave_da_openrouter"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/configurar_chave_da_openrouter"
+                android:padding="8dp"
+                android:src="@drawable/icone_de_configuracao_do_player_de_video" />
+
+            <ImageButton
+                android:id="@+id/botao_fechar_chat_da_openrouter"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fechar_chat_da_openrouter"
+                android:padding="8dp"
+                android:src="@drawable/icone_de_fechar_o_player_de_video" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/rolagem_das_abas_da_gaveta_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="6dp"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/faixa_das_abas_da_gaveta_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:id="@+id/barra_de_contexto_do_chat_na_gaveta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/rotulo_da_aba_do_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#8A9099"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|end"
+                android:orientation="horizontal">
+
+                <com.chromebrothers.navegador.VistaDoMedidorCircularDoHistoricoDoChat
+                    android:id="@+id/medidor_do_historico_do_chat"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginEnd="2dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:contentDescription="@string/historico_de_conversas_do_chat"
+                    android:focusable="true" />
+
+                <ImageButton
+                    android:id="@+id/botao_historico_de_conversas_do_chat"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/historico_de_conversas_do_chat"
+                    android:padding="8dp"
+                    android:src="@drawable/icone_de_historico_de_conversas_do_chat" />
+
+                <ImageButton
+                    android:id="@+id/botao_limpar_o_chat_da_openrouter"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/nova_conversa_do_chat"
+                    android:padding="8dp"
+                    android:src="@drawable/icone_de_nova_conversa_do_chat" />
+
+                <ImageButton
+                    android:id="@+id/botao_rodar_roteiro_de_automacao_do_chat"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/rodar_roteiro_de_automacao_do_chat"
+                    android:padding="8dp"
+                    android:src="@drawable/icone_de_reproduzir_do_player_de_video" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.chromebrothers.navegador.CorpoDasAbasDaGavetaDoChatComSwipeEntreAbas
+            android:id="@+id/corpo_das_abas_da_gaveta_do_chat_com_swipe"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <FrameLayout
+                android:id="@+id/host_do_gravador_na_gaveta_do_chat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <FrameLayout
+                android:id="@+id/host_dos_componentes_ancorados_na_gaveta_do_chat"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/corpo_do_chat_da_openrouter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+        <ScrollView
+            android:id="@+id/rolagem_das_mensagens_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/lista_de_mensagens_do_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <TextView
+            android:id="@+id/aviso_dos_modelos_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#8A9099"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <EditText
+            android:id="@+id/campo_do_modelo_do_chat_da_openrouter"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+            android:hint="@string/modelo_do_chat_da_openrouter"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:singleLine="true"
+            android:textColor="#F4F7FB"
+            android:textColorHint="#8A9099"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <HorizontalScrollView
+            android:id="@+id/rolagem_das_familias_de_modelo_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/faixa_das_familias_de_modelo_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <ScrollView
+            android:id="@+id/rolagem_dos_modelos_da_familia_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/lista_de_modelos_da_familia_do_chat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:background="@drawable/fundo_do_seletor_de_modo_do_chat"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="3dp">
+
+                <TextView
+                    android:id="@+id/botao_modo_ask_do_chat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:text="@string/modo_ask_do_chat"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/botao_modo_agente_do_chat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:text="@string/modo_agente_do_chat"
+                    android:textSize="13sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/botao_escolher_modelo_do_chat"
+                android:layout_width="0dp"
+                android:layout_height="36dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:textColor="#C4C7CE"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/selo_da_pagina_no_chat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/fundo_do_seletor_de_modo_do_chat"
+            android:paddingStart="10dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="4dp"
+            android:text="@string/pagina_anexada_ao_chat"
+            android:textColor="#8AB4F8"
+            android:textSize="12sp"
+            android:visibility="gone" />
+
+        <HorizontalScrollView
+            android:id="@+id/rolagem_dos_anexos_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/lista_de_anexos_do_chat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/fundo_da_capsula_do_compositor_do_chat"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="4dp">
+
+            <ImageButton
+                android:id="@+id/botao_mais_do_chat"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/adicionar_pagina_ao_chat"
+                android:padding="8dp"
+                android:src="@drawable/icone_de_mais_do_compositor_do_chat" />
+
+            <EditText
+                android:id="@+id/campo_da_mensagem_do_chat"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:hint="@string/mensagem_do_chat"
+                android:importantForAutofill="no"
+                android:inputType="textMultiLine|textCapSentences"
+                android:maxLines="4"
+                android:minHeight="40dp"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp"
+                android:textColor="#F4F7FB"
+                android:textColorHint="#8A9099"
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/botao_enviar_mensagem_do_chat"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/fundo_do_seletor_de_modo_do_chat"
+                android:contentDescription="@string/enviar_mensagem_do_chat"
+                android:padding="8dp"
+                android:src="@drawable/icone_de_enviar_mensagem_do_chat_da_openrouter" />
+        </LinearLayout>
+
+            </LinearLayout>
+
+            <include
+                layout="@layout/layout_painel_da_configuracao_do_chat_da_openrouter"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </com.chromebrothers.navegador.CorpoDasAbasDaGavetaDoChatComSwipeEntreAbas>
+    </LinearLayout>
+    </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/painel_do_gerenciador_de_abas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#202124"
+        android:clickable="true"
+        android:elevation="16dp"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:paddingStart="18dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="18dp"
+        android:paddingBottom="18dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/botao_nova_aba_na_gestao"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/nova_aba"
+                android:padding="10dp"
+                android:src="@drawable/icone_nova_aba_do_navegador_chromebrothers" />
+
+            <TextView
+                android:id="@+id/botao_nova_janela_na_gestao"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:text="@string/nova_janela_do_navegador"
+                android:textColor="#8AB4F8"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/botao_fechar_gestao_de_abas"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fechar_gestao_de_abas"
+                android:padding="12dp"
+                android:src="@drawable/icone_fechar_aba_do_navegador_chromebrothers" />
+        </LinearLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
+
+            <GridLayout
+                android:id="@+id/grade_de_abas_do_gerenciador"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:alignmentMode="alignBounds"
+                android:columnCount="3" />
+        </ScrollView>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/painel_do_player_controlado_do_video_na_pagina"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:elevation="24dp"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <View
+            android:id="@+id/superficie_do_video_no_player_da_pagina"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <LinearLayout
+            android:id="@+id/barra_superior_do_player_da_pagina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:background="@drawable/fundo_da_barra_superior_do_player"
+            android:orientation="vertical"
+            android:padding="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <HorizontalScrollView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/lista_de_velocidades_do_player_da_pagina"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/interruptor_de_captura_de_midia_no_player_da_pagina"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:contentDescription="@string/capturar_midia_para_download"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp"
+                    android:text="@string/rotulo_curto_da_captura_de_midia"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp" />
+
+                <ImageButton
+                    android:id="@+id/botao_baixar_midia_do_player_da_pagina"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/baixar_midia_da_pagina"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_baixar_midia_da_pagina"
+                    android:visibility="gone" />
+
+                <ImageButton
+                    android:id="@+id/botao_salvar_quadro_do_player_da_pagina"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/salvar_quadro"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_salvar_quadro_do_player_de_video" />
+
+                <ImageButton
+                    android:id="@+id/botao_copiar_quadro_do_player_da_pagina"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/copiar_quadro"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_copiar_quadro_do_player_de_video" />
+
+                <ImageButton
+                    android:id="@+id/botao_favoritar_o_video_da_biblioteca"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/favoritar_video"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_video_favorito_contorno" />
+
+                <ImageButton
+                    android:id="@+id/botao_abrir_gaveta_da_biblioteca_de_videos"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/abrir_biblioteca_de_videos"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_da_gaveta_da_biblioteca_de_videos" />
+
+                <ImageButton
+                    android:id="@+id/botao_configurar_incremento_do_player_da_pagina"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/configurar_incremento_do_video"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_configuracao_do_player_de_video" />
+
+                <ImageButton
+                    android:id="@+id/botao_fechar_player_da_pagina"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/fechar_player_da_pagina"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/icone_de_fechar_o_player_de_video" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lista_de_incrementos_do_player_da_pagina"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/aviso_do_deslocamento_do_player_da_pagina"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="150dp"
+            android:shadowColor="#CC000000"
+            android:shadowDx="0"
+            android:shadowDy="2"
+            android:shadowRadius="8"
+            android:textColor="#FFFFFF"
+            android:textSize="48sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/controles_centrais_do_player_da_pagina"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/fundo_dos_controles_centrais_do_player_de_video"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="6dp">
+
+            <ImageButton
+                android:id="@+id/botao_retroceder_dez_segundos_do_player_da_pagina"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/retroceder_video"
+                android:padding="14dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_retroceder_dez_segundos_do_player_de_video" />
+
+            <ImageButton
+                android:id="@+id/botao_pausar_player_da_pagina"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/pausar_video"
+                android:padding="14dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_pausa_do_player_de_video" />
+
+            <ImageButton
+                android:id="@+id/botao_avancar_dez_segundos_do_player_da_pagina"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/avancar_video"
+                android:padding="14dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_avancar_dez_segundos_do_player_de_video" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/barra_inferior_do_player_da_pagina"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#CC000000"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp">
+
+            <SeekBar
+                android:id="@+id/barra_de_posicao_do_player_da_pagina"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:contentDescription="@string/posicao_do_video"
+                android:max="1000" />
+
+            <TextView
+                android:id="@+id/texto_da_posicao_do_player_da_pagina"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#F4F7FB"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <include
+            android:id="@+id/inclusao_da_faixa_de_scrub_fino_do_player_da_pagina"
+            layout="@layout/layout_faixa_de_scrub_fino_por_toque_longo_do_player_de_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginBottom="56dp" />
+    </FrameLayout>
+
+    <include
+        layout="@layout/layout_gaveta_da_biblioteca_de_videos_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/painel_do_campo_de_texto_do_navegador"
+        android:layout_width="400dp"
+        android:layout_height="460dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/fundo_da_janela_da_carcaca_da_colecao_flutuante"
+        android:baselineAligned="false"
+        android:clickable="true"
+        android:elevation="48dp"
+        android:focusable="true"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@drawable/fundo_do_cabecalho_da_carcaca_da_colecao_flutuante"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
+
+            <FrameLayout
+                android:id="@+id/alca_para_arrastar_o_campo_de_texto"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/alca_para_arrastar_o_campo_de_texto">
+
+                <TextView
+                    android:id="@+id/faixa_de_titulo_do_campo_de_texto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start|center_vertical"
+                    android:contentDescription="@string/mover_janela_do_campo_de_texto"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="130dp"
+                    android:text="@string/abrir_campo_de_texto_do_navegador"
+                    android:textColor="#E8EAF0"
+                    android:textSize="13.5sp"
+                    android:textStyle="bold" />
+
+                <include
+                    layout="@layout/layout_alca_pilula_do_chrome_das_janelas_flutuantes_do_navegador"
+                    android:layout_width="56dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end|center_vertical"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageButton
+                    android:id="@+id/botao_ancorar_campo_de_texto_na_gaveta_do_chat"
+                    style="@style/IconeDeAcaoCompactaDoChromeDasJanelasFlutuantes"
+                    android:contentDescription="@string/ancorar_colecao_na_gaveta_do_chat"
+                    android:src="@drawable/icone_de_chat_da_openrouter_do_navegador" />
+
+                <ImageButton
+                    android:id="@+id/botao_minimizar_campo_de_texto_do_navegador"
+                    style="@style/IconeMinimizarFecharDoChromeDasJanelasFlutuantes"
+                    android:contentDescription="@string/minimizar_campo_de_texto"
+                    android:src="@drawable/icone_de_minimizar_janela_do_campo_de_texto_do_navegador" />
+
+                <ImageButton
+                    android:id="@+id/botao_fechar_campo_de_texto_do_navegador"
+                    style="@style/IconeMinimizarFecharDoChromeDasJanelasFlutuantes"
+                    android:contentDescription="@string/fechar_campo_de_texto_do_navegador"
+                    android:src="@drawable/icone_de_fechar_o_player_de_video" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/corpo_do_campo_de_texto_para_ancorar"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="4dp"
+            android:paddingBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/selo_do_site_do_campo_de_texto"
+                    android:layout_width="0dp"
+                    android:layout_height="36dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/fundo_do_selo_do_site_do_campo_de_texto_do_navegador"
+                    android:clickable="true"
+                    android:contentDescription="@string/consultar_sites_e_notas_do_campo_de_texto"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="8dp">
+
+                    <TextView
+                        android:id="@+id/texto_do_selo_do_site_do_campo_de_texto"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:singleLine="true"
+                        android:textColor="#8AB4F8"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/seta_da_lista_do_campo_de_texto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="▾"
+                        android:textColor="#8AB4F8"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/selo_das_notas_do_campo_de_texto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:background="@drawable/fundo_do_selo_do_site_do_campo_de_texto_do_navegador"
+                    android:clickable="true"
+                    android:contentDescription="@string/consultar_notas_do_campo_de_texto"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="8dp">
+
+                    <TextView
+                        android:id="@+id/texto_do_selo_das_notas_do_campo_de_texto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/rotulo_do_seletor_de_notas"
+                        android:textColor="#F4F7FB"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/seta_das_notas_do_campo_de_texto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="4dp"
+                        android:text="▾"
+                        android:textColor="#F4F7FB"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_weight="1">
+
+                <EditText
+                    android:id="@+id/campo_de_texto_do_navegador"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem"
+                    android:gravity="top|start"
+                    android:hint="@string/dica_do_campo_de_texto_do_navegador"
+                    android:importantForAutofill="no"
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:overScrollMode="ifContentScrolls"
+                    android:padding="12dp"
+                    android:scrollbars="vertical"
+                    android:textColor="#F4F7FB"
+                    android:textColorHint="#8A9099"
+                    android:textSize="16sp" />
+
+                <ScrollView
+                    android:id="@+id/lista_suspensa_do_campo_de_texto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#242833"
+                    android:clickable="true"
+                    android:elevation="4dp"
+                    android:fillViewport="true"
+                    android:scrollbars="vertical"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/lista_de_notas_do_campo_de_texto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="4dp" />
+                </ScrollView>
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/linha_da_caixa_vinculada"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:contentDescription="@string/vincular_caixa_do_site"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:minWidth="0dp"
+                    android:text="@string/rotulo_da_caixa_vinculada"
+                    android:textColor="#8AB4F8"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rotulo_do_campo_vinculado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/nenhum_vinculo_curto"
+                    android:textColor="#8A9099"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/botao_remover_campo_vinculado"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:layout_height="48dp"
+                    android:minWidth="48dp"
+                    android:contentDescription="@string/remover_vinculo_da_caixa"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+                    android:text="×"
+                    android:textColor="#8A9099"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:background="#3C4452" />
+
+            <LinearLayout
+                android:id="@+id/linha_do_botao_de_envio_vinculado"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:contentDescription="@string/vincular_botao_de_envio_do_site"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
+                    android:minWidth="0dp"
+                    android:text="@string/rotulo_do_botao_de_envio_vinculado"
+                    android:textColor="#F9AB00"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/rotulo_do_envio_vinculado"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:singleLine="true"
+                    android:text="@string/nenhum_vinculo_curto"
+                    android:textColor="#8A9099"
+                    android:textSize="13sp" />
+
+                <Button
+                    android:id="@+id/botao_remover_envio_vinculado"
+                    style="@style/BotaoDaMolduraDaComposicao"
+                    android:layout_height="48dp"
+                    android:minWidth="48dp"
+                    android:contentDescription="@string/remover_vinculo_do_botao_de_envio"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+                    android:text="×"
+                    android:textColor="#8A9099"
+                    android:textSize="18sp"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/botao_vincular_automaticamente_caixa_e_botao_do_site"
+                style="@style/IconeDaFaixaDoCampoDeTexto"
+                android:layout_width="44dp"
+                android:layout_height="48dp"
+                android:contentDescription="@string/vincular_automaticamente_caixa_e_botao_do_site"
+                android:padding="10dp"
+                android:src="@drawable/icone_de_vincular_automaticamente_caixa_e_botao_do_site_no_campo_de_texto" />
+        </LinearLayout>
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|top"
+            android:orientation="vertical"
+            android:paddingTop="4dp"
+            android:paddingBottom="40dp">
+
+            <ImageButton
+                android:id="@+id/botao_importar_texto_do_campo_vinculado"
+                style="@style/IconeDaFaixaDoCampoDeTexto"
+                android:alpha="0.35"
+                android:contentDescription="@string/importar_texto_do_campo_vinculado"
+                android:enabled="false"
+                android:src="@drawable/icone_de_importar_texto_do_campo_vinculado_do_navegador" />
+
+            <ImageButton
+                android:id="@+id/botao_copiar_texto_do_campo_de_texto"
+                style="@style/IconeDaFaixaDoCampoDeTexto"
+                android:contentDescription="@string/copiar_texto_do_campo_de_texto"
+                android:src="@drawable/icone_de_copiar_quadro_do_player_de_video" />
+
+            <ImageButton
+                android:id="@+id/botao_limpar_campo_de_texto_do_navegador"
+                style="@style/IconeDaFaixaDoCampoDeTexto"
+                android:layout_marginTop="4dp"
+                android:contentDescription="@string/limpar_campo_de_texto_do_navegador"
+                android:src="@drawable/icone_de_limpar_texto_do_campo_de_texto_do_navegador" />
+
+            <ImageButton
+                android:id="@+id/botao_guardar_nota_do_campo_de_texto"
+                style="@style/IconeDaFaixaDoCampoDeTexto"
+                android:layout_marginTop="4dp"
+                android:contentDescription="@string/guardar_nota_do_campo_de_texto"
+                android:src="@drawable/icone_de_guardar_nota_do_campo_de_texto_do_navegador" />
+
+            <ImageButton
+                android:id="@+id/botao_enviar_texto_ao_campo_do_site"
+                style="@style/IconeDaFaixaDoCampoDeTexto"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/fundo_circular_do_botao_de_enviar_texto_ao_campo_do_site"
+                android:backgroundTint="@null"
+                android:contentDescription="@string/enviar_texto_ao_campo_do_site"
+                android:padding="12dp"
+                android:src="@drawable/icone_de_enter_para_enviar_texto_do_campo_de_texto_do_navegador" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/alca_de_redimensionar_o_campo_de_texto"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="bottom|end"
+            android:clickable="true"
+            android:contentDescription="@string/redimensionar_largura_do_campo_de_texto"
+            android:focusable="true">
+
+            <View
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
+                android:background="@drawable/indicador_de_redimensionar_canto_do_campo_de_texto" />
+        </FrameLayout>
+        </FrameLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/bolha_do_campo_de_texto_do_navegador"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="top|start"
+        android:background="@drawable/fundo_da_bolha_do_campo_de_texto_do_navegador"
+        android:contentDescription="@string/bolha_do_campo_de_texto"
+        android:elevation="16dp"
+        android:gravity="center"
+        android:text="Aa"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/painel_do_popup_da_extensao"
+        android:layout_width="420dp"
+        android:layout_height="520dp"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="120dp"
+        android:layout_marginEnd="12dp"
+        android:background="@color/fundo_da_barra_do_navegador_chromebrothers"
+        android:clickable="true"
+        android:elevation="40dp"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ImageButton
+            android:id="@+id/botao_fechar_popup_da_extensao"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp"
+            android:background="@drawable/fundo_da_barra_superior_do_player"
+            android:contentDescription="@string/fechar_popup_da_extensao"
+            android:elevation="4dp"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icone_de_fechar_o_player_de_video" />
+    </FrameLayout>
+
+    <include layout="@layout/layout_faixa_do_gravador_de_roteiro_de_automacao" />
+
+    <!-- Overlay: não entra no fluxo da coluna, não empurra a página. -->
+    <FrameLayout
+        android:id="@+id/moldura_da_lista_de_sugestoes_da_barra_de_endereco"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:clickable="true"
+        android:clipChildren="true"
+        android:clipToPadding="true"
+        android:elevation="24dp"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <ScrollView
+            android:id="@+id/lista_de_sugestoes_da_barra_de_endereco"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/fundo_da_barra_do_navegador_chromebrothers"
+            android:elevation="8dp"
+            android:maxHeight="320dp">
+
+            <LinearLayout
+                android:id="@+id/conteudo_das_sugestoes_da_barra_de_endereco"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </FrameLayout>
+
+</FrameLayout>

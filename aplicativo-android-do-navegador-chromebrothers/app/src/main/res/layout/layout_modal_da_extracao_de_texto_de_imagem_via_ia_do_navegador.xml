@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fundo_arredondado_da_caixa_de_dialogo_do_editor_de_imagem"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:id="@+id/titulo_do_modal_da_extracao_de_texto_de_imagem_via_ia_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@string/titulo_da_extracao_de_texto_da_imagem"
+        android:textColor="#F4F7FB"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/faixa_de_carregamento_do_modal_da_extracao_de_texto_de_imagem_via_ia_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progresso_do_modal_da_extracao_de_texto_de_imagem_via_ia_do_navegador"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#8AB4F8" />
+
+        <TextView
+            android:id="@+id/status_do_modal_da_extracao_de_texto_de_imagem_via_ia_do_navegador"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:text="@string/extraindo_texto_da_imagem"
+            android:textColor="#C4C7CE"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+    <com.chromebrothers.navegador.RolagemComTetoDe320DpDoTextoExtraidoDaImagemDoNavegador
+        android:id="@+id/rolagem_do_texto_extraido_da_imagem_via_ia_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="12dp"
+        android:fadeScrollbars="false"
+        android:overScrollMode="ifContentScrolls"
+        android:scrollbars="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/texto_extraido_da_imagem_via_ia_do_navegador"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:textColor="#F4F7FB"
+            android:textIsSelectable="true"
+            android:textSize="16sp" />
+    </com.chromebrothers.navegador.RolagemComTetoDe320DpDoTextoExtraidoDaImagemDoNavegador>
+
+    <Button
+        android:id="@+id/botao_copiar_texto_extraido_da_imagem_via_ia_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/copiar_texto_extraido_da_imagem"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/botao_enviar_texto_extraido_ao_chat_do_navegador"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minWidth="0dp"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/enviar_texto_extraido_ao_chat"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/botao_fechar_modal_da_extracao_de_texto_de_imagem_via_ia_do_navegador"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="8dp"
+        android:background="@android:color/transparent"
+        android:minWidth="0dp"
+        android:minHeight="0dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:stateListAnimator="@null"
+        android:text="@string/fechar_modal_da_extracao_de_texto_da_imagem"
+        android:textAllCaps="false"
+        android:textColor="#8A9099"
+        android:textSize="15sp" />
+</LinearLayout>

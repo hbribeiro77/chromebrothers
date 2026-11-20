@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/fundo_arredondado_da_caixa_de_dialogo_do_editor_de_imagem"
+    android:orientation="vertical"
+    android:paddingStart="16dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="16dp"
+    android:paddingBottom="12dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:text="@string/titulo_da_captura_nativa_de_tela"
+        android:textColor="#F4F7FB"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/botao_captura_da_area_visivel_da_tela"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="12dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/captura_da_area_visivel_da_tela"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_captura_da_area_selecionada_da_tela"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/captura_da_area_selecionada_da_tela"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_captura_da_pagina_inteira_da_tela"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/captura_da_pagina_inteira_da_tela"
+        android:textAllCaps="false"
+        android:textColor="#F4F7FB"
+        android:textSize="16sp" />
+
+    <Button
+        android:id="@+id/botao_cancelar_captura_nativa_de_tela"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@android:color/transparent"
+        android:gravity="start|center_vertical"
+        android:minHeight="48dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:stateListAnimator="@null"
+        android:text="@string/cancelar_captura_nativa_de_tela"
+        android:textAllCaps="false"
+        android:textColor="#A8B3C4"
+        android:textSize="16sp" />
+</LinearLayout>

@@ -1,0 +1,204 @@
+NO GIT — working tree snapshot for Task 1 review
+Files:
+  regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\PersistenciaDasMensagensDoChatDaOpenRouter.kt
+  regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\TituloDaConversaDoChatDaOpenRouter.kt
+  regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDaPersistenciaDasMensagensDoChatDaOpenRouter.kt
+  regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDoTituloDaConversaDoChatDaOpenRouter.kt
+
+===== BEGIN FILE: regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\PersistenciaDasMensagensDoChatDaOpenRouter.kt =====
+package com.chromebrothers.navegador.regras
+
+object PersistenciaDasMensagensDoChatDaOpenRouter {
+    fun escrever(mensagens: List<MensagemDeChat>): String {
+        val itens = mensagens.joinToString(",") { jsonDaMensagem(it) }
+        return """{"mensagens":[$itens]}"""
+    }
+
+    fun ler(bruto: String): List<MensagemDeChat> {
+        val objetos = TextoJsonDoChat.objetosDaChave(bruto, "mensagens") ?: return emptyList()
+        return objetos.map { lerMensagem(it) }
+    }
+
+    private fun jsonDaMensagem(mensagem: MensagemDeChat): String {
+        val papel = TextoJsonDoChat.escapar(mensagem.papel)
+        val conteudo = TextoJsonDoChat.escapar(mensagem.conteudo)
+        val idDaChamada = TextoJsonDoChat.escapar(mensagem.idDaChamada)
+        val partes = mensagem.partes.joinToString(",") { jsonDaParte(it) }
+        val chamadas = mensagem.chamadas.joinToString(",") { jsonDaChamada(it) }
+        return """{"papel":"$papel","conteudo":"$conteudo","idDaChamada":"$idDaChamada","partes":[$partes],"chamadas":[$chamadas]}"""
+    }
+
+    private fun jsonDaParte(parte: ParteDeConteudoDoChat): String {
+        val tipo = TextoJsonDoChat.escapar(parte.tipo)
+        val texto = TextoJsonDoChat.escapar(parte.texto)
+        val mime = TextoJsonDoChat.escapar(parte.mime)
+        val nome = TextoJsonDoChat.escapar(parte.nome)
+        val dados = TextoJsonDoChat.escapar(parte.dados)
+        return """{"tipo":"$tipo","texto":"$texto","mime":"$mime","nome":"$nome","dados":"$dados"}"""
+    }
+
+    private fun jsonDaChamada(chamada: ChamadaDeFerramenta): String {
+        val id = TextoJsonDoChat.escapar(chamada.id)
+        val nome = TextoJsonDoChat.escapar(chamada.nome)
+        val argumentos = TextoJsonDoChat.escapar(chamada.argumentos)
+        return """{"id":"$id","nome":"$nome","argumentos":"$argumentos"}"""
+    }
+
+    private fun lerMensagem(objeto: String): MensagemDeChat {
+        return MensagemDeChat(
+            papel = TextoJsonDoChat.valorDaChave(objeto, "papel") ?: "",
+            conteudo = TextoJsonDoChat.valorDaChave(objeto, "conteudo") ?: "",
+            partes = TextoJsonDoChat.objetosDaChave(objeto, "partes").orEmpty().map { lerParte(it) },
+            chamadas = TextoJsonDoChat.objetosDaChave(objeto, "chamadas").orEmpty().map { lerChamada(it) },
+            idDaChamada = TextoJsonDoChat.valorDaChave(objeto, "idDaChamada") ?: "",
+        )
+    }
+
+    private fun lerParte(objeto: String): ParteDeConteudoDoChat {
+        return ParteDeConteudoDoChat(
+            tipo = TextoJsonDoChat.valorDaChave(objeto, "tipo") ?: "",
+            texto = TextoJsonDoChat.valorDaChave(objeto, "texto") ?: "",
+            mime = TextoJsonDoChat.valorDaChave(objeto, "mime") ?: "",
+            nome = TextoJsonDoChat.valorDaChave(objeto, "nome") ?: "",
+            dados = TextoJsonDoChat.valorDaChave(objeto, "dados") ?: "",
+        )
+    }
+
+    private fun lerChamada(objeto: String): ChamadaDeFerramenta {
+        return ChamadaDeFerramenta(
+            id = TextoJsonDoChat.valorDaChave(objeto, "id") ?: "",
+            nome = TextoJsonDoChat.valorDaChave(objeto, "nome") ?: "",
+            argumentos = TextoJsonDoChat.valorDaChave(objeto, "argumentos") ?: "",
+        )
+    }
+}
+
+===== END FILE: regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\PersistenciaDasMensagensDoChatDaOpenRouter.kt =====
+
+===== BEGIN FILE: regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\TituloDaConversaDoChatDaOpenRouter.kt =====
+package com.chromebrothers.navegador.regras
+
+object TituloDaConversaDoChatDaOpenRouter {
+    fun gerar(mensagens: List<MensagemDeChat>, maximo: Int = 60): String {
+        val bruto = mensagens.firstOrNull { it.papel == "user" }?.conteudo.orEmpty()
+        val limpo = colapsarEspacos(bruto.trim())
+        if (limpo.isEmpty()) return "Conversa"
+        return limpo.take(maximo)
+    }
+
+    private fun colapsarEspacos(texto: String): String = buildString {
+        var espacoPendente = false
+        for (caractere in texto) {
+            if (caractere.isWhitespace()) {
+                espacoPendente = true
+            } else {
+                if (espacoPendente) append(' ')
+                espacoPendente = false
+                append(caractere)
+            }
+        }
+    }
+}
+
+===== END FILE: regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\TituloDaConversaDoChatDaOpenRouter.kt =====
+
+===== BEGIN FILE: regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDaPersistenciaDasMensagensDoChatDaOpenRouter.kt =====
+package com.chromebrothers.navegador.regras
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+
+class TesteDaPersistenciaDasMensagensDoChatDaOpenRouter {
+    @Test
+    fun roundtripDeMensagemUserComTexto() {
+        val original = listOf(MensagemDeChat(papel = "user", conteudo = "Olá \"mundo\""))
+        val json = PersistenciaDasMensagensDoChatDaOpenRouter.escrever(original)
+        val lido = PersistenciaDasMensagensDoChatDaOpenRouter.ler(json)
+        assertEquals(original, lido)
+    }
+
+    @Test
+    fun roundtripComPartesImagemChamadasEMensagemTool() {
+        val original = listOf(
+            MensagemDeChat(
+                papel = "user",
+                conteudo = "veja a imagem",
+                partes = listOf(
+                    ParteDeConteudoDoChat(
+                        tipo = "imagem",
+                        mime = "image/png",
+                        dados = "iVBORw0KGgo=",
+                    ),
+                ),
+            ),
+            MensagemDeChat(
+                papel = "assistant",
+                chamadas = listOf(
+                    ChamadaDeFerramenta(
+                        id = "call_1",
+                        nome = "ler_pagina",
+                        argumentos = """{"seletor":"h1"}""",
+                    ),
+                ),
+            ),
+            MensagemDeChat(
+                papel = "tool",
+                conteudo = "título",
+                idDaChamada = "call_1",
+            ),
+        )
+        val lido = PersistenciaDasMensagensDoChatDaOpenRouter.ler(
+            PersistenciaDasMensagensDoChatDaOpenRouter.escrever(original),
+        )
+        assertEquals(original, lido)
+    }
+
+    @Test
+    fun jsonInvalidoDevolveListaVazia() {
+        assertEquals(emptyList(), PersistenciaDasMensagensDoChatDaOpenRouter.ler("{}"))
+        assertEquals(emptyList(), PersistenciaDasMensagensDoChatDaOpenRouter.ler("lixo"))
+    }
+}
+
+===== END FILE: regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDaPersistenciaDasMensagensDoChatDaOpenRouter.kt =====
+
+===== BEGIN FILE: regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDoTituloDaConversaDoChatDaOpenRouter.kt =====
+package com.chromebrothers.navegador.regras
+
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class TesteDoTituloDaConversaDoChatDaOpenRouter {
+    @Test
+    fun tituloPegaPrimeiraMensagemUserCortada() {
+        val msgs = listOf(
+            MensagemDeChat("system", "x"),
+            MensagemDeChat("user", "a".repeat(100)),
+        )
+        val t = TituloDaConversaDoChatDaOpenRouter.gerar(msgs, maximo = 60)
+        assertEquals(60, t.length)
+        assertTrue(t.startsWith("aaa"))
+    }
+
+    @Test
+    fun semUserUsaConversa() {
+        assertEquals("Conversa", TituloDaConversaDoChatDaOpenRouter.gerar(emptyList()))
+    }
+
+    @Test
+    fun tituloColapsaEspacosEUsaConversaQuandoUserFicaVazio() {
+        val msgs = listOf(
+            MensagemDeChat("system", "ignore"),
+            MensagemDeChat("user", "  olá   mundo \n novo  "),
+        )
+        assertEquals("olá mundo novo", TituloDaConversaDoChatDaOpenRouter.gerar(msgs))
+        assertEquals(
+            "Conversa",
+            TituloDaConversaDoChatDaOpenRouter.gerar(listOf(MensagemDeChat("user", " \n\t "))),
+        )
+    }
+}
+
+===== END FILE: regras-de-video-do-navegador\src\test\kotlin\com\chromebrothers\navegador\regras\TesteDoTituloDaConversaDoChatDaOpenRouter.kt =====
+

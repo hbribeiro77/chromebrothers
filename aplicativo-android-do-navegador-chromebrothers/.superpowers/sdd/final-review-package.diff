@@ -1,0 +1,829 @@
+FINAL REVIEW PACKAGE — historico conversas (no git)
+Spec path above. Key production files:
+--- FILE regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\PersistenciaDasMensagensDoChatDaOpenRouter.kt ---
+package com.chromebrothers.navegador.regras
+
+object PersistenciaDasMensagensDoChatDaOpenRouter {
+    fun escrever(mensagens: List<MensagemDeChat>): String {
+        val itens = mensagens.joinToString(",") { jsonDaMensagem(it) }
+        return """{"mensagens":[$itens]}"""
+    }
+
+    fun ler(bruto: String): List<MensagemDeChat> {
+        val objetos = TextoJsonDoChat.objetosDaChave(bruto, "mensagens") ?: return emptyList()
+        return objetos.map { lerMensagem(it) }
+    }
+
+    private fun jsonDaMensagem(mensagem: MensagemDeChat): String {
+        val papel = TextoJsonDoChat.escapar(mensagem.papel)
+        val conteudo = TextoJsonDoChat.escapar(mensagem.conteudo)
+        val idDaChamada = TextoJsonDoChat.escapar(mensagem.idDaChamada)
+        val partes = mensagem.partes.joinToString(",") { jsonDaParte(it) }
+        val chamadas = mensagem.chamadas.joinToString(",") { jsonDaChamada(it) }
+        return """{"papel":"$papel","conteudo":"$conteudo","idDaChamada":"$idDaChamada","partes":[$partes],"chamadas":[$chamadas]}"""
+    }
+
+    private fun jsonDaParte(parte: ParteDeConteudoDoChat): String {
+        val tipo = TextoJsonDoChat.escapar(parte.tipo)
+        val texto = TextoJsonDoChat.escapar(parte.texto)
+        val mime = TextoJsonDoChat.escapar(parte.mime)
+        val nome = TextoJsonDoChat.escapar(parte.nome)
+        val dados = TextoJsonDoChat.escapar(parte.dados)
+        return """{"tipo":"$tipo","texto":"$texto","mime":"$mime","nome":"$nome","dados":"$dados"}"""
+    }
+
+    private fun jsonDaChamada(chamada: ChamadaDeFerramenta): String {
+        val id = TextoJsonDoChat.escapar(chamada.id)
+        val nome = TextoJsonDoChat.escapar(chamada.nome)
+        val argumentos = TextoJsonDoChat.escapar(chamada.argumentos)
+        return """{"id":"$id","nome":"$nome","argumentos":"$argumentos"}"""
+    }
+
+    private fun lerMensagem(objeto: String): MensagemDeChat {
+        return MensagemDeChat(
+            papel = TextoJsonDoChat.valorDaChave(objeto, "papel") ?: "",
+            conteudo = TextoJsonDoChat.valorDaChave(objeto, "conteudo") ?: "",
+            partes = TextoJsonDoChat.objetosDaChave(objeto, "partes").orEmpty().map { lerParte(it) },
+            chamadas = TextoJsonDoChat.objetosDaChave(objeto, "chamadas").orEmpty().map { lerChamada(it) },
+            idDaChamada = TextoJsonDoChat.valorDaChave(objeto, "idDaChamada") ?: "",
+        )
+    }
+
+    private fun lerParte(objeto: String): ParteDeConteudoDoChat {
+        return ParteDeConteudoDoChat(
+            tipo = TextoJsonDoChat.valorDaChave(objeto, "tipo") ?: "",
+            texto = TextoJsonDoChat.valorDaChave(objeto, "texto") ?: "",
+            mime = TextoJsonDoChat.valorDaChave(objeto, "mime") ?: "",
+            nome = TextoJsonDoChat.valorDaChave(objeto, "nome") ?: "",
+            dados = TextoJsonDoChat.valorDaChave(objeto, "dados") ?: "",
+        )
+    }
+
+    private fun lerChamada(objeto: String): ChamadaDeFerramenta {
+        return ChamadaDeFerramenta(
+            id = TextoJsonDoChat.valorDaChave(objeto, "id") ?: "",
+            nome = TextoJsonDoChat.valorDaChave(objeto, "nome") ?: "",
+            argumentos = TextoJsonDoChat.valorDaChave(objeto, "argumentos") ?: "",
+        )
+    }
+}
+
+--- FILE regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\TituloDaConversaDoChatDaOpenRouter.kt ---
+package com.chromebrothers.navegador.regras
+
+object TituloDaConversaDoChatDaOpenRouter {
+    fun gerar(mensagens: List<MensagemDeChat>, maximo: Int = 60): String {
+        val bruto = mensagens.firstOrNull { it.papel == "user" }?.conteudo.orEmpty()
+        val limpo = colapsarEspacos(bruto.trim())
+        if (limpo.isEmpty()) return "Conversa"
+        return limpo.take(maximo)
+    }
+
+    private fun colapsarEspacos(texto: String): String = buildString {
+        var espacoPendente = false
+        for (caractere in texto) {
+            if (caractere.isWhitespace()) {
+                espacoPendente = true
+            } else {
+                if (espacoPendente) append(' ')
+                espacoPendente = false
+                append(caractere)
+            }
+        }
+    }
+}
+
+--- FILE regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\IndiceDasConversasDoChatDaOpenRouter.kt ---
+package com.chromebrothers.navegador.regras
+
+data class EntradaDoIndiceDaConversaDoChat(
+    val id: String,
+    val titulo: String,
+    val criadaEm: Long,
+    val atualizadaEm: Long,
+    val bytesAproximados: Long,
+    val resumida: Boolean = false,
+)
+
+object IndiceDasConversasDoChatDaOpenRouter {
+    const val MAXIMO_DE_CONVERSAS = 40
+    const val TETO_DE_BYTES_TOTAIS = 200L * 1024 * 1024
+    const val TETO_DURO_POR_CONVERSA = 50L * 1024 * 1024
+
+    fun escrever(entradas: List<EntradaDoIndiceDaConversaDoChat>): String {
+        val itens = entradas.joinToString(",") { jsonDaEntrada(it) }
+        return """{"conversas":[$itens]}"""
+    }
+
+    fun ler(bruto: String): List<EntradaDoIndiceDaConversaDoChat> {
+        if (!delimitadoresBalanceados(bruto)) return emptyList()
+        val objetos = TextoJsonDoChat.objetosDaChave(bruto, "conversas") ?: return emptyList()
+        return objetos.map { lerEntrada(it) ?: return emptyList() }
+    }
+
+    private fun delimitadoresBalanceados(bruto: String): Boolean {
+        val abertos = ArrayDeque<Char>()
+        var dentroDeTexto = false
+        var indice = 0
+        while (indice < bruto.length) {
+            val caractere = bruto[indice]
+            if (dentroDeTexto) {
+                when (caractere) {
+                    '\\' -> indice += 2
+                    '"' -> {
+                        dentroDeTexto = false
+                        indice++
+                    }
+                    else -> indice++
+                }
+                continue
+            }
+            when (caractere) {
+                '"' -> dentroDeTexto = true
+                '{', '[' -> abertos.addLast(caractere)
+                '}' -> if (abertos.removeLastOrNull() != '{') return false
+                ']' -> if (abertos.removeLastOrNull() != '[') return false
+            }
+            indice++
+        }
+        return !dentroDeTexto && abertos.isEmpty()
+    }
+
+    fun criar(
+        entradas: List<EntradaDoIndiceDaConversaDoChat>,
+        id: String,
+        titulo: String,
+        agoraMs: Long,
+        bytes: Long,
+    ): List<EntradaDoIndiceDaConversaDoChat> {
+        val nova = EntradaDoIndiceDaConversaDoChat(
+            id = id,
+            titulo = titulo,
+            criadaEm = agoraMs,
+            atualizadaEm = agoraMs,
+            bytesAproximados = bytes,
+        )
+        return listOf(nova) + entradas
+    }
+
+    fun atualizar(
+        entradas: List<EntradaDoIndiceDaConversaDoChat>,
+        id: String,
+        titulo: String? = null,
+        atualizadaEm: Long,
+        bytes: Long,
+        resumida: Boolean? = null,
+    ): List<EntradaDoIndiceDaConversaDoChat> {
+        if (entradas.none { it.id == id }) return entradas
+        return entradas.map { entrada ->
+            if (entrada.id != id) {
+                entrada
+            } else {
+                entrada.copy(
+                    titulo = titulo ?: entrada.titulo,
+                    atualizadaEm = atualizadaEm,
+                    bytesAproximados = bytes,
+                    resumida = resumida ?: entrada.resumida,
+                )
+            }
+        }
+    }
+
+    fun excluir(
+        entradas: List<EntradaDoIndiceDaConversaDoChat>,
+        id: String,
+    ): List<EntradaDoIndiceDaConversaDoChat> = entradas.filter { it.id != id }
+
+    fun bytesTotais(entradas: List<EntradaDoIndiceDaConversaDoChat>): Long =
+        entradas.sumOf { it.bytesAproximados }
+
+    fun ultrapassouQuantidade(entradas: List<EntradaDoIndiceDaConversaDoChat>): Boolean =
+        entradas.size >= MAXIMO_DE_CONVERSAS
+
+    fun ultrapassouBytesTotais(entradas: List<EntradaDoIndiceDaConversaDoChat>): Boolean =
+        bytesTotais(entradas) >= TETO_DE_BYTES_TOTAIS
+
+    fun ultrapassouTetoDuroDaConversa(bytes: Long): Boolean =
+        bytes > TETO_DURO_POR_CONVERSA
+
+    private fun jsonDaEntrada(entrada: EntradaDoIndiceDaConversaDoChat): String {
+        val id = TextoJsonDoChat.escapar(entrada.id)
+        val titulo = TextoJsonDoChat.escapar(entrada.titulo)
+        val resumida = if (entrada.resumida) "true" else "false"
+        return """{"id":"$id","titulo":"$titulo","criadaEm":${entrada.criadaEm},"atualizadaEm":${entrada.atualizadaEm},"bytesAproximados":${entrada.bytesAproximados},"resumida":$resumida}"""
+    }
+
+    private fun lerEntrada(objeto: String): EntradaDoIndiceDaConversaDoChat? {
+        val id = TextoJsonDoChat.valorDaChave(objeto, "id") ?: return null
+        if (id.isBlank()) return null
+        val titulo = TextoJsonDoChat.valorDaChave(objeto, "titulo") ?: return null
+        return EntradaDoIndiceDaConversaDoChat(
+            id = id,
+            titulo = titulo,
+            criadaEm = longoDaChave(objeto, "criadaEm"),
+            atualizadaEm = longoDaChave(objeto, "atualizadaEm"),
+            bytesAproximados = longoDaChave(objeto, "bytesAproximados"),
+            resumida = booleanoDaChave(objeto, "resumida") ?: false,
+        )
+    }
+
+    private fun longoDaChave(json: String, chave: String): Long =
+        TextoJsonDoChat.numeroDaChave(json, chave)?.toLong() ?: 0L
+
+    private fun booleanoDaChave(json: String, chave: String): Boolean? {
+        val marca = "\"$chave\""
+        var indice = 0
+        while (indice < json.length) {
+            val achou = json.indexOf(marca, indice)
+            if (achou < 0) return null
+            var cursor = achou + marca.length
+            while (cursor < json.length && json[cursor].isWhitespace()) cursor++
+            if (cursor >= json.length || json[cursor] != ':') {
+                indice = achou + 1
+                continue
+            }
+            cursor++
+            while (cursor < json.length && json[cursor].isWhitespace()) cursor++
+            if (json.startsWith("true", cursor)) return true
+            if (json.startsWith("false", cursor)) return false
+            indice = achou + 1
+        }
+        return null
+    }
+}
+
+--- FILE regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\MedidorDeUsoDoHistoricoDoChatDaOpenRouter.kt ---
+package com.chromebrothers.navegador.regras
+
+enum class FaixaDoMedidorDoHistoricoDoChat {
+    OK,
+    ATENCAO,
+    CHEIO,
+}
+
+object MedidorDeUsoDoHistoricoDoChatDaOpenRouter {
+    fun percentual(bytesTotais: Long, teto: Long): Int {
+        if (teto <= 0L) return 100
+        if (bytesTotais <= 0L) return 0
+        if (bytesTotais >= teto) return 100
+        return ((bytesTotais * 100) / teto).toInt()
+    }
+
+    fun faixa(percentual: Int): FaixaDoMedidorDoHistoricoDoChat = when {
+        percentual >= 100 -> FaixaDoMedidorDoHistoricoDoChat.CHEIO
+        percentual >= 80 -> FaixaDoMedidorDoHistoricoDoChat.ATENCAO
+        else -> FaixaDoMedidorDoHistoricoDoChat.OK
+    }
+}
+
+--- FILE regras-de-video-do-navegador\src\main\kotlin\com\chromebrothers\navegador\regras\CompactacaoDaConversaDoChatDaOpenRouter.kt ---
+package com.chromebrothers.navegador.regras
+
+object CompactacaoDaConversaDoChatDaOpenRouter {
+    const val ULTIMAS_TROCAS_USER_ASSISTANT = 2
+
+    fun promptParaResumir(mensagens: List<MensagemDeChat>): List<MensagemDeChat> {
+        val historico = mensagens
+            .filter { it.papel == "user" || it.papel == "assistant" }
+            .joinToString("\n") { mensagem ->
+                "${mensagem.papel}: ${textoVisivelParaOResumo(mensagem)}"
+            }
+        return listOf(
+            MensagemDeChat(
+                papel = "system",
+                conteudo = "Você vai resumir a conversa de forma fiel, em português do Brasil. " +
+                    "Não invente fatos. Preserve nomes, decisões, números e pedidos. " +
+                    "Anexos aparecem só como [imagem] ou [arquivo], sem o conteúdo binário. " +
+                    "Responda apenas com o resumo.",
+            ),
+            MensagemDeChat(
+                papel = "user",
+                conteudo = "resumir o histórico abaixo em português:\n$historico",
+            ),
+        )
+    }
+
+    fun aplicar(resumo: String, mensagensOriginais: List<MensagemDeChat>): List<MensagemDeChat> {
+        return listOf(MensagemDeChat("assistant", resumo.trim())) + ultimasTrocas(mensagensOriginais)
+    }
+
+    private fun ultimasTrocas(mensagens: List<MensagemDeChat>): List<MensagemDeChat> {
+        val visiveis = mensagens.filter { it.papel == "user" || it.papel == "assistant" }
+        val escolhidas = ArrayDeque<MensagemDeChat>()
+        var indice = visiveis.lastIndex
+        var trocas = 0
+        while (indice >= 0 && trocas < ULTIMAS_TROCAS_USER_ASSISTANT) {
+            val atual = visiveis[indice]
+            if (atual.papel == "assistant" && indice > 0 && visiveis[indice - 1].papel == "user") {
+                escolhidas.addFirst(soOTexto(atual))
+                escolhidas.addFirst(soOTexto(visiveis[indice - 1]))
+                indice -= 2
+            } else {
+                escolhidas.addFirst(soOTexto(atual))
+                indice -= 1
+            }
+            trocas += 1
+        }
+        return escolhidas.toList()
+    }
+
+    private fun soOTexto(mensagem: MensagemDeChat): MensagemDeChat {
+        return MensagemDeChat(papel = mensagem.papel, conteudo = mensagem.conteudo)
+    }
+
+    private fun textoVisivelParaOResumo(mensagem: MensagemDeChat): String {
+        val pedacos = buildList {
+            if (mensagem.conteudo.isNotBlank()) add(mensagem.conteudo)
+            mensagem.partes.forEach { parte ->
+                when (parte.tipo) {
+                    "imagem" -> add("[imagem]")
+                    "arquivo" -> add("[arquivo]")
+                    else -> if (parte.texto.isNotBlank()) add(parte.texto)
+                }
+            }
+        }
+        return pedacos.joinToString(" ")
+    }
+}
+
+--- FILE app\src\main\kotlin\com\chromebrothers\navegador\RepositorioDasConversasDoChatNoAparelho.kt ---
+package com.chromebrothers.navegador
+
+import android.content.Context
+import com.chromebrothers.navegador.regras.EntradaDoIndiceDaConversaDoChat
+import com.chromebrothers.navegador.regras.FaixaDoMedidorDoHistoricoDoChat
+import com.chromebrothers.navegador.regras.IndiceDasConversasDoChatDaOpenRouter
+import com.chromebrothers.navegador.regras.MedidorDeUsoDoHistoricoDoChatDaOpenRouter
+import com.chromebrothers.navegador.regras.MensagemDeChat
+import com.chromebrothers.navegador.regras.PersistenciaDasMensagensDoChatDaOpenRouter
+import com.chromebrothers.navegador.regras.TextoJsonDoChat
+import com.chromebrothers.navegador.regras.TituloDaConversaDoChatDaOpenRouter
+import java.io.File
+import java.util.UUID
+import java.util.concurrent.CopyOnWriteArrayList
+
+interface OuvinteDasConversasDoChat {
+    fun conversaExcluida(id: String) {}
+    fun conversaResumida(id: String) {}
+}
+
+data class ResultadoDoSaveDaConversa(
+    val id: String?,
+    val avisoDeLimite: Boolean,
+    val bloqueadoPorTetoDuro: Boolean,
+    val erro: String? = null,
+)
+
+class RepositorioDasConversasDoChatNoAparelho(context: Context) {
+    private val pasta = File(context.filesDir, PASTA)
+    private val arquivoDoIndice = File(pasta, ARQUIVO_DO_INDICE)
+    // Ouvintes e trava são compartilhados pelo processo inteiro (companion), para que
+    // excluir/resumir numa janela avise as outras e duas janelas não corrompam o indice.json.
+    private val ouvintes get() = OUVINTES_DO_PROCESSO
+    private val trava get() = TRAVA_DE_ARQUIVOS_DO_PROCESSO
+
+    fun listar(): List<EntradaDoIndiceDaConversaDoChat> = synchronized(trava) { lerIndice() }
+
+    fun carregar(id: String): List<MensagemDeChat>? {
+        if (id.isBlank()) return null
+        return synchronized(trava) {
+            val arquivo = arquivoDaConversa(id)
+            if (!arquivo.isFile) return@synchronized null
+            try {
+                val bruto = arquivo.readText(Charsets.UTF_8)
+                if (!delimitadoresBalanceados(bruto)) return@synchronized null
+                if (TextoJsonDoChat.objetosDaChave(bruto, "mensagens") == null) return@synchronized null
+                PersistenciaDasMensagensDoChatDaOpenRouter.ler(bruto)
+            } catch (_: Exception) {
+                null
+            }
+        }
+    }
+
+    fun salvar(
+        id: String?,
+        mensagens: List<MensagemDeChat>,
+        resumida: Boolean = false,
+    ): ResultadoDoSaveDaConversa {
+        if (id == null && mensagens.isEmpty()) {
+            return ResultadoDoSaveDaConversa(id = null, avisoDeLimite = false, bloqueadoPorTetoDuro = false)
+        }
+        val conteudo = PersistenciaDasMensagensDoChatDaOpenRouter.escrever(mensagens)
+        val bytes = conteudo.toByteArray(Charsets.UTF_8).size.toLong()
+        if (IndiceDasConversasDoChatDaOpenRouter.ultrapassouTetoDuroDaConversa(bytes)) {
+            return ResultadoDoSaveDaConversa(id = id, avisoDeLimite = false, bloqueadoPorTetoDuro = true)
+        }
+        return synchronized(trava) {
+            try {
+                pasta.mkdirs()
+                val idFinal = id?.takeIf { it.isNotBlank() } ?: UUID.randomUUID().toString()
+                gravarArquivo(arquivoDaConversa(idFinal), conteudo)
+                val agora = System.currentTimeMillis()
+                val atuais = lerIndice()
+                val novas = if (atuais.any { it.id == idFinal }) {
+                    IndiceDasConversasDoChatDaOpenRouter.atualizar(
+                        entradas = atuais,
+                        id = idFinal,
+                        atualizadaEm = agora,
+                        bytes = bytes,
+                        resumida = if (resumida) true else null,
+                    )
+                } else {
+                    IndiceDasConversasDoChatDaOpenRouter.criar(
+                        entradas = atuais,
+                        id = idFinal,
+                        titulo = TituloDaConversaDoChatDaOpenRouter.gerar(mensagens),
+                        agoraMs = agora,
+                        bytes = bytes,
+                    )
+                }
+                gravarArquivo(arquivoDoIndice, IndiceDasConversasDoChatDaOpenRouter.escrever(novas))
+                val aviso = IndiceDasConversasDoChatDaOpenRouter.ultrapassouQuantidade(novas) ||
+                    IndiceDasConversasDoChatDaOpenRouter.ultrapassouBytesTotais(novas)
+                ResultadoDoSaveDaConversa(id = idFinal, avisoDeLimite = aviso, bloqueadoPorTetoDuro = false)
+            } catch (e: Exception) {
+                ResultadoDoSaveDaConversa(
+                    id = id,
+                    avisoDeLimite = false,
+                    bloqueadoPorTetoDuro = false,
+                    erro = e.message ?: e.javaClass.simpleName,
+                )
+            }
+        }
+    }
+
+    fun excluir(id: String) {
+        if (id.isBlank()) return
+        synchronized(trava) {
+            try {
+                arquivoDaConversa(id).delete()
+                val novas = IndiceDasConversasDoChatDaOpenRouter.excluir(lerIndice(), id)
+                pasta.mkdirs()
+                gravarArquivo(arquivoDoIndice, IndiceDasConversasDoChatDaOpenRouter.escrever(novas))
+            } catch (_: Exception) {
+                // Falha de I/O: ainda avisamos os ouvintes abaixo para a tela refletir o pedido.
+            }
+        }
+        ouvintes.forEach { it.conversaExcluida(id) }
+    }
+
+    /** Avisa as janelas que a conversa acabou de ser compactada (resumida) e regravada. */
+    fun notificarConversaResumida(id: String) {
+        if (id.isBlank()) return
+        ouvintes.forEach { it.conversaResumida(id) }
+    }
+
+    fun bytesTotais(): Long = IndiceDasConversasDoChatDaOpenRouter.bytesTotais(listar())
+
+    fun percentualDoMedidor(): Int = MedidorDeUsoDoHistoricoDoChatDaOpenRouter.percentual(
+        bytesTotais(),
+        IndiceDasConversasDoChatDaOpenRouter.TETO_DE_BYTES_TOTAIS,
+    )
+
+    fun faixaDoMedidor(): FaixaDoMedidorDoHistoricoDoChat =
+        MedidorDeUsoDoHistoricoDoChatDaOpenRouter.faixa(percentualDoMedidor())
+
+    /** Registro idempotente: registrar o mesmo ouvinte duas vezes não duplica avisos. */
+    fun registrarOuvinte(ouvinte: OuvinteDasConversasDoChat) {
+        ouvintes.addIfAbsent(ouvinte)
+    }
+
+    fun removerOuvinte(ouvinte: OuvinteDasConversasDoChat) {
+        ouvintes.remove(ouvinte)
+    }
+
+    private fun delimitadoresBalanceados(bruto: String): Boolean {
+        val abertos = ArrayDeque<Char>()
+        var dentroDeTexto = false
+        var indice = 0
+        while (indice < bruto.length) {
+            val caractere = bruto[indice]
+            if (dentroDeTexto) {
+                when (caractere) {
+                    '\\' -> indice += 2
+                    '"' -> {
+                        dentroDeTexto = false
+                        indice++
+                    }
+                    else -> indice++
+                }
+                continue
+            }
+            when (caractere) {
+                '"' -> dentroDeTexto = true
+                '{', '[' -> abertos.addLast(caractere)
+                '}' -> if (abertos.removeLastOrNull() != '{') return false
+                ']' -> if (abertos.removeLastOrNull() != '[') return false
+            }
+            indice++
+        }
+        return !dentroDeTexto && abertos.isEmpty()
+    }
+
+    private fun arquivoDaConversa(id: String): File =
+        File(pasta, "conversa_${id.replace(Regex("[^A-Za-z0-9_-]"), "_")}.json")
+
+    private fun lerIndice(): List<EntradaDoIndiceDaConversaDoChat> {
+        if (!arquivoDoIndice.isFile) return emptyList()
+        return try {
+            IndiceDasConversasDoChatDaOpenRouter.ler(arquivoDoIndice.readText(Charsets.UTF_8))
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun gravarArquivo(destino: File, conteudo: String) {
+        val temporario = File(destino.parentFile, destino.name + ".tmp")
+        temporario.writeText(conteudo, Charsets.UTF_8)
+        if (!temporario.renameTo(destino)) {
+            destino.writeText(conteudo, Charsets.UTF_8)
+            temporario.delete()
+        }
+    }
+
+    companion object {
+        private const val PASTA = "conversas_do_chat"
+        private const val ARQUIVO_DO_INDICE = "indice.json"
+        private val OUVINTES_DO_PROCESSO = CopyOnWriteArrayList<OuvinteDasConversasDoChat>()
+        private val TRAVA_DE_ARQUIVOS_DO_PROCESSO = Any()
+    }
+}
+
+--- FILE app\src\main\kotlin\com\chromebrothers\navegador\VistaDoMedidorCircularDoHistoricoDoChat.kt ---
+package com.chromebrothers.navegador
+
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.util.AttributeSet
+import android.view.View
+import com.chromebrothers.navegador.regras.FaixaDoMedidorDoHistoricoDoChat
+
+/** Anel pequeno que mostra quanto do espaço do histórico de conversas já foi usado (0 a 100). */
+class VistaDoMedidorCircularDoHistoricoDoChat @JvmOverloads constructor(
+    context: Context,
+    atributos: AttributeSet? = null,
+    estiloPadrao: Int = 0,
+) : View(context, atributos, estiloPadrao) {
+
+    private val densidade = resources.displayMetrics.density
+    private val espessura = 3f * densidade
+    private val tintaDoFundo = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = espessura
+        color = Color.parseColor("#3C4043")
+    }
+    private val tintaDoProgresso = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = espessura
+        strokeCap = Paint.Cap.ROUND
+        color = COR_OK
+    }
+    private val area = RectF()
+    private var percentual = 0
+
+    init {
+        definirDescricao()
+    }
+
+    fun setProgresso(percentual: Int, faixa: FaixaDoMedidorDoHistoricoDoChat) {
+        this.percentual = percentual.coerceIn(0, 100)
+        tintaDoProgresso.color = when (faixa) {
+            FaixaDoMedidorDoHistoricoDoChat.OK -> COR_OK
+            FaixaDoMedidorDoHistoricoDoChat.ATENCAO -> COR_ATENCAO
+            FaixaDoMedidorDoHistoricoDoChat.CHEIO -> COR_CHEIO
+        }
+        definirDescricao()
+        invalidate()
+    }
+
+    override fun onMeasure(larguraSpec: Int, alturaSpec: Int) {
+        val padrao = (28 * densidade).toInt()
+        val largura = resolveSize(padrao, larguraSpec)
+        val altura = resolveSize(padrao, alturaSpec)
+        setMeasuredDimension(largura, altura)
+    }
+
+    override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+        val lado = minOf(width - paddingLeft - paddingRight, height - paddingTop - paddingBottom).toFloat()
+        if (lado <= espessura) return
+        val esquerda = paddingLeft + (width - paddingLeft - paddingRight - lado) / 2f + espessura / 2f
+        val topo = paddingTop + (height - paddingTop - paddingBottom - lado) / 2f + espessura / 2f
+        area.set(esquerda, topo, esquerda + lado - espessura, topo + lado - espessura)
+        canvas.drawArc(area, 0f, 360f, false, tintaDoFundo)
+        if (percentual > 0) {
+            canvas.drawArc(area, -90f, 360f * percentual / 100f, false, tintaDoProgresso)
+        }
+    }
+
+    private fun definirDescricao() {
+        contentDescription = context.getString(R.string.chat_medidor_do_historico_descricao, percentual)
+    }
+
+    private companion object {
+        val COR_OK = Color.parseColor("#8AB4F8")
+        val COR_ATENCAO = Color.parseColor("#FDD663")
+        val COR_CHEIO = Color.parseColor("#F28B82")
+    }
+}
+
+--- FILE app\src\main\res\layout\layout_item_da_lista_de_conversas_do_chat.xml ---
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:paddingStart="16dp"
+    android:paddingTop="6dp"
+    android:paddingEnd="8dp"
+    android:paddingBottom="6dp">
+
+    <LinearLayout
+        android:id="@+id/area_do_texto_da_conversa_do_chat"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/titulo_da_conversa_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/data_da_conversa_do_chat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="?android:attr/textColorSecondary"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/botao_resumir_a_conversa_do_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="@string/chat_resumir_conversa"
+        android:textColor="#8AB4F8"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/botao_excluir_a_conversa_do_chat"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackground"
+        android:gravity="center"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="@string/chat_excluir_conversa"
+        android:textColor="#F28B82"
+        android:textSize="13sp" />
+</LinearLayout>
+
+--- FILE docs\superpowers\specs\2026-11-02-historico-de-conversas-do-chat-da-openrouter-design.md ---
+# Histórico de conversas do chat (OpenRouter) — design
+
+**Data:** 2026-11-02  
+**Status:** aprovado
+
+## Objetivo
+
+Persistir conversas do chat da OpenRouter no aparelho, com lista global, retomar, nova conversa, excluir, resumir/compactar para liberar espaço, e medidor circular de uso do histórico. Sem referenciar outra conversa no prompt (fica para versão futura).
+
+## Contexto atual
+
+- Uma conversa por janela, só em memória (`historico` em `PainelDoChatDaOpenRouterNoNavegador`).
+- Fechar a Activity apaga as mensagens.
+- Disco hoje: chave, modelo, notas de site, sites liberados — não as mensagens.
+- `MensagemDeChat`: `papel`, `conteudo`, `partes` (anexos/base64), `chamadas`, `idDaChamada`.
+
+## Decisões de produto (v1)
+
+| Tema | Decisão |
+|------|---------|
+| Escopo | Salvar / listar / retomar / nova conversa / excluir / resumir |
+| Lista | Global no app (qualquer janela vê as mesmas conversas) |
+| Limpar | Substitui por **Nova conversa** (arquiva se houver conteúdo) |
+| Mesma conversa em 2+ janelas | Permitido; última gravação vence |
+| Anexos | Persistir com a conversa |
+| Limpeza automática | Não; só exclusão/resumo manual |
+| Limite | Alerta + medidor; não apaga sozinho |
+| Resumir | Compacta o arquivo (resumo + últimas trocas; remove anexos antigos) |
+
+## Fora de escopo (v1)
+
+- Referenciar / citar outra conversa no contexto do envio.
+- Limpeza automática por idade ou LRU.
+- Busca full-text nas conversas.
+- Sync na nuvem.
+- Histórico por aba (continua por janela na UI ativa; lista é global).
+
+## Armazenamento
+
+Pasta interna: `filesDir/conversas_do_chat/`
+
+- `indice.json` — entradas leves: `id`, `titulo`, `criadaEm`, `atualizadaEm`, `bytesAproximados` (e flag opcional `resumida`).
+- `conversa_<id>.json` — lista completa de `MensagemDeChat` no formato já serializado para a API (`papel`, `conteudo`, `partes`, `chamadas`, `idDaChamada`).
+
+**Sessão ativa (memória):** `idDaConversaAtual` + `historico`.  
+Se `id` for nulo, o primeiro envio com conteúdo cria a conversa, gera título pela 1ª mensagem do usuário (texto cortado) e grava no índice.
+
+**Quando gravar:** após cada turno completo (resposta do assistente / fim do ciclo de tools) e ao tocar Nova conversa (se houver mensagens). Conversa vazia não entra no índice.
+
+**Limites (constantes nas regras):** teto de **quantidade** de conversas **e** teto de **bytes totais** (o medidor usa os bytes); teto duro por arquivo (ex. 50 MB) só para bloquear save extremo. Valores numéricos ficam no plano/implementação.
+
+## UI e fluxos
+
+### Nova conversa
+
+Substitui o botão Limpar. Se a atual tem mensagens: garante persistência e limpa o painel (`id` nulo, `historico` vazio, bolhas zeradas). Se já está vazia: no-op.
+
+### Lista de histórico
+
+Entrada principal: ícone no header do chat (toque no medidor também abre a lista). Lista: título + data da última atualização.  
+Toque → carrega o JSON no painel e remonta bolhas (`user` / `assistant` visíveis; mensagens `tool`/`system` de ferramenta ficam no `historico` enviado à API, sem bolha dedicada, alinhado ao comportamento atual).  
+Excluir → remove arquivo + índice; se era a ativa nessa janela, painel vai para sessão nova; **outros painéis** com o mesmo `id` também passam a sessão nova (listener in-process do repositório).
+
+### Medidor circular
+
+Sempre visível no header do chat (perto de Nova conversa / histórico). Arco 0–100% = bytes totais do índice ÷ teto. Estados visuais: normal → âmbar (atenção) → vermelho (cheio). Toque abre a lista. O aviso no save permanece como reforço.
+
+### Resumir conversa
+
+Ação na lista (alternativa à exclusão):
+
+1. Confirmação explícita (compacta e remove anexos antigos).
+2. Chamada OpenRouter (modelo atual do chat, sem tools) com prompt fixo pedindo resumo fiel em pt-BR do histórico.
+3. Substitui o arquivo por: uma mensagem de resumo + as **últimas 2 trocas** (até 2 pares user→assistant, ou seja no máx. 4 mensagens visíveis recentes) intactas; `partes` antigas removidas em todo o arquivo.
+4. Atualiza `bytesAproximados`, flag `resumida` e o medidor. Título base permanece (UI pode indicar “resumida”).
+5. **Todos** os painéis com aquele `id` recarregam a versão compacta (mesmo listener), para uma janela aberta não sobrescrever o resumo no próximo save.
+
+Requer rede e chave, como o chat. Falha → não altera o arquivo; Toast de erro.
+
+### Alerta de limite
+
+Ao salvar: se quantidade ou bytes ≥ teto → aviso claro pedindo exclusão ou resumo. Não apaga automaticamente.  
+Se uma conversa individual ultrapassar teto duro por anexos → avisar; bloquear só nesse caso extremo (não truncar em silêncio).
+
+## Arquitetura de código
+
+### Regras puras (`regras-de-video-do-navegador`) — TDD
+
+- Serializar / deserializar conversa ↔ texto JSON.
+- Montar / atualizar índice (criar, tocar, excluir, recalcular bytes).
+- Gerar título a partir da 1ª mensagem do usuário.
+- Calcular percentual e faixa do medidor (ok / atenção / cheio).
+- Compactar: resumo da API + últimas 2 trocas → novo histórico sem `partes` antigas.
+- Prompt fixo de resumo.
+- Constantes de teto e limiares do medidor.
+
+### App
+
+- Repositório em disco (`filesDir/conversas_do_chat/`): ler/gravar índice e arquivos.
+- `PainelDoChatDaOpenRouterNoNavegador`: sessão, save pós-turno, Nova conversa, lista, excluir, resumir, remontar bolhas, medidor.
+- Reutilizar `ClienteDeChatDaOpenRouter` para a chamada de resumo (sem tools).
+
+Padrão próximo ao de notas de site: regras testáveis + fachada Android só de I/O.
+
+## Erros
+
+| Situação | Comportamento |
+|----------|----------------|
+| Falha de disco no save | Toast; mantém estado em memória |
+| Falha ao resumir | Toast; arquivo intacto |
+| JSON corrompido | Mostra na lista como ilegível; só permite excluir |
+| Sem rede no resumir | Toast; não altera arquivo |
+
+## Critérios de sucesso
+
+1. Nova conversa arquiva a atual (com conteúdo) e deixa o painel em branco.
+2. Lista global mostra conversas; retomar restaura mensagens e anexos após fechar o app.
+3. Excluir remove do disco e do índice.
+4. Resumir compacta, reduz bytes e permite continuar na mesma conversa.
+5. Medidor reflete uso; alerta aparece ao atingir limite; nada é apagado sozinho.
+6. Duas janelas na mesma conversa: ambas operam; última gravação prevalece.
+7. `:regras-de-video-do-navegador:test` + `:app:assembleDebug` passam.
+
+## Testes manuais sugeridos
+
+- Nova → várias mensagens com anexo → matar app → retomar.
+- Medidor sobe com anexos; resumir baixa o uso.
+- Excluir e nova conversa vazia não poluem o índice.
+- Duas janelas, mesma conversa, saves intercalados.
+

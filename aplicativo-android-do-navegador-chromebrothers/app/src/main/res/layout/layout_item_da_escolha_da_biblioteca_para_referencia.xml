@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.chromebrothers.navegador.CelulaQuadradaDaEscolhaDaBiblioteca xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/imagem_da_escolha_da_biblioteca"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop" />
+
+    <View
+        android:id="@+id/moldura_da_escolha_da_biblioteca"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/moldura_da_imagem_escolhida_da_biblioteca"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/estrela_da_escolha_da_biblioteca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|start"
+        android:layout_margin="8dp"
+        android:shadowColor="#99000000"
+        android:shadowRadius="4"
+        android:text="★"
+        android:textColor="#FDD663"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/selo_de_video_da_escolha_da_biblioteca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="8dp"
+        android:background="@drawable/fundo_do_selo_de_video_da_escolha_da_biblioteca"
+        android:paddingStart="8dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="2dp"
+        android:text="▶ Vídeo"
+        android:textColor="#F4F7FB"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/selo_da_escolha_da_biblioteca"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:background="@drawable/fundo_do_selo_vazio_da_escolha_da_biblioteca"
+        android:gravity="center"
+        android:textColor="#1A1D24"
+        android:textSize="13sp"
+        android:textStyle="bold" />
+</com.chromebrothers.navegador.CelulaQuadradaDaEscolhaDaBiblioteca>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Linha do painel de camadas (estúdio): miniatura sobre xadrez, nome + detalhe, olho, lixeira. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_marginTop="2dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="6dp"
+    android:paddingEnd="2dp">
+
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="@drawable/fundo_xadrez_da_miniatura_da_camada"
+        android:clipToOutline="true">
+
+        <ImageView
+            android:id="@+id/miniatura_da_camada_da_edicao"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/camada_de_imagem"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/rotulo_da_camada_da_edicao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#F4F7FB"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/detalhe_da_camada_da_edicao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#8A9099"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/botao_visibilidade_da_camada_da_edicao"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/ocultar_camada_da_edicao"
+        android:padding="9dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/icone_de_camada_visivel_da_edicao_de_imagem" />
+
+    <ImageButton
+        android:id="@+id/botao_lixeira_da_camada_da_edicao"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/excluir_camada_da_edicao"
+        android:padding="9dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/icone_de_lixeira_da_camada_da_edicao_de_imagem" />
+</LinearLayout>

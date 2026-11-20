@@ -1,0 +1,807 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/painel_da_gaveta_da_biblioteca_de_videos"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:elevation="32dp"
+    android:visibility="gone">
+
+    <View
+        android:id="@+id/fundo_da_gaveta_da_biblioteca_de_videos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#99000000"
+        android:contentDescription="@string/fechar_biblioteca_de_videos"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/meio_da_tela_da_gaveta_da_biblioteca"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <LinearLayout
+        android:id="@+id/gaveta_da_biblioteca_de_videos"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#121418"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/meio_da_tela_da_gaveta_da_biblioteca"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/titulo_da_gaveta_da_biblioteca"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/biblioteca_de_videos"
+                android:textColor="#F4F7FB"
+                android:textSize="22sp" />
+
+            <ImageButton
+                android:id="@+id/botao_armazenamento_da_gaveta_da_biblioteca"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/armazenamento_do_aplicativo"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_armazenamento_da_gaveta" />
+
+            <ImageButton
+                android:id="@+id/botao_fechar_gaveta_da_biblioteca_de_videos"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fechar_biblioteca_de_videos"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_fechar_o_player_de_video" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/botao_secao_videos_da_biblioteca"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:background="@android:color/transparent"
+                    android:minWidth="0dp"
+                    android:text="@string/biblioteca_de_videos" />
+
+                <Button
+                    android:id="@+id/botao_secao_imagens_da_biblioteca"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:background="@android:color/transparent"
+                    android:minWidth="0dp"
+                    android:text="@string/secao_imagens_da_biblioteca" />
+
+                <Button
+                    android:id="@+id/botao_secao_baixados_da_biblioteca"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:background="@android:color/transparent"
+                    android:minWidth="0dp"
+                    android:text="@string/secao_baixados_da_biblioteca" />
+
+                <Button
+                    android:id="@+id/botao_secao_paginas_da_biblioteca"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:minWidth="0dp"
+                    android:text="@string/secao_paginas_da_biblioteca" />
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/botao_secao_recentes_da_biblioteca_de_videos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:text="@string/videos_recentes" />
+
+            <Button
+                android:id="@+id/botao_secao_favoritos_da_biblioteca_de_videos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:text="@string/videos_favoritos" />
+        </LinearLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/faixa_chips_origem_da_biblioteca"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:scrollbars="none"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/linha_chips_origem_da_biblioteca"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
+
+        <LinearLayout
+            android:id="@+id/grupo_de_acoes_da_composicao_de_imagem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/lista_de_rascunhos_da_edicao_de_imagem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <Button
+                android:id="@+id/botao_nova_composicao_de_imagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:background="@android:color/transparent"
+                android:minWidth="0dp"
+                android:text="@string/nova_composicao_de_imagem"
+                android:textAllCaps="false"
+                android:textColor="#F4F7FB"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/botao_baixar_imagens_copiadas_da_biblioteca"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:minWidth="0dp"
+            android:text="@string/baixar_imagens_copiadas"
+            android:textColor="#8AB4F8"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/texto_vazio_da_biblioteca_de_videos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/historico_de_videos_vazio"
+            android:textColor="#C5CAD3"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="12dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:id="@+id/lista_da_biblioteca_de_videos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </ScrollView>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/visor_da_imagem_capturada_da_biblioteca"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#F2000000"
+        android:clickable="true"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/grupo_de_ferramentas_do_editor_de_imagem"
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:background="#121418"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp"
+            android:visibility="gone">
+
+            <ImageButton
+                android:id="@+id/botao_recortar_imagem_da_biblioteca"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/recortar_imagem"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_recortar_imagem_da_biblioteca" />
+
+            <ImageButton
+                android:id="@+id/botao_traco_vermelho_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/traco_vermelho"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_circulo_do_traco_da_imagem"
+                app:tint="#E53935" />
+
+            <ImageButton
+                android:id="@+id/botao_traco_branco_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/traco_branco"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_circulo_do_traco_da_imagem"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/botao_borracha_do_traco_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/borracha_do_traco"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_borracha_do_traco_da_imagem" />
+
+            <ImageButton
+                android:id="@+id/botao_texto_da_composicao"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/adicionar_texto_na_composicao"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_adicionar_texto_na_composicao_da_imagem" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/botao_cor_da_folha_da_edicao"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="@drawable/fundo_anel_do_seletor_de_cor_do_texto_da_imagem"
+                android:contentDescription="@string/cor_da_folha_da_edicao"
+                android:padding="12dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_circular_preenchido_da_cor_do_texto_da_imagem" />
+
+            <ImageButton
+                android:id="@+id/botao_refazer_edicao_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/refazer_edicao_da_imagem"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:scaleX="-1"
+                android:src="@drawable/icone_de_desfazer_edicao_da_imagem" />
+
+            <ImageButton
+                android:id="@+id/botao_desfazer_edicao_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/desfazer_edicao_da_imagem"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_desfazer_edicao_da_imagem" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imagem_ampliada_da_biblioteca"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/secao_imagens_da_biblioteca"
+                android:scaleType="fitCenter" />
+
+            <com.chromebrothers.navegador.EditorDeRecorteETracoDaImagemDaBiblioteca
+                android:id="@+id/editor_de_recorte_e_traco_da_imagem"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/chip_do_zoom_da_vista_do_editor_de_imagem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="64dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/fundo_da_fileira_contextual_do_editor_de_imagem"
+                android:elevation="10dp"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="8dp"
+                android:textColor="#F4F7FB"
+                android:textSize="14sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/barra_de_edicao_da_imagem_ampliada"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/fundo_da_fileira_contextual_do_editor_de_imagem"
+                android:elevation="8dp"
+                android:orientation="vertical"
+                android:padding="4dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/linha_de_proporcao_do_editor_de_imagem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/botao_moldura_um_por_um"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/moldura_um_por_um" />
+
+                    <Button
+                        android:id="@+id/botao_moldura_quatro_por_tres"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/moldura_quatro_por_tres" />
+
+                    <Button
+                        android:id="@+id/botao_moldura_dezesseis_por_nove"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/moldura_dezesseis_por_nove" />
+
+                    <Button
+                        android:id="@+id/botao_moldura_nove_por_dezesseis"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/moldura_nove_por_dezesseis" />
+
+                    <Button
+                        android:id="@+id/botao_moldura_proporcao_original"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/moldura_proporcao_original" />
+
+                    <Button
+                        android:id="@+id/botao_moldura_livre"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/moldura_livre" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linha_de_acao_do_recorte_da_imagem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/botao_selecao_retangular_da_imagem"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/selecao_retangular_da_imagem" />
+
+                    <Button
+                        android:id="@+id/botao_selecao_em_laco_da_imagem"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/selecao_em_laco_da_imagem" />
+
+                    <Button
+                        android:id="@+id/botao_selecao_inteligente_da_imagem"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/selecao_inteligente_da_imagem"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/botao_aplicar_recorte_da_imagem"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/recortar_imagem"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/botao_destacar_pedaco_da_imagem"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/destacar_pedaco_da_imagem"
+                        android:visibility="gone" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linha_de_espessura_do_editor_de_imagem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageButton
+                        android:id="@+id/botao_diminuir_espessura_do_traco"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/diminuir_espessura_do_traco"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_diminuir_espessura_do_traco" />
+
+                    <TextView
+                        android:id="@+id/indicador_da_espessura_do_traco"
+                        android:layout_width="28dp"
+                        android:layout_height="48dp"
+                        android:gravity="center"
+                        android:text="3"
+                        android:textColor="#F4F7FB"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageButton
+                        android:id="@+id/botao_aumentar_espessura_do_traco"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/aumentar_espessura_do_traco"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_aumentar_espessura_do_traco" />
+
+                    <Button
+                        android:id="@+id/botao_opacidade_do_traco"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/marcador_do_traco" />
+
+                    <Button
+                        android:id="@+id/botao_nanquim_do_traco"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/nanquim_do_traco" />
+
+                    <Button
+                        android:id="@+id/botao_lapis_do_traco"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/lapis_do_traco" />
+
+                    <Button
+                        android:id="@+id/botao_seta_do_traco"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/seta_do_traco" />
+
+                    <Button
+                        android:id="@+id/botao_desenhar_com_o_dedo"
+                        style="@style/BotaoDaMolduraDaComposicao"
+                        android:text="@string/desenhar_com_o_dedo" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linha_de_cor_do_editor_de_imagem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <ImageButton
+                        android:id="@+id/botao_cor_branca_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/cor_branca_do_texto" />
+
+                    <ImageButton
+                        android:id="@+id/botao_cor_preta_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/cor_preta_do_texto" />
+
+                    <ImageButton
+                        android:id="@+id/botao_cor_vermelha_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/cor_vermelha_do_texto" />
+
+                    <ImageButton
+                        android:id="@+id/botao_cor_azul_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/cor_azul_do_editor" />
+
+                    <ImageButton
+                        android:id="@+id/botao_cor_amarela_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/cor_amarela_do_editor" />
+
+                    <ImageButton
+                        android:id="@+id/botao_cor_verde_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/cor_verde_do_editor" />
+
+                    <ImageButton
+                        android:id="@+id/botao_conta_gotas_do_editor"
+                        style="@style/AmostraDaPaletaDoEditorDeImagem"
+                        android:contentDescription="@string/conta_gotas_da_cor"
+                        android:src="@drawable/icone_de_conta_gotas_do_editor_de_imagem" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Painel de camadas (estúdio): cartão flutuante aberto pelo ícone de camadas no topo. -->
+            <LinearLayout
+                android:id="@+id/lista_de_camadas_da_edicao"
+                android:layout_width="288dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:layout_marginTop="60dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/fundo_do_painel_de_camadas_do_estudio"
+                android:clickable="true"
+                android:elevation="12dp"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:paddingStart="6dp"
+                        android:text="@string/camadas_da_edicao"
+                        android:textColor="#F4F7FB"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/botao_nova_camada_da_edicao"
+                        android:layout_width="wrap_content"
+                        android:layout_height="40dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:minWidth="0dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:text="@string/estudio_nova_camada"
+                        android:textAllCaps="false"
+                        android:textColor="#8AB4F8"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linhas_das_camadas_da_edicao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/barra_de_acoes_da_imagem_ampliada"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#121418"
+            android:paddingStart="8dp"
+            android:paddingTop="4dp"
+            android:paddingEnd="8dp"
+            android:paddingBottom="16dp">
+
+            <Button
+                android:id="@+id/botao_resolucao_da_moldura_da_composicao"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_gravity="start|center_vertical"
+                android:background="@android:color/transparent"
+                app:backgroundTint="@android:color/transparent"
+                android:ellipsize="end"
+                android:gravity="start|center_vertical"
+                android:maxWidth="240dp"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:singleLine="true"
+                android:stateListAnimator="@null"
+                android:textAllCaps="false"
+                android:textColor="#8AB4F8"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:id="@+id/grupo_de_acoes_da_imagem_ampliada"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageButton
+                        android:id="@+id/botao_favoritar_imagem_ampliada_da_biblioteca"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/favoritar_imagem"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_video_favorito_contorno" />
+
+                    <ImageButton
+                        android:id="@+id/botao_copiar_imagem_ampliada_da_biblioteca"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/copiar_esta_imagem"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_copiar_quadro_do_player_de_video" />
+
+                    <ImageButton
+                        android:id="@+id/botao_editar_imagem_ampliada_da_biblioteca"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/editar_imagem_da_biblioteca"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_editar_imagem_da_biblioteca" />
+
+                    <ImageButton
+                        android:id="@+id/botao_baixar_imagem_ampliada_da_biblioteca"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/baixar_esta_imagem"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_salvar_quadro_do_player_de_video" />
+
+                    <ImageButton
+                        android:id="@+id/botao_renomear_imagem_ampliada_da_biblioteca"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/renomear_imagem_da_galeria"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/icone_de_renomear_imagem_da_galeria"
+                        android:visibility="gone" />
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="24dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:background="#5C6570" />
+                </LinearLayout>
+
+            <ImageButton
+                android:id="@+id/botao_concluir_edicao_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/concluir_edicao_da_imagem"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_concluir_edicao_da_imagem"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/botao_componentes_no_chrome_do_editor_de_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/componentes_no_chrome_do_editor_de_imagem"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_quebra_cabeca_dos_componentes_do_editor_de_imagem"
+                android:visibility="gone" />
+
+            <ImageButton
+                android:id="@+id/botao_mostrar_gaveta_na_imagem_ampliada"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/abrir_biblioteca_de_videos"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_da_gaveta_da_biblioteca_de_videos" />
+
+            <ImageButton
+                android:id="@+id/botao_voltar_ao_navegador_a_partir_da_imagem"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/voltar_ao_navegador"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_voltar_ao_navegador_a_partir_da_imagem" />
+
+            <ImageButton
+                android:id="@+id/botao_fechar_imagem_ampliada_da_biblioteca"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/fechar_imagem_capturada"
+                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/icone_de_fechar_o_player_de_video" />
+            </LinearLayout>
+        </FrameLayout>
+        </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

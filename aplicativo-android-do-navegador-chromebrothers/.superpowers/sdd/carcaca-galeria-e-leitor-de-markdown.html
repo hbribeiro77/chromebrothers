@@ -1,0 +1,319 @@
+﻿<!doctype html>
+<html lang='pt-BR'>
+<head><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src https: http: file: content: data: blob:; media-src https: http: file: content: blob:; style-src 'unsafe-inline'; script-src 'unsafe-inline'; font-src data: https: http:; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none';">
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'>
+<title>Carcaça — Galeria e Leitor de Markdown</title>
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#0f1014; --panel:#1b1d24; --panel2:#22252e; --line:#2e323d;
+  --ink:#e8eaf0; --muted:#8b91a1; --dim:#5c6274;
+  --accent:#f5c518; --accentink:#191a1f; --purple:#7c5cff; --danger:#ff6b6b;
+  --r:14px;
+}
+html,body{margin:0}
+body{
+  background:radial-gradient(1100px 520px at 15% -12%, #1c1f2b 0%, rgba(15,16,20,0) 60%), var(--bg);
+  color:var(--ink); font:14px/1.45 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  padding:16px 14px 44px; -webkit-font-smoothing:antialiased;
+}
+.ic{width:16px;height:16px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.75;stroke-linecap:round;stroke-linejoin:round}
+.ic--dots{fill:currentColor;stroke:none}
+.ic--sm{width:13px;height:13px;stroke-width:2}
+.ic--20{width:20px;height:20px}
+h1{font-size:15.5px;margin:0 0 3px;letter-spacing:.2px}
+.sub{color:var(--muted);font-size:12px;margin:0 0 16px;max-width:640px}
+.row{display:flex;flex-wrap:wrap;gap:18px;align-items:flex-start}
+.panel{width:404px;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);
+  overflow:hidden;display:flex;flex-direction:column;box-shadow:0 22px 44px -20px #000,inset 0 1px 0 #ffffff0a}
+.head{display:flex;align-items:center;gap:6px;padding:7px 8px 7px 4px;border-bottom:1px solid var(--line);
+  background:linear-gradient(180deg,#23262f,#1b1d24)}
+.grip{width:26px;height:30px;display:grid;place-items:center;border-radius:8px;color:#565c6e;cursor:grab;flex:0 0 auto}
+.grip:hover{background:#ffffff0a;color:var(--muted)}
+.grip:active{cursor:grabbing;color:var(--accent)}
+.t{flex:1;min-width:0;padding-left:2px}
+.t h2{margin:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t p{margin:1px 0 0;font-size:11px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acts{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.ibtn{width:30px;height:30px;padding:0;display:grid;place-items:center;border-radius:9px;border:1px solid transparent;
+  background:transparent;color:var(--muted);cursor:pointer}
+.ibtn:hover{background:#ffffff0d;border-color:var(--line);color:var(--ink)}
+.ibtn--save:hover{color:var(--accent);border-color:#f5c5183d;background:#f5c51814}
+.ibtn--close:hover{background:#ff6b6b1c;border-color:#ff6b6b3d;color:#ff8f8f}
+.ibtn[aria-expanded='true']{background:#ffffff12;border-color:var(--line);color:var(--ink)}
+.pop{position:relative}
+.body{padding:12px;display:flex;flex-direction:column;gap:11px}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.spacer{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:10px;border:1px solid var(--line);
+  background:var(--panel2);color:var(--ink);font-size:12.5px;font-family:inherit;cursor:pointer;line-height:1}
+.btn:hover{border-color:#3a3f4d;background:#262a34}
+.btn em{font-style:normal;font-size:11px;color:var(--dim)}
+.btn--primary{background:var(--accent);color:var(--accentink);border-color:transparent;font-weight:600}
+.btn--primary:hover{background:#ffd63d}
+.btn--ghost{background:transparent;border-color:transparent;color:var(--muted);padding:7px 8px}
+.btn--ghost:hover{background:var(--panel2);color:var(--ink)}
+.seg{display:inline-flex;gap:2px;padding:2px;background:#12141a;border:1px solid var(--line);border-radius:10px}
+.seg button{display:inline-flex;align-items:center;gap:6px;border:0;background:transparent;color:var(--muted);
+  font:12px/1 inherit;font-family:inherit;padding:6px 10px;border-radius:7px;cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed='true']{background:var(--panel2);color:var(--ink);box-shadow:inset 0 1px 0 #ffffff14}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;font:11.5px/1 inherit;font-family:inherit;color:var(--muted);
+  background:#ffffff08;border:1px solid var(--line);border-radius:999px;padding:6px 10px;cursor:pointer}
+.chip:hover{color:var(--ink);border-color:#3a3f4d}
+.chip b{font-weight:500;color:var(--dim)}
+.chip--on{color:var(--accent);background:#f5c51814;border-color:#f5c5183d}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{background:#191c24;border:1px solid var(--line);border-radius:10px;min-height:76px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:7px;font-size:10.5px;color:var(--muted);text-align:center;padding:8px}
+.tile svg{color:var(--accent)}
+.md{background:#12141a;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  font:12px/1.62 ui-monospace,SFMono-Regular,Menlo,monospace;color:#b7bed0}
+.md h3{margin:0 0 6px;font-size:12.5px;color:var(--ink);font-weight:600}
+.md p{margin:0 0 6px}
+.md p:last-child{margin:0}
+.md .k{color:var(--purple)}
+.status{display:flex;align-items:center;gap:12px;padding:8px 12px;border-top:1px solid var(--line);
+  background:#171922;font-size:11px;color:var(--muted)}
+.status span{display:inline-flex;align-items:center;gap:5px}
+.status b{font-weight:600;color:var(--ink);margin-right:1px}
+.status .status__right{margin-left:auto;color:var(--dim)}
+.menu{position:absolute;right:0;top:34px;min-width:176px;padding:5px;z-index:6;display:none;background:#242833;
+  border:1px solid var(--line);border-radius:11px;box-shadow:0 24px 44px -18px #000}
+.menu.is-open{display:block}
+.menu button{width:100%;display:flex;align-items:center;gap:9px;padding:7px 9px;border:0;border-radius:7px;
+  background:transparent;color:var(--muted);font:12.5px/1 inherit;font-family:inherit;cursor:pointer;text-align:left}
+.menu button:hover{background:#ffffff0d;color:var(--ink)}
+.menu button.danger:hover{background:#ff6b6b14;color:#ff8f8f}
+.menu hr{border:0;border-top:1px solid var(--line);margin:5px 2px}
+.spec{margin-top:22px;border:1px solid var(--line);border-radius:var(--r);background:#14161d;padding:14px}
+.spec h3{margin:0 0 11px;font-size:11px;letter-spacing:.7px;text-transform:uppercase;color:var(--muted);font-weight:600}
+.iconrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:9px}
+.icard{display:flex;align-items:center;gap:9px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;
+  background:#191c24;font-size:12px;color:var(--muted)}
+.icard svg{color:var(--ink)}
+.icard:hover{border-color:#3a3f4d;color:var(--ink)}
+.icard:hover svg{color:var(--accent)}
+.cmp{display:flex;flex-direction:column;gap:9px}
+.old,.new{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-radius:10px;padding:9px 12px;font-size:12px}
+.old{border:1px dashed #3a3f4d;color:var(--dim)}
+.old span{text-decoration:line-through;text-decoration-color:#ff6b6b8c}
+.new{border:1px solid #f5c51833;background:#f5c5180d;color:var(--muted)}
+.new em{font-style:normal;color:var(--accent)}
+.bubblerow{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.bub{width:54px;height:54px;border-radius:50%;background:var(--panel);border:1px solid var(--line);display:grid;
+  place-items:center;color:var(--accent);cursor:grab;box-shadow:0 14px 26px -14px #000,inset 0 1px 0 #ffffff0d;
+  font-size:12px;font-weight:600}
+.bub:active{cursor:grabbing}
+.bub--alt{color:var(--purple)}
+.bubblerow p{margin:0;max-width:420px}
+@media (max-width:460px){.panel{width:100%}.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<svg style='display:none' aria-hidden='true'>
+  <symbol id='i-grip' viewBox='0 0 24 24'><circle cx='9' cy='7' r='1.35'/><circle cx='15' cy='7' r='1.35'/><circle cx='9' cy='12' r='1.35'/><circle cx='15' cy='12' r='1.35'/><circle cx='9' cy='17' r='1.35'/><circle cx='15' cy='17' r='1.35'/></symbol>
+  <symbol id='i-save' viewBox='0 0 24 24'><path d='M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z'/><path d='M17 21v-8H7v8'/><path d='M7 3v5h8'/></symbol>
+  <symbol id='i-minus' viewBox='0 0 24 24'><path d='M5 12h14'/></symbol>
+  <symbol id='i-x' viewBox='0 0 24 24'><path d='M18 6 6 18M6 6l12 12'/></symbol>
+  <symbol id='i-more' viewBox='0 0 24 24'><circle cx='5' cy='12' r='1.45'/><circle cx='12' cy='12' r='1.45'/><circle cx='19' cy='12' r='1.45'/></symbol>
+  <symbol id='i-check' viewBox='0 0 24 24'><path d='M20 6 9 17l-5-5'/></symbol>
+  <symbol id='i-refresh' viewBox='0 0 24 24'><path d='M21 12a9 9 0 1 1-3-6.7'/><path d='M21 4v5h-5'/></symbol>
+  <symbol id='i-back' viewBox='0 0 24 24'><path d='M9 14 4 9l5-5'/><path d='M4 9h11a5 5 0 0 1 5 5v6'/></symbol>
+  <symbol id='i-home' viewBox='0 0 24 24'><path d='M3 10.5 12 3l9 7.5'/><path d='M5 9.8V20h14V9.8'/></symbol>
+  <symbol id='i-play' viewBox='0 0 24 24'><path d='M7 4.5v15l12-7.5z'/></symbol>
+  <symbol id='i-folder' viewBox='0 0 24 24'><path d='M3 7.5A2 2 0 0 1 5 5.5h4l2 2.5h6a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/></symbol>
+  <symbol id='i-folder-open' viewBox='0 0 24 24'><path d='M3 8V7a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V10'/><path d='M3 8h14.6a1.4 1.4 0 0 1 1.35 1.8l-1.7 6.2A2 2 0 0 1 15.3 19H5a2 2 0 0 1-2-2z'/></symbol>
+  <symbol id='i-image' viewBox='0 0 24 24'><rect x='3' y='4.5' width='18' height='15' rx='2.5'/><circle cx='8.6' cy='10' r='1.5'/><path d='m4 17 5-4.5 4 3.5 3-2.5 4 3.5'/></symbol>
+  <symbol id='i-video' viewBox='0 0 24 24'><rect x='3' y='6' width='13' height='12' rx='2.5'/><path d='m16 11 5-3v8l-5-3z'/></symbol>
+  <symbol id='i-download' viewBox='0 0 24 24'><path d='M12 3v11'/><path d='m7.5 10 4.5 4.5L16.5 10'/><path d='M4 19h16'/></symbol>
+  <symbol id='i-copy' viewBox='0 0 24 24'><rect x='9' y='9' width='11' height='11' rx='2.5'/><path d='M15 6.5V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h.5'/></symbol>
+  <symbol id='i-chat' viewBox='0 0 24 24'><path d='M21 12a8 8 0 0 1-8 8H8l-5 2 1.4-4.2A8 8 0 0 1 13 4a8 8 0 0 1 8 8z'/></symbol>
+  <symbol id='i-file-text' viewBox='0 0 24 24'><path d='M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z'/><path d='M14 3v5h5M9 13h6M9 17h4'/></symbol>
+  <symbol id='i-trash' viewBox='0 0 24 24'><path d='M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13'/></symbol>
+  <symbol id='i-list' viewBox='0 0 24 24'><path d='M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01'/></symbol>
+  <symbol id='i-sparkle' viewBox='0 0 24 24'><path d='M12 3.5l1.8 5.2 5.2 1.8-5.2 1.8L12 17.5l-1.8-5.2L5 10.5l5.2-1.8z'/></symbol>
+  <symbol id='i-pencil' viewBox='0 0 24 24'><path d='M4 20h4L20 8l-4-4L4 16z'/></symbol>
+  <symbol id='i-eye' viewBox='0 0 24 24'><path d='M2.5 12S6 6.5 12 6.5 21.5 12 21.5 12 18 17.5 12 17.5 2.5 12 2.5 12z'/><circle cx='12' cy='12' r='2.6'/></symbol>
+  <symbol id='i-grid' viewBox='0 0 24 24'><rect x='3.5' y='3.5' width='7' height='7' rx='1.8'/><rect x='13.5' y='3.5' width='7' height='7' rx='1.8'/><rect x='3.5' y='13.5' width='7' height='7' rx='1.8'/><rect x='13.5' y='13.5' width='7' height='7' rx='1.8'/></symbol>
+  <symbol id='i-hash' viewBox='0 0 24 24'><path d='M9.5 4 7.5 20M16.5 4l-2 16M4.5 9h16M3.5 15h16'/></symbol>
+</svg>
+
+<h1>Carcaça — Galeria &amp; Leitor de Markdown</h1>
+<p class='sub'>Alça de arrastar no header, ações como ícones, toolbar em camadas, contagens no rodapé e overflow para ações raras. Tudo com o mesmo set de ícones.</p>
+
+<div class='row'>
+
+  <section class='panel'>
+    <header class='head'>
+      <span class='grip' title='Arrastar janela'><svg class='ic ic--dots'><use href='#i-grip'/></svg></span>
+      <div class='t'>
+        <h2>Galeria</h2>
+        <p>ChromeBrothers · nível 1</p>
+      </div>
+      <div class='acts'>
+        <button class='ibtn ibtn--save' title='Guardar componente' aria-label='Guardar componente'><svg class='ic'><use href='#i-save'/></svg></button>
+        <button class='ibtn' title='Minimizar (vira bolha)' aria-label='Minimizar'><svg class='ic'><use href='#i-minus'/></svg></button>
+        <button class='ibtn ibtn--close' title='Fechar' aria-label='Fechar'><svg class='ic'><use href='#i-x'/></svg></button>
+      </div>
+    </header>
+    <div class='body'>
+      <div class='tools'>
+        <button class='btn btn--primary'><svg class='ic'><use href='#i-folder-open'/></svg>Escolher pasta</button>
+        <button class='btn'><svg class='ic'><use href='#i-play'/></svg>Tocar tudo <em>13</em></button>
+        <span class='spacer'></span>
+        <button class='btn btn--ghost' title='Atualizar' aria-label='Atualizar'><svg class='ic'><use href='#i-refresh'/></svg></button>
+        <button class='btn btn--ghost' title='Voltar' aria-label='Voltar'><svg class='ic'><use href='#i-back'/></svg></button>
+        <button class='btn btn--ghost' title='Raiz' aria-label='Raiz'><svg class='ic'><use href='#i-home'/></svg></button>
+      </div>
+      <div class='chips'>
+        <button class='chip chip--on'><svg class='ic ic--sm'><use href='#i-check'/></svg>Padrão: ChromeBrothers</button>
+        <button class='chip'>Mostrar outros <b>27</b></button>
+        <button class='chip'>PDF</button>
+      </div>
+      <div class='grid'>
+        <div class='tile'><svg class='ic ic--20'><use href='#i-folder'/></svg>Baixar Asset</div>
+        <div class='tile'><svg class='ic ic--20'><use href='#i-folder'/></svg>Baixar Asset</div>
+        <div class='tile'><svg class='ic ic--20'><use href='#i-folder'/></svg>Baixar Asset</div>
+      </div>
+    </div>
+    <footer class='status'>
+      <span><svg class='ic ic--sm'><use href='#i-folder'/></svg><b>3</b>pastas</span>
+      <span><svg class='ic ic--sm'><use href='#i-image'/></svg><b>5</b>imagens</span>
+      <span><svg class='ic ic--sm'><use href='#i-video'/></svg><b>13</b>vídeos</span>
+      <span class='status__right'>27 ocultos</span>
+    </footer>
+  </section>
+
+  <section class='panel'>
+    <header class='head'>
+      <span class='grip' title='Arrastar janela'><svg class='ic ic--dots'><use href='#i-grip'/></svg></span>
+      <div class='t'>
+        <h2>Leitor de Markdown</h2>
+        <p>editor + pré-visualização ao vivo</p>
+      </div>
+      <div class='acts'>
+        <button class='ibtn ibtn--save' title='Guardar componente' aria-label='Guardar componente'><svg class='ic'><use href='#i-save'/></svg></button>
+        <span class='pop'>
+          <button class='ibtn' id='moreBtn' aria-expanded='false' title='Mais ações' aria-label='Mais ações'><svg class='ic ic--dots'><use href='#i-more'/></svg></button>
+          <div class='menu' id='moreMenu'>
+            <button><svg class='ic'><use href='#i-list'/></svg>Índice</button>
+            <button><svg class='ic'><use href='#i-sparkle'/></svg>Exemplo</button>
+            <button><svg class='ic'><use href='#i-copy'/></svg>Copiar HTML</button>
+            <button><svg class='ic'><use href='#i-file-text'/></svg>Gerar PDF</button>
+            <hr>
+            <button class='danger'><svg class='ic'><use href='#i-trash'/></svg>Limpar</button>
+          </div>
+        </span>
+        <button class='ibtn' title='Minimizar (vira bolha)' aria-label='Minimizar'><svg class='ic'><use href='#i-minus'/></svg></button>
+        <button class='ibtn ibtn--close' title='Fechar' aria-label='Fechar'><svg class='ic'><use href='#i-x'/></svg></button>
+      </div>
+    </header>
+    <div class='body'>
+      <div class='tools'>
+        <div class='seg'>
+          <button aria-pressed='true'><svg class='ic ic--sm'><use href='#i-pencil'/></svg>Editor</button>
+          <button aria-pressed='false'><svg class='ic ic--sm'><use href='#i-eye'/></svg>Prévia</button>
+        </div>
+        <button class='btn'><svg class='ic'><use href='#i-folder-open'/></svg>Abrir .md</button>
+        <button class='btn'><svg class='ic'><use href='#i-download'/></svg>Baixar .md</button>
+        <button class='btn'><svg class='ic'><use href='#i-chat'/></svg>Enviar ao chat</button>
+      </div>
+      <div class='md'>
+        <h3># Leitor de Markdown</h3>
+        <p>Um componente para <span class='k'>escrever</span>, <span class='k'>colar</span> ou <span class='k'>arrastar</span> arquivos .md e ver o resultado na hora.</p>
+        <p>&gt; Dica: arraste um arquivo .md para dentro do editor.</p>
+      </div>
+    </div>
+    <footer class='status'>
+      <span><b>146</b>palavras</span>
+      <span><b>831</b>chars</span>
+      <span><b>41</b>linhas</span>
+      <span class='status__right'>prévia ao vivo</span>
+    </footer>
+  </section>
+
+</div>
+
+<section class='spec'>
+  <h3>Set de ícones — uma biblioteca só · 16px · stroke 1.75 · currentColor</h3>
+  <div class='iconrow'>
+    <div class='icard'><svg class='ic ic--20 ic--dots'><use href='#i-grip'/></svg><span>arrastar</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-save'/></svg><span>guardar</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-minus'/></svg><span>minimizar</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-x'/></svg><span>fechar</span></div>
+    <div class='icard'><svg class='ic ic--20 ic--dots'><use href='#i-more'/></svg><span>mais ações</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-grid'/></svg><span>galeria</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-hash'/></svg><span>markdown</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-folder-open'/></svg><span>abrir pasta</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-download'/></svg><span>baixar</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-copy'/></svg><span>copiar</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-chat'/></svg><span>enviar ao chat</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-file-text'/></svg><span>PDF</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-trash'/></svg><span>limpar</span></div>
+    <div class='icard'><svg class='ic ic--20'><use href='#i-refresh'/></svg><span>atualizar</span></div>
+  </div>
+</section>
+
+<section class='spec'>
+  <h3>Antes → depois</h3>
+  <div class='cmp'>
+    <div class='old'><span>Coleção</span><span>Coleção</span><span>Guardar componente</span><span>Minimizar</span><span>Fechar</span></div>
+    <div class='new'><em>Galeria</em> &amp; <em>Leitor de Markdown</em> no header &nbsp;·&nbsp; <em>[ ▦ ][ 💾 ][ ⋯ ][ − ][ ✕ ]</em> <span style='margin-left:auto;color:#5c6274'>uma linha só, 44px</span></div>
+  </div>
+</section>
+
+<section class='spec'>
+  <h3>Minimizado — vira bolha arrastável</h3>
+  <div class='bubblerow'>
+    <div class='bub' title='Galeria'><svg class='ic ic--20'><use href='#i-grid'/></svg></div>
+    <div class='bub bub--alt' title='Leitor de Markdown'><svg class='ic ic--20'><use href='#i-hash'/></svg></div>
+    <p class='sub' style='margin:0'>A bolha guarda o ícone do tipo e o estado. Toque abre, arraste move. Fechar continua só no painel aberto, para não perder o componente por engano.</p>
+  </div>
+</section>
+
+<section class='spec'>
+  <h3>Testes rápidos</h3>
+  <div class='tools'>
+    <button class='btn btn--primary' onclick='salvarPdf()'><svg class='ic'><use href='#i-file-text'/></svg>PDF desta carcaça</button>
+    <button class='btn' onclick='avisar()'><svg class='ic'><use href='#i-chat'/></svg>Enviar ao chat</button>
+  </div>
+</section>
+
+<script>
+var mb=document.getElementById('moreBtn'), mm=document.getElementById('moreMenu');
+mb.addEventListener('click',function(e){
+  e.stopPropagation();
+  var aberto=mm.classList.toggle('is-open');
+  mb.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+});
+document.addEventListener('click',function(){
+  mm.classList.remove('is-open');
+  mb.setAttribute('aria-expanded','false');
+});
+var tabs=document.querySelectorAll('.seg button');
+for (var i=0;i<tabs.length;i++){
+  tabs[i].addEventListener('click',function(){
+    for (var j=0;j<tabs.length;j++){ tabs[j].setAttribute('aria-pressed','false'); }
+    this.setAttribute('aria-pressed','true');
+  });
+}
+function salvarPdf(){
+  try{
+    if (window.chromebrothers && chromebrothers.gerarPdf){ chromebrothers.gerarPdf('carcaca-galeria-e-leitor-md'); }
+    else { alert('O PDF sai pelo app, dentro do componente.'); }
+  }catch(e){}
+}
+function avisar(){
+  var msg='Carcaça ajustada: painel 1 = Galeria, painel 2 = Leitor de Markdown. Header único com alça de arrastar e ações em ícone.';
+  try{
+    if (window.chromebrothers && chromebrothers.enviarAoChat){ chromebrothers.enviarAoChat(msg); }
+    else { alert(msg); }
+  }catch(e){}
+}
+</script>
+</body>
+</html>

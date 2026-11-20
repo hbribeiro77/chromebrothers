@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@drawable/fundo_escuro_do_icone_do_navegador_chromebrothers" />
+    <foreground android:drawable="@drawable/frente_com_dois_aneis_do_icone_do_navegador_chromebrothers" />
+</adaptive-icon>

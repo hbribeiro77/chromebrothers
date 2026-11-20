@@ -1,0 +1,187 @@
+﻿NO GIT Task4 rereview
+package com.chromebrothers.navegador
+
+import android.content.Context
+import com.chromebrothers.navegador.regras.EntradaDoIndiceDaConversaDoChat
+import com.chromebrothers.navegador.regras.FaixaDoMedidorDoHistoricoDoChat
+import com.chromebrothers.navegador.regras.IndiceDasConversasDoChatDaOpenRouter
+import com.chromebrothers.navegador.regras.MedidorDeUsoDoHistoricoDoChatDaOpenRouter
+import com.chromebrothers.navegador.regras.MensagemDeChat
+import com.chromebrothers.navegador.regras.PersistenciaDasMensagensDoChatDaOpenRouter
+import com.chromebrothers.navegador.regras.TextoJsonDoChat
+import com.chromebrothers.navegador.regras.TituloDaConversaDoChatDaOpenRouter
+import java.io.File
+import java.util.UUID
+import java.util.concurrent.CopyOnWriteArrayList
+
+interface OuvinteDasConversasDoChat {
+    fun conversaExcluida(id: String) {}
+    fun conversaResumida(id: String) {}
+}
+
+data class ResultadoDoSaveDaConversa(
+    val id: String?,
+    val avisoDeLimite: Boolean,
+    val bloqueadoPorTetoDuro: Boolean,
+    val erro: String? = null,
+)
+
+class RepositorioDasConversasDoChatNoAparelho(context: Context) {
+    private val pasta = File(context.filesDir, PASTA)
+    private val arquivoDoIndice = File(pasta, ARQUIVO_DO_INDICE)
+    private val ouvintes = CopyOnWriteArrayList<OuvinteDasConversasDoChat>()
+    private val trava = Any()
+
+    fun listar(): List<EntradaDoIndiceDaConversaDoChat> = synchronized(trava) { lerIndice() }
+
+    fun carregar(id: String): List<MensagemDeChat>? {
+        if (id.isBlank()) return null
+        return synchronized(trava) {
+            val arquivo = arquivoDaConversa(id)
+            if (!arquivo.isFile) return@synchronized null
+            try {
+                val bruto = arquivo.readText(Charsets.UTF_8)
+                if (!delimitadoresBalanceados(bruto)) return@synchronized null
+                if (TextoJsonDoChat.objetosDaChave(bruto, "mensagens") == null) return@synchronized null
+                PersistenciaDasMensagensDoChatDaOpenRouter.ler(bruto)
+            } catch (_: Exception) {
+                null
+            }
+        }
+    }
+
+    fun salvar(id: String?, mensagens: List<MensagemDeChat>): ResultadoDoSaveDaConversa {
+        if (id == null && mensagens.isEmpty()) {
+            return ResultadoDoSaveDaConversa(id = null, avisoDeLimite = false, bloqueadoPorTetoDuro = false)
+        }
+        val conteudo = PersistenciaDasMensagensDoChatDaOpenRouter.escrever(mensagens)
+        val bytes = conteudo.toByteArray(Charsets.UTF_8).size.toLong()
+        if (IndiceDasConversasDoChatDaOpenRouter.ultrapassouTetoDuroDaConversa(bytes)) {
+            return ResultadoDoSaveDaConversa(id = id, avisoDeLimite = false, bloqueadoPorTetoDuro = true)
+        }
+        return synchronized(trava) {
+            try {
+                pasta.mkdirs()
+                val idFinal = id?.takeIf { it.isNotBlank() } ?: UUID.randomUUID().toString()
+                gravarArquivo(arquivoDaConversa(idFinal), conteudo)
+                val agora = System.currentTimeMillis()
+                val atuais = lerIndice()
+                val novas = if (atuais.any { it.id == idFinal }) {
+                    IndiceDasConversasDoChatDaOpenRouter.atualizar(
+                        entradas = atuais,
+                        id = idFinal,
+                        atualizadaEm = agora,
+                        bytes = bytes,
+                    )
+                } else {
+                    IndiceDasConversasDoChatDaOpenRouter.criar(
+                        entradas = atuais,
+                        id = idFinal,
+                        titulo = TituloDaConversaDoChatDaOpenRouter.gerar(mensagens),
+                        agoraMs = agora,
+                        bytes = bytes,
+                    )
+                }
+                gravarArquivo(arquivoDoIndice, IndiceDasConversasDoChatDaOpenRouter.escrever(novas))
+                val aviso = IndiceDasConversasDoChatDaOpenRouter.ultrapassouQuantidade(novas) ||
+                    IndiceDasConversasDoChatDaOpenRouter.ultrapassouBytesTotais(novas)
+                ResultadoDoSaveDaConversa(id = idFinal, avisoDeLimite = aviso, bloqueadoPorTetoDuro = false)
+            } catch (e: Exception) {
+                ResultadoDoSaveDaConversa(
+                    id = id,
+                    avisoDeLimite = false,
+                    bloqueadoPorTetoDuro = false,
+                    erro = e.message ?: e.javaClass.simpleName,
+                )
+            }
+        }
+    }
+
+    fun excluir(id: String) {
+        if (id.isBlank()) return
+        synchronized(trava) {
+            try {
+                arquivoDaConversa(id).delete()
+                val novas = IndiceDasConversasDoChatDaOpenRouter.excluir(lerIndice(), id)
+                pasta.mkdirs()
+                gravarArquivo(arquivoDoIndice, IndiceDasConversasDoChatDaOpenRouter.escrever(novas))
+            } catch (_: Exception) {
+                // Falha de I/O: ainda avisamos os ouvintes abaixo para a tela refletir o pedido.
+            }
+        }
+        ouvintes.forEach { it.conversaExcluida(id) }
+    }
+
+    fun bytesTotais(): Long = IndiceDasConversasDoChatDaOpenRouter.bytesTotais(listar())
+
+    fun percentualDoMedidor(): Int = MedidorDeUsoDoHistoricoDoChatDaOpenRouter.percentual(
+        bytesTotais(),
+        IndiceDasConversasDoChatDaOpenRouter.TETO_DE_BYTES_TOTAIS,
+    )
+
+    fun faixaDoMedidor(): FaixaDoMedidorDoHistoricoDoChat =
+        MedidorDeUsoDoHistoricoDoChatDaOpenRouter.faixa(percentualDoMedidor())
+
+    fun registrarOuvinte(ouvinte: OuvinteDasConversasDoChat) {
+        ouvintes.addIfAbsent(ouvinte)
+    }
+
+    fun removerOuvinte(ouvinte: OuvinteDasConversasDoChat) {
+        ouvintes.remove(ouvinte)
+    }
+
+    private fun delimitadoresBalanceados(bruto: String): Boolean {
+        val abertos = ArrayDeque<Char>()
+        var dentroDeTexto = false
+        var indice = 0
+        while (indice < bruto.length) {
+            val caractere = bruto[indice]
+            if (dentroDeTexto) {
+                when (caractere) {
+                    '\\' -> indice += 2
+                    '"' -> {
+                        dentroDeTexto = false
+                        indice++
+                    }
+                    else -> indice++
+                }
+                continue
+            }
+            when (caractere) {
+                '"' -> dentroDeTexto = true
+                '{', '[' -> abertos.addLast(caractere)
+                '}' -> if (abertos.removeLastOrNull() != '{') return false
+                ']' -> if (abertos.removeLastOrNull() != '[') return false
+            }
+            indice++
+        }
+        return !dentroDeTexto && abertos.isEmpty()
+    }
+
+    private fun arquivoDaConversa(id: String): File =
+        File(pasta, "conversa_${id.replace(Regex("[^A-Za-z0-9_-]"), "_")}.json")
+
+    private fun lerIndice(): List<EntradaDoIndiceDaConversaDoChat> {
+        if (!arquivoDoIndice.isFile) return emptyList()
+        return try {
+            IndiceDasConversasDoChatDaOpenRouter.ler(arquivoDoIndice.readText(Charsets.UTF_8))
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    private fun gravarArquivo(destino: File, conteudo: String) {
+        val temporario = File(destino.parentFile, destino.name + ".tmp")
+        temporario.writeText(conteudo, Charsets.UTF_8)
+        if (!temporario.renameTo(destino)) {
+            destino.writeText(conteudo, Charsets.UTF_8)
+            temporario.delete()
+        }
+    }
+
+    companion object {
+        private const val PASTA = "conversas_do_chat"
+        private const val ARQUIVO_DO_INDICE = "indice.json"
+    }
+}
+

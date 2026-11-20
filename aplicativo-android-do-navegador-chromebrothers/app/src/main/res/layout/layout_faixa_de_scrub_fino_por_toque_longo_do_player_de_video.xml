@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/painel_do_scrub_fino_por_toque_longo_do_player_de_video"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="#F2000000"
+    android:clickable="true"
+    android:elevation="28dp"
+    android:focusable="true"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingStart="0dp"
+    android:paddingTop="8dp"
+    android:paddingEnd="0dp"
+    android:paddingBottom="12dp"
+    android:visibility="gone">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp">
+
+        <TextView
+            android:id="@+id/texto_do_tempo_do_scrub_fino_por_toque_longo_do_player_de_video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:shadowColor="#CC000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/botao_sair_do_modo_de_scrub_fino_por_toque_longo_do_player_de_video"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="end|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/sair_do_modo_de_scrub_fino_do_player_de_video"
+            android:padding="8dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icone_de_fechar_o_player_de_video" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/viewport_da_filmstrip_do_scrub_fino_por_toque_longo_do_player_de_video"
+        android:layout_width="match_parent"
+        android:layout_height="96dp"
+        android:background="#2A3140"
+        android:clipChildren="true"
+        android:clipToPadding="true">
+
+        <LinearLayout
+            android:id="@+id/faixa_de_miniaturas_do_scrub_fino_por_toque_longo_do_player_de_video"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start|center_vertical"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:orientation="horizontal" />
+
+        <View
+            android:id="@+id/moldura_fixa_do_scrub_fino_por_toque_longo_do_player_de_video"
+            android:layout_width="168dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="@drawable/moldura_fixa_central_do_scrub_fino_por_toque_longo_do_player_de_video"
+            android:clickable="false"
+            android:focusable="false" />
+    </FrameLayout>
+</LinearLayout>
