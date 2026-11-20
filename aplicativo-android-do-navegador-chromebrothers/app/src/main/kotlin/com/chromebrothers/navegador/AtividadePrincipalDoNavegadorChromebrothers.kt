@@ -2082,11 +2082,31 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
             ligadoNoMenu = preferencias.modoImersivo,
             editorDeImagemAberto = editorDeImagemAberto(),
             siteEmTelaCheia = siteEmTelaCheia,
+            playerDaPaginaAberto = playerDaPaginaAberto(),
         )
         WindowInsetsControllerCompat(window, window.decorView).apply {
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             if (esconder) hide(WindowInsetsCompat.Type.systemBars()) else show(WindowInsetsCompat.Type.systemBars())
         }
+    }
+
+    private fun playerDaPaginaAberto(): Boolean =
+        ::painelDoPlayerDaPagina.isInitialized && painelDoPlayerDaPagina.visibility == View.VISIBLE
+
+    /** Margens das barras do sistema no instante em que o player sobreposto abriu (null = player fechado). */
+    private var barrasCongeladasPeloPlayerDaPagina: androidx.core.graphics.Insets? = null
+
+    /** Congela (ao abrir) ou solta (ao fechar) as margens da raiz e reaplica o modo imersivo. */
+    private fun congelarMargensParaOPlayerDaPagina(congelar: Boolean) {
+        val raiz = findViewById<View>(R.id.raiz_do_navegador)
+        barrasCongeladasPeloPlayerDaPagina = if (congelar) {
+            ViewCompat.getRootWindowInsets(raiz)?.getInsets(WindowInsetsCompat.Type.systemBars())
+                ?: androidx.core.graphics.Insets.of(raiz.paddingLeft, raiz.paddingTop, raiz.paddingRight, raiz.paddingBottom)
+        } else {
+            null
+        }
+        aplicarModoImersivo()
+        ViewCompat.requestApplyInsets(raiz)
     }
 
     /** O site pediu tela cheia: só a página fica (sem abas, barra, busca, extensões nem chat). */
@@ -5852,7 +5872,8 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         val pagina = paginas[gestao.idDaAbaAtiva]
         val temMidia = ligada && pagina != null &&
             EscolhaDoPedidoDeMidiaParaBaixar.listar(pagina.pedidosDeMidiaObservados()).isNotEmpty()
-        botaoBaixarMidia.visibility = if (temMidia) View.VISIBLE else View.GONE
+        // Com o player sobreposto aberto o botão redondo some: o player tem o próprio botão de baixar.
+        botaoBaixarMidia.visibility = if (temMidia && !playerDaPaginaAberto()) View.VISIBLE else View.GONE
         findViewById<ImageButton>(R.id.botao_baixar_midia_do_player_da_pagina).visibility =
             if (ligada) View.VISIBLE else View.GONE
     }
@@ -6631,6 +6652,10 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         progresso.visibility = View.GONE
         painelDoPlayerDaPagina.visibility = View.VISIBLE
         botaoFlutuante.visibility = View.GONE
+        // Como o player nativo em tela cheia: some status, teclas do Android e o botão redondo de baixar
+        // (o player tem o próprio botão de baixar nos controles).
+        congelarMargensParaOPlayerDaPagina(true)
+        atualizarBotaoDeBaixarMidia()
         usuarioQuerReproduzir = true
         videoDoPlayerEstaPausado = false
         mostrarControlesDoPlayerPorUmInstante()
@@ -6718,6 +6743,8 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         painelDoPlayerDaPagina.visibility = View.GONE
         barraDeNavegacao.visibility = View.VISIBLE
         aplicarDisposicaoDaBarraDoNavegador()
+        congelarMargensParaOPlayerDaPagina(false)
+        atualizarBotaoDeBaixarMidia()
         relogioDoPlayerDaPagina.removeCallbacks(pulsoDoPlayerDaPagina)
         relogioDoPlayerDaPagina.removeCallbacks(esconderControlesDoPlayerDaPagina)
         relogioDoPlayerDaPagina.removeCallbacks(esconderAvisoDoDeslocamentoDoPlayer)
@@ -9989,13 +10016,17 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         }
 
         aplicarInsetsDaPagina = { view, insets ->
-            val barras = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Player sobreposto aberto: as barras do sistema somem, mas a página mantém o tamanho (margens
+            // congeladas, faixas pretas). Redimensionar a página fazia o player de sites como o Boosty se
+            // remontar e soltar o vídeo que está no palco (ficava preto).
+            val congeladas = barrasCongeladasPeloPlayerDaPagina
+            val barras = congeladas ?: insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val teclado = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
             val paddingInferior = EspacoDoTecladoSobreAPaginaDoNavegador.paddingInferiorDaRaiz(
                 barraDoSistema = barras.bottom,
             )
             val paleta = paletaAtual()
-            view.setBackgroundColor(paleta.fundoDaFaixa)
+            view.setBackgroundColor(if (congeladas != null) Color.BLACK else paleta.fundoDaFaixa)
             view.setPadding(barras.left, barras.top, barras.right, paddingInferior)
             val extra = EspacoDoTecladoSobreAPaginaDoNavegador.folgaExtra(
                 barraDoSistema = barras.bottom,

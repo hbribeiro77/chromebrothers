@@ -19,4 +19,9 @@ class TesteDoModoImersivoDaJanelaDoNavegador {
         assertTrue(esconde(menu = false, editor = true, site = false))
         assertTrue(esconde(menu = false, editor = false, site = true))
     }
+
+    @Test
+    fun `player sobreposto da pagina esconde as barras como o player nativo`() {
+        assertTrue(ModoImersivoDaJanelaDoNavegador.deveEsconderAsBarras(false, false, false, playerDaPaginaAberto = true))
+    }
 }

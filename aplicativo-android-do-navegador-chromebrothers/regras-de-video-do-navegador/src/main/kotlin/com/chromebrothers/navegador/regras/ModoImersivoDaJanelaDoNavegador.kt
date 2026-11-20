@@ -10,5 +10,7 @@ object ModoImersivoDaJanelaDoNavegador {
         ligadoNoMenu: Boolean,
         editorDeImagemAberto: Boolean,
         siteEmTelaCheia: Boolean,
-    ): Boolean = ligadoNoMenu || editorDeImagemAberto || siteEmTelaCheia
+        /** Player sobreposto da página aberto: tela cheia como o player nativo (sem status e teclas). */
+        playerDaPaginaAberto: Boolean = false,
+    ): Boolean = ligadoNoMenu || editorDeImagemAberto || siteEmTelaCheia || playerDaPaginaAberto
 }
