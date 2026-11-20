@@ -446,7 +446,10 @@ object ScriptInjetadoParaDetectarVideoHtmlNaPagina {
               (document.head || document.documentElement).appendChild(estilo);
             }
             avisarPaiDoPalco(true);
-            estilo.textContent = "#cb-palco-do-player{position:fixed!important;left:0!important;top:0!important;width:100%!important;height:100%!important;background:#000!important;z-index:2147483647!important;}#cb-palco-do-player video{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:contain!important;background:#000!important;pointer-events:none!important;}";
+            // 100% de um fixo é a área visível (visual viewport); em páginas um pouco mais largas/altas que a
+            // tela ela fica menor que a área da página e sobra uma faixa à direita/embaixo. 100vw/100vh cobre
+            // a área inteira; a barra de rolagem da página (desenhada por cima de tudo) some enquanto o palco existe.
+            estilo.textContent = "html{scrollbar-width:none!important}#cb-palco-do-player{position:fixed!important;left:0!important;top:0!important;right:auto!important;bottom:auto!important;width:max(100%,100vw)!important;height:max(100%,100vh)!important;background:#000!important;z-index:2147483647!important;}#cb-palco-do-player video{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;margin:0!important;object-fit:contain!important;background:#000!important;pointer-events:none!important;}";
           }
           window.chromebrothersEntrarNoPlayer = function (id) {
             var video = videoPeloId(id);

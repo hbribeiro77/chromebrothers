@@ -136,6 +136,16 @@ class TesteDeVelocidadeCapturaEPlayerNativoDoVideo {
     }
 
     @Test
+    fun palcoDoPlayerCobreAAreaInteiraDaPagina() {
+        val script = ScriptInjetadoParaDetectarVideoHtmlNaPagina.texto()
+        val estilo = script.substringAfter("estilo.textContent = \"").substringBefore("\";")
+        // 100% sozinho deixava uma faixa à direita/embaixo quando a área visível é menor que a da página.
+        assertTrue(estilo.contains("width:max(100%,100vw)"))
+        assertTrue(estilo.contains("height:max(100%,100vh)"))
+        assertTrue(estilo.contains("html{scrollbar-width:none!important}"))
+    }
+
+    @Test
     fun miniaturaDoVideoSoQuandoChegaPertoDaTela() {
         val script = ScriptInjetadoParaDetectarVideoHtmlNaPagina.texto()
         val preparar = script.substringAfter("function prepararMiniatura(video)").substringBefore("function pintarMiniaturaAgora")
