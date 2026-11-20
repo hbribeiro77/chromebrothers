@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.chromebrothers.navegador"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.chromebrothers.navegador"
@@ -29,14 +29,17 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
-    }
-
     packaging {
         jniLibs {
             useLegacyPackaging = true
         }
+    }
+}
+
+// Kotlin 2.3: o antigo `kotlinOptions { jvmTarget = "17" }` virou erro; este é o formato atual.
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
     }
 }
 
@@ -48,11 +51,12 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
-    implementation("androidx.media3:media3-exoplayer:1.5.1")
-    implementation("androidx.media3:media3-muxer:1.5.1")
-    implementation("androidx.media3:media3-ui:1.5.1")
+    // Mesma versão que o GeckoView 153 traz (senão o Gradle sobe sozinho e a 1.5.1 aqui engana).
+    implementation("androidx.media3:media3-exoplayer:1.10.1")
+    implementation("androidx.media3:media3-muxer:1.10.1")
+    implementation("androidx.media3:media3-ui:1.10.1")
     implementation("androidx.webkit:webkit:1.12.1")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    implementation("org.mozilla.geckoview:geckoview:143.0.20251003115653")
+    implementation("org.mozilla.geckoview:geckoview:153.0.20260810162159")
 }

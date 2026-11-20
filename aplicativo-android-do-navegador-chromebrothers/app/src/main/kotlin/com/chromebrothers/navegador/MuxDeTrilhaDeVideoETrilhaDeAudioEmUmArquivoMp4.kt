@@ -5,8 +5,8 @@ import android.media.MediaExtractor
 import android.media.MediaFormat
 import androidx.media3.common.Format
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.muxer.BufferInfo
 import androidx.media3.muxer.Mp4Muxer
-import androidx.media3.muxer.Muxer
 import com.chromebrothers.navegador.regras.PreparacaoDaAmostraDeVideoAvcParaOMuxer
 import com.chromebrothers.navegador.regras.TempoDeExibicaoDaAmostraParaOArquivo
 import java.io.File
@@ -99,7 +99,8 @@ object MuxDeTrilhaDeVideoETrilhaDeAudioEmUmArquivoMp4 {
     private fun copiarAmostras(
         extrator: MediaExtractor,
         muxer: Mp4Muxer,
-        faixa: Muxer.TrackToken,
+        /** media3 1.10: a faixa é o número devolvido por `addTrack` (antes era um TrackToken). */
+        faixa: Int,
         formato: MediaFormat,
     ) {
         val mime = formato.getString(MediaFormat.KEY_MIME).orEmpty()
@@ -131,9 +132,8 @@ object MuxDeTrilhaDeVideoETrilhaDeAudioEmUmArquivoMp4 {
             } else {
                 0
             }
-            val info = MediaCodec.BufferInfo()
-            info.set(0, pronto.size, tempo, flags)
-            muxer.writeSampleData(faixa, ByteBuffer.wrap(pronto), info)
+            // media3 1.10: BufferInfo próprio (tempo, tamanho, flags); a flag de quadro-chave vale o mesmo.
+            muxer.writeSampleData(faixa, ByteBuffer.wrap(pronto), BufferInfo(tempo, pronto.size, flags))
             extrator.advance()
         }
     }

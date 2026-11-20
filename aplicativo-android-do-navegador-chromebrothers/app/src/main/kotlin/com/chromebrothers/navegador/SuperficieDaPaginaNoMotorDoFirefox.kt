@@ -1175,17 +1175,7 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
                 }
             }
 
-            override fun onUpdatePrompt(
-                currentlyInstalled: WebExtension,
-                updatedExtension: WebExtension,
-                newPermissions: Array<out String>,
-                newOrigins: Array<out String>,
-            ): GeckoResult<AllowOrDeny>? {
-                return pedirAceite(updatedExtension, newPermissions, newOrigins, emptyArray()) { aceitou ->
-                    if (aceitou) AllowOrDeny.ALLOW else AllowOrDeny.DENY
-                }
-            }
-
+            // GeckoView 153: as versões antigas (sem coleta de dados) de onUpdatePrompt/onOptionalPrompt saíram.
             override fun onUpdatePrompt(
                 extension: WebExtension,
                 newPermissions: Array<out String>,
@@ -1193,16 +1183,6 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
                 newDataCollectionPermissions: Array<out String>,
             ): GeckoResult<AllowOrDeny>? {
                 return pedirAceite(extension, newPermissions, newOrigins, newDataCollectionPermissions) { aceitou ->
-                    if (aceitou) AllowOrDeny.ALLOW else AllowOrDeny.DENY
-                }
-            }
-
-            override fun onOptionalPrompt(
-                extension: WebExtension,
-                permissions: Array<out String>,
-                origins: Array<out String>,
-            ): GeckoResult<AllowOrDeny>? {
-                return pedirAceite(extension, permissions, origins, emptyArray()) { aceitou ->
                     if (aceitou) AllowOrDeny.ALLOW else AllowOrDeny.DENY
                 }
             }
