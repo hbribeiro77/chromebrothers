@@ -111,6 +111,7 @@ class ControladorDoScrubFinoPorToqueLongoDoPlayerDeVideo(
             tocar = retomar,
             pausar = pausar,
             estaTocando = estavaTocando,
+            obterPosicaoDoPlayerMs = obterPosicaoMs,
         )
     }
 

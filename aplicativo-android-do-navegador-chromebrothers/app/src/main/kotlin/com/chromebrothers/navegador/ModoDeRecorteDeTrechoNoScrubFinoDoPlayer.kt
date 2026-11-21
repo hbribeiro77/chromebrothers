@@ -25,6 +25,8 @@ class ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
     private val tocar: () -> Unit,
     private val pausar: () -> Unit,
     private val estaTocando: () -> Boolean,
+    /** Posição real do player (para parar o "ver trecho" em cima do fim). */
+    private val obterPosicaoDoPlayerMs: () -> Long = obterPosicaoMs,
 ) {
     private val regra = RecorteDeTrechoDeVideo
     private val principal = Handler(Looper.getMainLooper())
@@ -50,19 +52,30 @@ class ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
     private var salvando = false
     private var progressoDoSalvamento = 0
     private var fimDoTrechoEmExibicao: Long? = null
+    /** O "ver trecho" já começou a tocar de fato (antes disso o player ainda está carregando após o seek). */
+    private var trechoComecouATocar = false
 
     private val acompanhar = object : Runnable {
         override fun run() {
             if (area.visibility != View.VISIBLE) return
             barra.posicaoMs = obterPosicaoMs()
-            fimDoTrechoEmExibicao?.let { fim ->
-                if (obterPosicaoMs() >= fim || !estaTocando()) {
-                    fimDoTrechoEmExibicao = null
-                    pausar()
-                    if (obterPosicaoMs() >= fim) seekParaMs(fim)
+            val fim = fimDoTrechoEmExibicao
+            if (fim != null) {
+                val tocando = estaTocando()
+                if (tocando) trechoComecouATocar = true
+                when {
+                    obterPosicaoDoPlayerMs() >= fim -> {
+                        // Chegou no fim: para e deixa o vídeo exatamente na marca.
+                        fimDoTrechoEmExibicao = null
+                        pausar()
+                        seekParaMs(fim)
+                    }
+                    // Só conta como "o usuário pausou" depois de ter começado a tocar.
+                    trechoComecouATocar && !tocando -> fimDoTrechoEmExibicao = null
                 }
             }
-            principal.postDelayed(this, 100L)
+            // Rápido durante o trecho (para em cima do fim); calmo no resto.
+            principal.postDelayed(this, if (fimDoTrechoEmExibicao != null) 30L else 100L)
         }
     }
 
@@ -181,7 +194,10 @@ class ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
         val b = fimMs ?: return
         seekParaMs(a)
         fimDoTrechoEmExibicao = b
+        trechoComecouATocar = false
         tocar()
+        principal.removeCallbacks(acompanhar)
+        principal.post(acompanhar)
     }
 
     private fun pedirNomeESalvar() {
