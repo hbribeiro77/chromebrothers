@@ -329,6 +329,14 @@ class SuperficieDaPaginaNoMotorDoFirefox(
     /** Reabre a aba exatamente onde estava (com voltar/avançar). Devolve false se o texto não servir. */
     fun restaurarEstadoDaSessao(texto: String, enderecoAnterior: String?): Boolean {
         val estado = runCatching { GeckoSession.SessionState.fromString(texto) }.getOrNull() ?: return false
+        // Estado gravado antes de a página sair do about:blank (app fechado logo depois de navegar):
+        // restaurá-lo deixaria a aba vazia com o endereço na barra. Quem chamou carrega o endereço.
+        val atualNoEstado = runCatching { estado[estado.currentIndex].uri }.getOrNull()
+        if ((atualNoEstado.isNullOrBlank() || atualNoEstado == "about:blank") &&
+            !enderecoAnterior.isNullOrBlank() && enderecoAnterior != "about:blank"
+        ) {
+            return false
+        }
         estadoDaSessao = estado
         if (!enderecoAnterior.isNullOrBlank()) url = enderecoAnterior
         sessao.restoreState(estado)
