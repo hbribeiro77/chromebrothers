@@ -30,11 +30,21 @@ class TesteDoPreCarregamentoDeSitePesadoNaAbertura {
     }
 
     @Test
-    fun abrirOMesmoSitePulaParaAAbaPronta() {
-        assertTrue(regra.deveIrParaAbaPreCarregada("https://higgsfield.ai/", "https://higgsfield.ai/"))
-        assertTrue(regra.deveIrParaAbaPreCarregada("https://Higgsfield.ai", "https://www.higgsfield.ai/market"))
-        assertFalse(regra.deveIrParaAbaPreCarregada("https://g1.globo.com/", "https://higgsfield.ai/"))
-        assertFalse(regra.deveIrParaAbaPreCarregada("https://higgsfield.ai/", null))
-        assertFalse(regra.deveIrParaAbaPreCarregada(null, "https://higgsfield.ai/"))
+    fun qualquerPaginaDoSiteUsaAReserva() {
+        assertTrue(regra.deveUsarReserva("https://higgsfield.ai/", "https://higgsfield.ai/"))
+        assertTrue(regra.deveUsarReserva("https://Higgsfield.ai", "https://www.higgsfield.ai/"))
+        assertTrue(regra.deveUsarReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/"), "o que a barra completou")
+        assertFalse(regra.deveUsarReserva("https://g1.globo.com/", "https://higgsfield.ai/"))
+        assertFalse(regra.deveUsarReserva("https://higgsfield.ai/", null))
+        assertFalse(regra.deveUsarReserva(null, "https://higgsfield.ai/"))
+    }
+
+    @Test
+    fun aReservaTrocaDeRotaSoQuandoOPedidoEhOutraPagina() {
+        assertNull(regra.rotaParaAbrirNaReserva("https://higgsfield.ai", "https://higgsfield.ai/"), "já está na inicial")
+        assertNull(regra.rotaParaAbrirNaReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/supercomputer"))
+        assertEquals("/supercomputer", regra.rotaParaAbrirNaReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/"))
+        assertEquals("/ai/video?model=seedance_2_5", regra.rotaParaAbrirNaReserva("https://higgsfield.ai/ai/video?model=seedance_2_5", "https://higgsfield.ai/"))
+        assertEquals("/", regra.rotaParaAbrirNaReserva("https://higgsfield.ai/", "https://higgsfield.ai/explore"))
     }
 }
