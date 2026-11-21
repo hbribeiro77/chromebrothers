@@ -24,6 +24,24 @@ object PreCarregamentoDeSitePesadoNaAbertura {
     /** Espera para repor a reserva depois que ela foi usada (deixa a página recém-aberta assentar). */
     const val ATRASO_PARA_REPOR_A_RESERVA_MS = 10_000L
 
+    /** Prioridade alta da reserva: carregar (~1 min) e aquecer a página inteira. */
+    const val DURACAO_DA_RESERVA_MS = 180_000L
+
+    /** Espera, depois de a reserva terminar de carregar, para começar a aquecê-la. */
+    const val ATRASO_PARA_AQUECER_MS = 15_000L
+
+    /**
+     * Aquecimento da reserva: rola a página até o fim, uma tela por vez, e volta ao topo. O site só
+     * monta e desenha cada seção quando ela aparece; assim isso acontece antes de a pessoa chegar.
+     */
+    const val SCRIPT_DE_AQUECIMENTO =
+        "(function(){if(window.__cbAquecendo)return 'ja';window.__cbAquecendo=1;var n=0;" +
+            "function p(){var fim=document.documentElement.scrollHeight-innerHeight;" +
+            "if(scrollY>=fim-2||n++>=60){setTimeout(function(){scrollTo({top:0,behavior:'instant'});" +
+            "window.__cbAquecido=n;},1500);return;}" +
+            "scrollTo({top:scrollY+Math.round(innerHeight*0.85),behavior:'instant'});setTimeout(p,900);}" +
+            "p();return 'ok';})()"
+
     /**
      * Com a aba ativa no próprio site, a reserva não é preparada (as duas páginas pesadas disputariam
      * CPU/GPU e a visível engasgaria): confere de novo depois deste tempo.

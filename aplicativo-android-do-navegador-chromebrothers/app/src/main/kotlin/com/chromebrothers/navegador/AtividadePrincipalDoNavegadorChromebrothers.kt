@@ -2246,11 +2246,23 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         } else {
             reserva.onResume()
             reserva.definirPrioridadeAlta(true)
-            manipuladorDasAbasSalvas.postDelayed(
-                adormecerPaginaAvulsa,
-                com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_PRIORIDADE_ALTA_MS,
-            )
+            manipuladorDasAbasSalvas.postDelayed(adormecerPaginaAvulsa, com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_RESERVA_MS)
         }
+    }
+
+    private var reservaAquecida = false
+
+    /** Rola a reserva até o fim e volta: o site monta e desenha cada seção antes de a pessoa chegar. */
+    private fun aquecerReserva(vista: SuperficieDaPaginaNoMotorDoFirefox) {
+        if (vistaPreCarregadaAvulsa !== vista || !reservaEmPreparo || reservaAquecida) return
+        if (abaAtivaEstaNoSitePesado()) {
+            // Pausada enquanto a pessoa usa o site: tenta de novo depois.
+            vista.postDelayed({ aquecerReserva(vista) }, com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ATRASO_ENQUANTO_NO_SITE_MS)
+            return
+        }
+        reservaAquecida = true
+        vista.evaluateJavascript(com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.SCRIPT_DE_AQUECIMENTO, null)
+        android.util.Log.i("ChromeBrothersAbas", "aquecendo a reserva (rolando a página inteira)")
     }
 
     private fun agendarReserva(atrasoMs: Long) {
@@ -2306,13 +2318,15 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         areaDasPaginas.addView(vista, 0)
         vista.onResume()
         vista.definirPrioridadeAlta(true)
+        // Terminou de carregar: daqui a pouco aquece (rola a página inteira fora da tela).
+        vista.aoTerminarPagina = { _, sucesso ->
+            if (sucesso) vista.postDelayed({ aquecerReserva(vista) }, com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ATRASO_PARA_AQUECER_MS)
+        }
         vista.loadUrl(endereco)
         vistaPreCarregadaAvulsa = vista
         reservaEmPreparo = true
-        manipuladorDasAbasSalvas.postDelayed(
-            adormecerPaginaAvulsa,
-            com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_PRIORIDADE_ALTA_MS,
-        )
+        reservaAquecida = false
+        manipuladorDasAbasSalvas.postDelayed(adormecerPaginaAvulsa, com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_RESERVA_MS)
         android.util.Log.i("ChromeBrothersAbas", "pré-carregando $endereco em página avulsa")
     }
 
