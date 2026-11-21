@@ -143,7 +143,28 @@ class ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
             inicioMs = b
             fimMs = a
         }
+        // Retorno na hora: vibra e o botão "pulsa" (antes parecia que nada acontecia).
+        val botao = if (inicio) botaoInicio else botaoFim
+        botao.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
+        botao.animate().cancel()
+        botao.scaleX = 1.12f
+        botao.scaleY = 1.12f
+        botao.animate().scaleX(1f).scaleY(1f).setDuration(180L).start()
         atualizar()
+    }
+
+    /** Botão marcado: tempo no texto e moldura amarela; desmarcado: o convite de sempre. */
+    private fun pintarBotaoDeMarca(botao: Button, rotulo: String, marcaMs: Long?) {
+        if (marcaMs != null) {
+            botao.text = "$rotulo · ${regra.tempoComDecimos(marcaMs)}"
+            botao.setBackgroundResource(R.drawable.fundo_do_botao_marcado_do_recorte_de_trecho_do_video)
+            botao.setTextColor(android.graphics.Color.parseColor("#F5C518"))
+        } else {
+            botao.text = "Marcar ${rotulo.lowercase()}"
+            botao.setBackgroundResource(R.drawable.fundo_do_campo_da_caixa_de_dialogo_do_editor_de_imagem)
+            botao.setTextColor(android.graphics.Color.parseColor("#F4F7FB"))
+        }
+        botao.backgroundTintList = null
     }
 
     private fun verTrecho() {
@@ -215,6 +236,8 @@ class ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
         barra.posicaoMs = obterPosicaoMs()
         val a = inicioMs
         val b = fimMs
+        pintarBotaoDeMarca(botaoInicio, "Início", a)
+        pintarBotaoDeMarca(botaoFim, "Fim", b)
         val temTrecho = a != null && b != null && regra.trechoValido(a, b, duracao) != null
         botaoVer.isEnabled = temTrecho && !salvando
         botaoSalvar.isEnabled = temTrecho && !salvando
