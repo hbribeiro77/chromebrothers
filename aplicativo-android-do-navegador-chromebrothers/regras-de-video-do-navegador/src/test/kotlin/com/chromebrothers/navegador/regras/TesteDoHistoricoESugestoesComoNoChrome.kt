@@ -103,6 +103,15 @@ class TesteDoHistoricoESugestoesComoNoChrome {
     }
 
     @Test
+    fun hostDigitadoInteiroNaoViraUmaPaginaDoSite() {
+        // "higgsfield.ai" digitado inteiro abria higgsfield.ai/supercomputer (a página mais visitada).
+        val pagina = entrada("https://higgsfield.ai/supercomputer", visitas = 9, digitadas = 0)
+        val inicio = entrada("https://higgsfield.ai/", visitas = 3, digitadas = 2)
+        assertNull(RanqueamentoDoHistoricoNaBarraDeEndereco.autocompletarEmLinha("higgsfield.ai", listOf(pagina, inicio), agora))
+        assertEquals("higgsfield.ai", RanqueamentoDoHistoricoNaBarraDeEndereco.autocompletarEmLinha("higgs", listOf(pagina, inicio), agora))
+    }
+
+    @Test
     fun autocompletaCaminhoQuandoJaDigitouABarra() {
         val repo = entrada("https://github.com/foo/bar", visitas = 4)
         assertEquals(

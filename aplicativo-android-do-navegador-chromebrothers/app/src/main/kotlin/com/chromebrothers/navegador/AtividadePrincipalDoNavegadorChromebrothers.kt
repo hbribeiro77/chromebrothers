@@ -2286,12 +2286,12 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
     }
 
     /**
-     * Aba fechada no site pesado: a página dela (pronta) vira a reserva, no lugar de uma reserva
-     * ainda em preparo. Reabrir o site em seguida é instantâneo.
+     * Aba fechada na página inicial do site pesado: a página dela (pronta) vira a reserva, no lugar
+     * de uma reserva ainda em preparo. Reabrir o site em seguida é instantâneo.
      */
     private fun guardarComoReservaSePossivel(pagina: PaginaDeUmaAbaDoNavegadorChromebrothers): Boolean {
         val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
-        if (isFinishing || isDestroyed || !regra.ehSitePesado(pagina.webView.url)) return false
+        if (isFinishing || isDestroyed || !regra.estaNaPaginaInicial(pagina.webView.url)) return false
         manipuladorDasAbasSalvas.removeCallbacks(prepararReserva)
         manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
         vistaPreCarregadaAvulsa?.let { emPreparo ->
@@ -2332,27 +2332,9 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         areaDasPaginas.removeView(antiga.webView)
         antiga.webView.stopLoading()
         antiga.webView.destroy()
-        val rota = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
-            .rotaParaAbrirNaReserva(endereco, vista.url)
         vista.translationX = 0f
         vista.visibility = View.VISIBLE
         mostrarAba(id)
-        if (rota != null) {
-            // Outra página do mesmo site: o site (aplicação de página única) troca de rota por dentro,
-            // como num clique de link, sem recarregar tudo.
-            vista.evaluateJavascript(
-                "(function(r){history.pushState(history.state,'',r);" +
-                    "window.dispatchEvent(new PopStateEvent('popstate',{state:history.state}));" +
-                    "return location.pathname;})(" + org.json.JSONObject.quote(rota) + ")",
-                null,
-            )
-            // A troca de rota por dentro não passa pelo começo de carregamento que atualiza a barra.
-            gestao.atualizar(id, endereco = endereco)
-            if (gestao.idDaAbaAtiva == id) {
-                campoEndereco.clearFocus()
-                campoEndereco.setText(textoDaBarra(endereco))
-            }
-        }
         // O que o app faz ao fim de cada carregamento (scripts de vídeo/arraste, histórico, barra).
         vista.aoTerminarPagina?.invoke(vista.url.orEmpty(), true)
         // O título chegou enquanto ela era reserva, sem aba para recebê-lo.

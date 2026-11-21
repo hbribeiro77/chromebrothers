@@ -34,31 +34,25 @@ object PreCarregamentoDeSitePesadoNaAbertura {
         naoCarregadas.lastOrNull { (id, endereco) -> id != idAtiva && ehSitePesado(endereco) }?.first
 
     /**
-     * Abrir qualquer página do site (atalho, endereço digitado, o que a barra completar) usa a
-     * reserva pronta; se a página pedida for outra, o próprio site troca de rota por dentro.
+     * Abrir a página inicial do site (atalho, domínio digitado) usa a reserva pronta, que também
+     * está nela. Outra página do site (higgsfield.ai/video) carrega normal: trocar a rota da
+     * reserva por dentro não é confiável (o site às vezes ignora e a barra mostraria outra página).
      */
     fun deveUsarReserva(destino: String?, enderecoDaReserva: String?): Boolean {
         val a = hostDe(destino) ?: return false
         val b = hostDe(enderecoDaReserva) ?: return false
-        return ehSitePesado(destino) && semWww(a) == semWww(b)
+        return semWww(a) == semWww(b) && estaNaPaginaInicial(destino) && estaNaPaginaInicial(enderecoDaReserva)
     }
 
     /**
-     * Rota (caminho + consulta + âncora) que a reserva ainda precisa abrir para chegar ao destino,
-     * ou null se ela já está nele.
+     * Página inicial do site pesado. Fechar uma aba que está nela guarda a página como reserva
+     * (já pronta) em vez de destruí-la: reabrir o site em seguida é instantâneo.
      */
-    fun rotaParaAbrirNaReserva(destino: String?, enderecoDaReserva: String?): String? {
-        val d = rotaDe(destino) ?: return null
-        return if (d == rotaDe(enderecoDaReserva)) null else d
-    }
-
-    private fun rotaDe(endereco: String?): String? {
-        if (endereco.isNullOrBlank()) return null
-        val uri = runCatching { URI(endereco.trim()) }.getOrNull() ?: return null
-        val caminho = uri.rawPath.orEmpty().ifEmpty { "/" }
-        val consulta = uri.rawQuery?.let { "?$it" }.orEmpty()
-        val ancora = uri.rawFragment?.let { "#$it" }.orEmpty()
-        return caminho + consulta + ancora
+    fun estaNaPaginaInicial(endereco: String?): Boolean {
+        if (!ehSitePesado(endereco)) return false
+        val uri = runCatching { URI(endereco!!.trim()) }.getOrNull() ?: return false
+        val caminho = uri.rawPath.orEmpty()
+        return (caminho.isEmpty() || caminho == "/") && uri.rawQuery.isNullOrEmpty()
     }
 
     private fun semWww(host: String) = host.removePrefix("www.")

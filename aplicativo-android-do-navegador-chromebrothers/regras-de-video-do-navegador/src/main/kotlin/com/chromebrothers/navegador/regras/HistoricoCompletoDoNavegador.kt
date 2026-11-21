@@ -188,6 +188,9 @@ object RanqueamentoDoHistoricoNaBarraDeEndereco {
         }
 
         // 2) Já digitando o caminho (ex.: "github.com/fo"): completa a página inteira.
+        // Só com a barra digitada: o domínio inteiro ("higgsfield.ai") abre o site, não a página
+        // mais visitada dele (higgsfield.ai/supercomputer), como no Chrome.
+        if (!semWww.contains('/')) return null
         val pagina = entradas
             .filter { it.digitadas > 0 || it.visitas >= 2 }
             .mapNotNull { entrada ->

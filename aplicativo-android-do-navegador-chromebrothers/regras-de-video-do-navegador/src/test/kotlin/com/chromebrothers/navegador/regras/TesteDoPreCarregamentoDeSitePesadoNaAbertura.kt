@@ -30,21 +30,23 @@ class TesteDoPreCarregamentoDeSitePesadoNaAbertura {
     }
 
     @Test
-    fun qualquerPaginaDoSiteUsaAReserva() {
+    fun soAPaginaInicialDoSiteUsaAReserva() {
         assertTrue(regra.deveUsarReserva("https://higgsfield.ai/", "https://higgsfield.ai/"))
         assertTrue(regra.deveUsarReserva("https://Higgsfield.ai", "https://www.higgsfield.ai/"))
-        assertTrue(regra.deveUsarReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/"), "o que a barra completou")
+        assertFalse(regra.deveUsarReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/"), "outra página carrega normal")
+        assertFalse(regra.deveUsarReserva("https://higgsfield.ai/", "https://higgsfield.ai/supercomputer"), "reserva em outra página não serve")
         assertFalse(regra.deveUsarReserva("https://g1.globo.com/", "https://higgsfield.ai/"))
         assertFalse(regra.deveUsarReserva("https://higgsfield.ai/", null))
         assertFalse(regra.deveUsarReserva(null, "https://higgsfield.ai/"))
     }
 
     @Test
-    fun aReservaTrocaDeRotaSoQuandoOPedidoEhOutraPagina() {
-        assertNull(regra.rotaParaAbrirNaReserva("https://higgsfield.ai", "https://higgsfield.ai/"), "já está na inicial")
-        assertNull(regra.rotaParaAbrirNaReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/supercomputer"))
-        assertEquals("/supercomputer", regra.rotaParaAbrirNaReserva("https://higgsfield.ai/supercomputer", "https://higgsfield.ai/"))
-        assertEquals("/ai/video?model=seedance_2_5", regra.rotaParaAbrirNaReserva("https://higgsfield.ai/ai/video?model=seedance_2_5", "https://higgsfield.ai/"))
-        assertEquals("/", regra.rotaParaAbrirNaReserva("https://higgsfield.ai/", "https://higgsfield.ai/explore"))
+    fun soAPaginaInicialViraReservaAoFecharAAba() {
+        assertTrue(regra.estaNaPaginaInicial("https://higgsfield.ai/"))
+        assertTrue(regra.estaNaPaginaInicial("https://higgsfield.ai"))
+        assertFalse(regra.estaNaPaginaInicial("https://higgsfield.ai/ai/video?model=x"))
+        assertFalse(regra.estaNaPaginaInicial("https://higgsfield.ai/?ref=x"))
+        assertFalse(regra.estaNaPaginaInicial("https://g1.globo.com/"))
+        assertFalse(regra.estaNaPaginaInicial(null))
     }
 }
