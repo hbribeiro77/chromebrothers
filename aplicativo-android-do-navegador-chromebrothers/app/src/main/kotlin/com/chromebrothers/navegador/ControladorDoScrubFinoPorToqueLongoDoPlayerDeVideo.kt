@@ -52,6 +52,8 @@ class ControladorDoScrubFinoPorToqueLongoDoPlayerDeVideo(
     /** Chamado após seek do scrub — player da página captura o quadro atual sem seek extra. */
     private val aoAposSeekDoScrub: (tempoMs: Long) -> Unit = {},
     private val obterChaveDoVideo: () -> String = { "" },
+    /** Arquivo do aparelho que está tocando (liga a tesoura de recorte); null = sem recorte (ex.: vídeo de site). */
+    obterArquivoParaRecorte: (() -> String?)? = null,
 ) {
     private val principal = Handler(Looper.getMainLooper())
     private val densidade = activity.resources.displayMetrics.density
@@ -98,6 +100,34 @@ class ControladorDoScrubFinoPorToqueLongoDoPlayerDeVideo(
     val estaComDedoBaixo: Boolean get() = dedoArrastando
     val posicaoAtualMs: Long get() = posicaoAlvoMs
 
+    private val recorte: ModoDeRecorteDeTrechoNoScrubFinoDoPlayer? = obterArquivoParaRecorte?.let { arquivo ->
+        ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
+            activity = activity,
+            painel = painel,
+            obterArquivo = arquivo,
+            obterPosicaoMs = { if (ativo) posicaoAlvoMs else obterPosicaoMs() },
+            obterDuracaoMs = { duracaoMs.takeIf { it > 0L } ?: obterDuracaoMs() },
+            seekParaMs = { ms -> irParaTempoPeloRecorte(ms) },
+            tocar = retomar,
+            pausar = pausar,
+            estaTocando = estavaTocando,
+        )
+    }
+
+    /** O modo recorte mudou a posição (barra ou "ver trecho"): tira de quadros e rótulo acompanham. */
+    private fun irParaTempoPeloRecorte(ms: Long) {
+        if (!ativo) {
+            seekParaMs(ms)
+            return
+        }
+        posicaoAlvoMs = ms.coerceIn(0L, duracaoMs)
+        aplicarDeslocamentoParaTempo(posicaoAlvoMs)
+        atualizarRotulo()
+        seekParaMs(posicaoAlvoMs)
+        aoAposSeekDoScrub(posicaoAlvoMs)
+        pedirQuadrosAoRedorDoCentro()
+    }
+
     init {
         botaoSair.setOnClickListener { sairDoModo() }
         val toque = View.OnTouchListener { _, evento ->
@@ -125,6 +155,7 @@ class ControladorDoScrubFinoPorToqueLongoDoPlayerDeVideo(
         chaveDoVideoAtual = obterChaveDoVideo().trim()
         posicaoAlvoMs = obterPosicaoMs().coerceIn(0L, duracaoMs)
         painel.visibility = View.VISIBLE
+        recorte?.aoEntrarNoScrub()
         painel.post {
             if (!ativo) return@post
             montarFilmstrip()
@@ -164,6 +195,7 @@ class ControladorDoScrubFinoPorToqueLongoDoPlayerDeVideo(
         ativo = false
         dedoArrastando = false
         faixa.translationX = 0f
+        recorte?.aoSairDoScrub()
         painel.visibility = View.GONE
         geracao.incrementAndGet()
         aoSair()

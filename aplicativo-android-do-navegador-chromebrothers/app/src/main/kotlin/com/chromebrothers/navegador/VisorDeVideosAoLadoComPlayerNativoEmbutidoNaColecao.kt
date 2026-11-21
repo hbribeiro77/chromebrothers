@@ -552,6 +552,7 @@ class VisorDeVideosAoLadoComPlayerNativoEmbutidoNaColecao(
             },
             capturarQuadroAvulso = { tempoMs, _, _, aoPronto -> provedor.capturarEm(tempoMs, aoPronto) },
             obterChaveDoVideo = { uriAtual().orEmpty() },
+            obterArquivoParaRecorte = { uriAtual() },
         )
         scrub = controlador
         controlador.ligarNaSuperficie(

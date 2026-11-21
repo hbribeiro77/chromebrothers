@@ -56,6 +56,55 @@ object CaixaDeConfirmacaoDoNavegador {
         dialogo.window?.setLayout(largura, WindowManager.LayoutParams.WRAP_CONTENT)
     }
 
+    /** Mesmo modal, com um campo de texto já preenchido (ex.: nome do arquivo). Confirmar entrega o texto. */
+    fun pedirTexto(
+        activity: Activity,
+        titulo: String,
+        mensagem: String,
+        valorInicial: String,
+        textoConfirmar: String,
+        corConfirmar: Int = Color.parseColor("#F5C518"),
+        aoConfirmar: (String) -> Unit,
+    ) {
+        if (activity.isFinishing || activity.isDestroyed) return
+        val dialogo = Dialog(activity)
+        val raiz = activity.layoutInflater.inflate(R.layout.layout_caixa_de_dialogo_do_editor_de_imagem, null)
+        raiz.findViewById<TextView>(R.id.titulo_da_caixa_de_dialogo_do_editor).text = titulo
+        raiz.findViewById<TextView>(R.id.mensagem_da_caixa_de_dialogo_do_editor).apply {
+            visibility = if (mensagem.isBlank()) View.GONE else View.VISIBLE
+            text = mensagem
+        }
+        val campo = raiz.findViewById<EditText>(R.id.campo_da_caixa_de_dialogo_do_editor).apply {
+            visibility = View.VISIBLE
+            hint = ""
+            setText(valorInicial)
+            // Seleciona só o nome (sem a extensão) para trocar de uma vez.
+            val ponto = valorInicial.lastIndexOf('.').takeIf { it > 0 } ?: valorInicial.length
+            setSelection(0, ponto)
+        }
+        val cancelar = raiz.findViewById<Button>(R.id.botao_cancelar_da_caixa_de_dialogo_do_editor)
+        val confirmar = raiz.findViewById<Button>(R.id.botao_confirmar_da_caixa_de_dialogo_do_editor)
+        cancelar.text = activity.getString(R.string.cancelar_caixa_do_editor)
+        cancelar.backgroundTintList = null
+        cancelar.stateListAnimator = null
+        confirmar.text = textoConfirmar
+        confirmar.setTextColor(corConfirmar)
+        confirmar.backgroundTintList = null
+        confirmar.stateListAnimator = null
+        cancelar.setOnClickListener { dialogo.dismiss() }
+        confirmar.setOnClickListener {
+            dialogo.dismiss()
+            aoConfirmar(campo.text?.toString().orEmpty())
+        }
+        dialogo.setContentView(raiz)
+        dialogo.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialogo.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        dialogo.show()
+        val largura = (520 * activity.resources.displayMetrics.density).toInt()
+        dialogo.window?.setLayout(largura, WindowManager.LayoutParams.WRAP_CONTENT)
+        campo.requestFocus()
+    }
+
     /** Texto padrão para excluir [quantidade] mídias (com o tamanho, quando conhecido). */
     fun mensagemDeExcluir(quantidade: Int, tamanhoTexto: String? = null): String {
         val oQue = if (quantidade == 1) "Este arquivo será apagado do aparelho" else "$quantidade arquivos serão apagados do aparelho"

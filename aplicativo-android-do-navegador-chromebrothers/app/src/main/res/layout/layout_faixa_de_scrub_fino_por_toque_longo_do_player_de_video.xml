@@ -23,6 +23,19 @@
         android:paddingStart="8dp"
         android:paddingEnd="8dp">
 
+        <!-- Recortar trecho: só aparece quando o vídeo é um arquivo do aparelho. -->
+        <ImageButton
+            android:id="@+id/botao_abrir_recorte_de_trecho_do_scrub_fino_do_player_de_video"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_gravity="start|center_vertical"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Recortar trecho"
+            android:padding="9dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/icone_de_tesoura_do_recorte_de_trecho_do_video"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/texto_do_tempo_do_scrub_fino_por_toque_longo_do_player_de_video"
             android:layout_width="wrap_content"
@@ -74,4 +87,64 @@
             android:clickable="false"
             android:focusable="false" />
     </FrameLayout>
+
+    <!-- Modo recorte: linha do tempo com quadros-chave, resumo do trecho e ações. -->
+    <LinearLayout
+        android:id="@+id/painel_do_recorte_de_trecho_do_scrub_fino_do_player_de_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:visibility="gone">
+
+        <com.chromebrothers.navegador.BarraDoTrechoDoRecorteDeVideo
+            android:id="@+id/barra_do_trecho_do_recorte_do_scrub_fino_do_player_de_video"
+            android:layout_width="match_parent"
+            android:layout_height="32dp" />
+
+        <TextView
+            android:id="@+id/resumo_do_recorte_de_trecho_do_scrub_fino_do_player_de_video"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textColor="#C4C7CE"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/botao_marcar_inicio_do_recorte_do_scrub_fino_do_player_de_video"
+                style="@style/BotaoDoRecorteDeTrechoDoVideo"
+                android:text="Marcar início" />
+
+            <Button
+                android:id="@+id/botao_marcar_fim_do_recorte_do_scrub_fino_do_player_de_video"
+                style="@style/BotaoDoRecorteDeTrechoDoVideo"
+                android:text="Marcar fim" />
+
+            <Button
+                android:id="@+id/botao_ver_trecho_do_recorte_do_scrub_fino_do_player_de_video"
+                style="@style/BotaoDoRecorteDeTrechoDoVideo"
+                android:text="Ver trecho" />
+
+            <Button
+                android:id="@+id/botao_salvar_recorte_do_scrub_fino_do_player_de_video"
+                style="@style/BotaoDoRecorteDeTrechoDoVideo"
+                android:text="Salvar recorte"
+                android:textColor="#F5C518" />
+
+            <Button
+                android:id="@+id/botao_fechar_recorte_do_scrub_fino_do_player_de_video"
+                style="@style/BotaoDoRecorteDeTrechoDoVideo"
+                android:text="Fechar" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

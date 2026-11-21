@@ -55,6 +55,8 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.10.1")
     implementation("androidx.media3:media3-muxer:1.10.1")
     implementation("androidx.media3:media3-ui:1.10.1")
+    // Recorte de trecho com "corte inteligente": só o começo (até o 1º quadro-chave) é reencodado.
+    implementation("androidx.media3:media3-transformer:1.10.1")
     implementation("androidx.webkit:webkit:1.12.1")
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")

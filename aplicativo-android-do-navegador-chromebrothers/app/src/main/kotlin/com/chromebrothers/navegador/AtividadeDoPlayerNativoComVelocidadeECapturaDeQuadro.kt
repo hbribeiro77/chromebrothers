@@ -353,6 +353,8 @@ class AtividadeDoPlayerNativoComVelocidadeECapturaDeQuadro : AppCompatActivity()
                 provedorMmr.capturarEm(tempoMs, aoPronto)
             },
             obterChaveDoVideo = { enderecoAtual },
+            // Tesoura só para arquivo do aparelho (o modo recorte confere o esquema do endereço).
+            obterArquivoParaRecorte = { enderecoAtual },
         )
         controladorDoScrubFino = controlador
         controlador.ligarNaSuperficie(

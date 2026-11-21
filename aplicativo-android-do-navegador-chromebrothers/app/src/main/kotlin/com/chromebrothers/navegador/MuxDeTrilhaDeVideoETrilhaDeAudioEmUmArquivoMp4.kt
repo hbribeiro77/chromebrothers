@@ -73,7 +73,7 @@ object MuxDeTrilhaDeVideoETrilhaDeAudioEmUmArquivoMp4 {
         }
     }
 
-    private fun formatoParaOMuxer(formato: MediaFormat): Format {
+    internal fun formatoParaOMuxer(formato: MediaFormat): Format {
         val mime = formato.getString(MediaFormat.KEY_MIME)
             ?: throw FalhaNoDownloadDeMidia("Não consegui juntar a imagem e o som desse vídeo.")
         val construtor = Format.Builder().setSampleMimeType(mime)
@@ -138,7 +138,7 @@ object MuxDeTrilhaDeVideoETrilhaDeAudioEmUmArquivoMp4 {
         }
     }
 
-    private fun inteiro(formato: MediaFormat, chave: String): Int? {
+    internal fun inteiro(formato: MediaFormat, chave: String): Int? {
         if (!formato.containsKey(chave)) return null
         return try {
             formato.getInteger(chave)
@@ -147,7 +147,7 @@ object MuxDeTrilhaDeVideoETrilhaDeAudioEmUmArquivoMp4 {
         }
     }
 
-    private fun bytes(formato: MediaFormat, chave: String): ByteArray? {
+    internal fun bytes(formato: MediaFormat, chave: String): ByteArray? {
         val buffer = formato.getByteBuffer(chave) ?: return null
         val copia = buffer.duplicate()
         copia.rewind()
