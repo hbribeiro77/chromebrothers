@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "ChromeBrothers",
-  "version": "1.5",
+  "version": "1.6",
   "browser_specific_settings": {
     "gecko": {
       "id": "chromebrothers@navegador"
@@ -29,6 +29,12 @@
     {
       "matches": ["*://*/*"],
       "js": ["ponte-de-javascript-da-pagina-no-motor-do-firefox.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://*/*"],
+      "js": ["parada-de-esqueletos-de-anuncio-do-chromebrothers.js"],
       "run_at": "document_start",
       "all_frames": true
     }
