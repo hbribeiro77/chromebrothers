@@ -105,10 +105,12 @@ class SuperficieDaPaginaNoMotorDoFirefox(
             override fun onPageStart(session: GeckoSession, urlPagina: String) {
                 if (!urlPagina.startsWith("data:") && urlPagina != "about:blank") url = urlPagina
                 val atual = url.orEmpty()
+                reaplicarPrioridade()
                 post { aoComecarPagina?.invoke(atual) }
             }
 
             override fun onPageStop(session: GeckoSession, success: Boolean) {
+                reaplicarPrioridade()
                 val atual = url.orEmpty()
                 post { aoTerminarPagina?.invoke(atual, success) }
             }
@@ -412,6 +414,23 @@ class SuperficieDaPaginaNoMotorDoFirefox(
     fun onPause() {
         ativa = false
         if (sessao.isOpen) sessao.setActive(false)
+    }
+
+    /**
+     * Aba escondida vai para o cgroup "background" do Android (só os 4 núcleos lentos, 1,78 GHz).
+     * Com prioridade alta o processo dela continua com os núcleos rápidos mesmo invisível.
+     */
+    fun definirPrioridadeAlta(alta: Boolean) {
+        prioridadeAlta = alta
+        sessao.setPriorityHint(if (alta) GeckoSession.PRIORITY_HIGH else GeckoSession.PRIORITY_DEFAULT)
+    }
+
+    // Pedido feito antes de o processo da página existir se perde (não há aba remota para recebê-lo):
+    // reaplica quando a página começa/termina, já com o processo de pé.
+    private var prioridadeAlta = false
+
+    private fun reaplicarPrioridade() {
+        if (prioridadeAlta) sessao.setPriorityHint(GeckoSession.PRIORITY_HIGH)
     }
 
     private fun registrarPerdaDoProcesso(travamento: Boolean) {

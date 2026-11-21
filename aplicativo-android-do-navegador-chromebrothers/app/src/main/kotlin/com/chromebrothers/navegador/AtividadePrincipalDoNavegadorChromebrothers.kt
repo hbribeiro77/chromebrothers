@@ -184,6 +184,13 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
 
     /** Abas reabertas que só carregam quando forem mostradas (como o Chrome, para não pesar). */
     private val abasAindaNaoCarregadas = mutableMapOf<Long, AbaSalvaDoNavegador>()
+
+    /** Aba de site pesado carregando escondida desde a abertura do app (ver PreCarregamentoDeSitePesadoNaAbertura). */
+    private var idDaAbaPreCarregada: Long? = null
+    private var abaPreCarregadaJaMostrada = false
+    /** Página inicial de onde se pulou para a aba pré-carregada: fecha quando a troca terminar. */
+    private var abaInicialParaFecharAposPular: Long? = null
+    private val baixarPrioridadeDaAbaPreCarregada = Runnable { encerrarPreCarregamento() }
     private val manipuladorDasAbasSalvas = android.os.Handler(android.os.Looper.getMainLooper())
     private val gravarAbasDepois = Runnable { gravarAbasAgora() }
     private val ultimoEnderecoNoHistoricoPorAba = mutableMapOf<Long, String>()
@@ -2174,7 +2181,64 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         val ativa = gestao.ativa() ?: abas.first()
         mostrarAba(ativa.id)
         android.util.Log.i("ChromeBrothersAbas", "reabertas ${abas.size} abas")
+        // Um respiro para a aba ativa começar primeiro; a pré-carregada vai em outro processo.
+        manipuladorDasAbasSalvas.postDelayed({ preCarregarSitePesado() }, 1_500L)
         return ativa
+    }
+
+    private fun preCarregarSitePesado() {
+        if (isFinishing || isDestroyed || idDaAbaPreCarregada != null) return
+        val naoCarregadas = gestao.listar()
+            .filter { abasAindaNaoCarregadas.containsKey(it.id) }
+            .map { it.id to (abasAindaNaoCarregadas[it.id]?.endereco ?: it.endereco) }
+        val id = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
+            .abaParaPreCarregar(naoCarregadas, gestao.idDaAbaAtiva) ?: return
+        garantirPaginaDaAba(id)
+        val pagina = paginas[id] ?: return
+        if (gestao.idDaAbaAtiva != id) {
+            // Ativa e desenhando, só que fora da tela: escondida (GONE) o Gecko carrega mas nunca pinta,
+            // e a 1ª pintura dessa página enorme ficava para a hora em que a pessoa chega (3–5 s em branco).
+            pagina.webView.translationX = maxOf(areaDasPaginas.width, resources.displayMetrics.widthPixels).toFloat() * 2f
+            pagina.webView.visibility = View.VISIBLE
+            pagina.webView.onResume()
+        }
+        pagina.webView.definirPrioridadeAlta(true)
+        idDaAbaPreCarregada = id
+        abaPreCarregadaJaMostrada = false
+        manipuladorDasAbasSalvas.postDelayed(
+            baixarPrioridadeDaAbaPreCarregada,
+            com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_PRIORIDADE_ALTA_MS,
+        )
+        android.util.Log.i("ChromeBrothersAbas", "pré-carregando aba $id escondida")
+    }
+
+    private fun encerrarPreCarregamento() {
+        val id = idDaAbaPreCarregada ?: return
+        idDaAbaPreCarregada = null
+        manipuladorDasAbasSalvas.removeCallbacks(baixarPrioridadeDaAbaPreCarregada)
+        val vista = paginas[id]?.webView ?: return
+        vista.definirPrioridadeAlta(false)
+        if (gestao.idDaAbaAtiva != id) {
+            // Ninguém abriu: vira uma aba escondida comum.
+            vista.visibility = View.GONE
+            vista.onPause()
+            vista.translationX = 0f
+        }
+    }
+
+    /** Abrir o site pesado com a aba dele pré-carregada e ainda não vista: mostra essa aba. */
+    private fun pularParaAbaPreCarregadaSePossivel(idOrigem: Long, endereco: String): Boolean {
+        val pre = idDaAbaPreCarregada ?: return false
+        if (pre == idOrigem || abaPreCarregadaJaMostrada) return false
+        val paginaPre = paginas[pre] ?: return false
+        val enderecoPre = paginaPre.webView.url ?: gestao.listar().firstOrNull { it.id == pre }?.endereco
+        if (!com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
+                .deveIrParaAbaPreCarregada(endereco, enderecoPre)
+        ) return false
+        val origemEraInicial = EnderecoDaPaginaInicialDoNavegadorChromebrothers.eh(paginas[idOrigem]?.webView?.url)
+        abaInicialParaFecharAposPular = if (origemEraInicial) idOrigem else null
+        mostrarAba(pre)
+        return true
     }
 
     private fun criarPaginaRestaurada(id: Long, salva: AbaSalvaDoNavegador) {
@@ -3429,6 +3493,9 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         sincronizarVisoresComAAbaAtiva(id)
         paginas.values.forEach { pagina ->
             val visivel = pagina.id == id
+            // A pré-carregada segue desenhando fora da tela até ser aberta (ou acabar o prazo).
+            if (!visivel && pagina.id == idDaAbaPreCarregada && !abaPreCarregadaJaMostrada) return@forEach
+            if (visivel) pagina.webView.translationX = 0f
             // Sem coverUntilFirstPaint na troca: aba já pintada não dispara first paint e fica tapada.
             pagina.webView.visibility = if (visivel) View.VISIBLE else View.GONE
             if (visivel) pagina.webView.onResume() else pagina.webView.onPause()
@@ -3449,6 +3516,13 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         aoTrocarAbaLimparOuRepetirBuscaNaPagina(idAnterior, id)
         if (idAnterior != id) {
             ajustarTecladoAposTrocaDeAba(pagina)
+        }
+        if (id == idDaAbaPreCarregada) {
+            abaPreCarregadaJaMostrada = true
+            abaInicialParaFecharAposPular?.let { inicial ->
+                abaInicialParaFecharAposPular = null
+                if (inicial != id && paginas.containsKey(inicial)) pagina.webView.post { fecharAba(inicial) }
+            }
         }
     }
 
@@ -4046,6 +4120,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         if (idDaAbaDaJanelaDeLogin == id) fecharJanelaDeLogin()
         abasCarregando.remove(id)
         abasAindaNaoCarregadas.remove(id)
+        if (id == idDaAbaPreCarregada) encerrarPreCarregamento()
         ultimoEnderecoNoHistoricoPorAba.remove(id)
         abasNavegandoPelaBarra.remove(id)
         val novaAtiva = gestao.fechar(id).let { vizinha ->
@@ -4381,6 +4456,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         val endereco = InterpretacaoDoTextoDaBarraDeEndereco.resolver(texto, preferencias.motor)
         if (endereco.isEmpty()) return
         if (gestao.idDaAbaAtiva == id) esconderTeclado()
+        if (pularParaAbaPreCarregadaSePossivel(id, endereco)) return
         encerrarVideo(id)
         // Endereço digitado na aba Visor: ela vira aba comum já, antes de a página carregar.
         converterAbaDoVisorEmAbaComumSePreciso(id, endereco)
