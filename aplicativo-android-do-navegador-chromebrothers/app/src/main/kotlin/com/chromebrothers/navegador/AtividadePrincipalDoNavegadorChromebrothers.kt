@@ -2220,8 +2220,36 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
     }
 
     private val prepararReserva = Runnable {
-        if (!isFinishing && !isDestroyed && vistaPreCarregadaAvulsa == null) {
-            preCarregarPaginaAvulsa(com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ENDERECO_PADRAO)
+        if (isFinishing || isDestroyed || vistaPreCarregadaAvulsa != null) return@Runnable
+        // Preparar a reserva com a pessoa usando o site disputa CPU/GPU com a página visível
+        // (ela engasga e fica preta ao rolar): espera a pessoa sair do site.
+        if (abaAtivaEstaNoSitePesado()) {
+            agendarReserva(com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ATRASO_ENQUANTO_NO_SITE_MS)
+            return@Runnable
+        }
+        preCarregarPaginaAvulsa(com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ENDERECO_PADRAO)
+    }
+
+    private fun abaAtivaEstaNoSitePesado(): Boolean =
+        com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ehSitePesado(
+            paginas[gestao.idDaAbaAtiva]?.webView?.url ?: gestao.ativa()?.endereco,
+        )
+
+    /** Reserva ainda carregando: pausa enquanto a aba ativa é do site e continua quando a pessoa sai. */
+    private fun atualizarReservaConformeAbaAtiva() {
+        val reserva = vistaPreCarregadaAvulsa ?: return
+        if (!reservaEmPreparo) return
+        manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
+        if (abaAtivaEstaNoSitePesado()) {
+            reserva.definirPrioridadeAlta(false)
+            reserva.onPause()
+        } else {
+            reserva.onResume()
+            reserva.definirPrioridadeAlta(true)
+            manipuladorDasAbasSalvas.postDelayed(
+                adormecerPaginaAvulsa,
+                com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_PRIORIDADE_ALTA_MS,
+            )
         }
     }
 
@@ -2250,7 +2278,9 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
      */
     private var vistaPreCarregadaAvulsa: SuperficieDaPaginaNoMotorDoFirefox? = null
     private var modoDaPaginaAvulsa: ModoDeApresentacaoDoSite? = null
+    private var reservaEmPreparo = false
     private val adormecerPaginaAvulsa = Runnable {
+        reservaEmPreparo = false
         vistaPreCarregadaAvulsa?.let { vista ->
             // Prazo acabou sem uso: segue guardada, mas parada e sem prioridade.
             vista.definirPrioridadeAlta(false)
@@ -2278,6 +2308,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         vista.definirPrioridadeAlta(true)
         vista.loadUrl(endereco)
         vistaPreCarregadaAvulsa = vista
+        reservaEmPreparo = true
         manipuladorDasAbasSalvas.postDelayed(
             adormecerPaginaAvulsa,
             com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_PRIORIDADE_ALTA_MS,
@@ -2301,11 +2332,13 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         }
         val vista = pagina.webView
         vista.translationX = maxOf(areaDasPaginas.width, resources.displayMetrics.widthPixels).toFloat() * 2f
+        // Já carregada: fica parada fora da tela (guarda o último quadro), sem disputar CPU/GPU.
         vista.visibility = View.VISIBLE
-        vista.onResume()
+        vista.definirPrioridadeAlta(false)
+        vista.onPause()
         vistaPreCarregadaAvulsa = vista
+        reservaEmPreparo = false
         modoDaPaginaAvulsa = pagina.modoForcado ?: preferencias.modoDeSite
-        manipuladorDasAbasSalvas.postDelayed(adormecerPaginaAvulsa, regra.DURACAO_DA_PRIORIDADE_ALTA_MS)
         android.util.Log.i("ChromeBrothersAbas", "aba ${pagina.id} fechada: página guardada como reserva")
         return true
     }
@@ -2320,6 +2353,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         // Aba com modo forçado diferente (ex.: celular): a página pronta não serve, carrega normal.
         if ((antiga.modoForcado ?: preferencias.modoDeSite) != modoDaPaginaAvulsa) return false
         vistaPreCarregadaAvulsa = null
+        reservaEmPreparo = false
         manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
         val nova = PaginaDeUmaAbaDoNavegadorChromebrothers(id, vista)
         nova.agenteOriginal = vista.settings.userAgentString
@@ -3438,7 +3472,11 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
             abasCarregando.add(id)
             comecosDoChat.toList().forEach { ouvinte -> ouvinte(id) }
             paginaDona?.limparPedidosDeMidia()
-            if (gestao.idDaAbaAtiva == id) atualizarBotaoDeBaixarMidia()
+            if (gestao.idDaAbaAtiva == id) {
+                atualizarBotaoDeBaixarMidia()
+                // A aba ativa entrou (ou saiu) do site pesado: a reserva em preparo pausa ou continua.
+                vista.post { atualizarReservaConformeAbaAtiva() }
+            }
             encerrarVideo(id)
             // Qualquer outro caminho (página inicial, atalho, link de fora): a aba Visor vira aba comum.
             converterAbaDoVisorEmAbaComumSePreciso(id, url)
@@ -3632,6 +3670,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
             ajustarTecladoAposTrocaDeAba(pagina)
         }
         if (id == idDaAbaPreCarregada) abaPreCarregadaJaMostrada = true
+        atualizarReservaConformeAbaAtiva()
     }
 
     // ---- Aba "Visor": imagem/vídeo tocado na grade abre numa aba própria, não por cima da página atual ----

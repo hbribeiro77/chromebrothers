@@ -24,6 +24,12 @@ object PreCarregamentoDeSitePesadoNaAbertura {
     /** Espera para repor a reserva depois que ela foi usada (deixa a página recém-aberta assentar). */
     const val ATRASO_PARA_REPOR_A_RESERVA_MS = 10_000L
 
+    /**
+     * Com a aba ativa no próprio site, a reserva não é preparada (as duas páginas pesadas disputariam
+     * CPU/GPU e a visível engasgaria): confere de novo depois deste tempo.
+     */
+    const val ATRASO_ENQUANTO_NO_SITE_MS = 20_000L
+
     fun ehSitePesado(endereco: String?): Boolean {
         val host = hostDe(endereco) ?: return false
         return sites.any { host == it || host.endsWith(".$it") }
