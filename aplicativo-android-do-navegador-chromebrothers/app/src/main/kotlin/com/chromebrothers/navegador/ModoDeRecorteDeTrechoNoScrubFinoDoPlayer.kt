@@ -134,6 +134,15 @@ class ModoDeRecorteDeTrechoNoScrubFinoDoPlayer(
     }
 
     private fun marcar(inicio: Boolean) {
+        // Botão já marcado: o toque desmarca (para trocar o ponto, desmarca e marca de novo).
+        if ((if (inicio) inicioMs else fimMs) != null) {
+            if (inicio) inicioMs = null else fimMs = null
+            fimDoTrechoEmExibicao = null
+            val botao = if (inicio) botaoInicio else botaoFim
+            botao.performHapticFeedback(android.view.HapticFeedbackConstants.CONTEXT_CLICK)
+            atualizar()
+            return
+        }
         val agora = obterPosicaoMs().coerceIn(0L, obterDuracaoMs().coerceAtLeast(0L))
         if (inicio) inicioMs = agora else fimMs = agora
         // Marcas invertidas: troca, para o trecho sempre ir do menor ao maior.
