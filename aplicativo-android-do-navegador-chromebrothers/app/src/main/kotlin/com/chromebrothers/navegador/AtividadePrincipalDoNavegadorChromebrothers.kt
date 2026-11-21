@@ -2053,6 +2053,8 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
             else navegarNaAba(aba.id, enderecoInicialDaJanela)
         }
         aplicarDisposicaoDaBarraDoNavegador()
+        // Um respiro para a aba ativa começar primeiro; a pré-carregada vai em outro processo.
+        manipuladorDasAbasSalvas.postDelayed({ preCarregarSitePesado() }, 1_500L)
     }
 
     override fun onResume() {
@@ -2181,18 +2183,22 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         val ativa = gestao.ativa() ?: abas.first()
         mostrarAba(ativa.id)
         android.util.Log.i("ChromeBrothersAbas", "reabertas ${abas.size} abas")
-        // Um respiro para a aba ativa começar primeiro; a pré-carregada vai em outro processo.
-        manipuladorDasAbasSalvas.postDelayed({ preCarregarSitePesado() }, 1_500L)
         return ativa
     }
 
     private fun preCarregarSitePesado() {
-        if (isFinishing || isDestroyed || idDaAbaPreCarregada != null) return
+        if (isFinishing || isDestroyed || idDaAbaPreCarregada != null || vistaPreCarregadaAvulsa != null) return
+        val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
+        // A ativa já é o site: ela carrega sozinha.
+        if (regra.ehSitePesado(gestao.ativa()?.endereco)) return
         val naoCarregadas = gestao.listar()
             .filter { abasAindaNaoCarregadas.containsKey(it.id) }
             .map { it.id to (abasAindaNaoCarregadas[it.id]?.endereco ?: it.endereco) }
-        val id = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
-            .abaParaPreCarregar(naoCarregadas, gestao.idDaAbaAtiva) ?: return
+        val id = regra.abaParaPreCarregar(naoCarregadas, gestao.idDaAbaAtiva)
+        if (id == null) {
+            preCarregarPaginaAvulsa(regra.ENDERECO_PADRAO)
+            return
+        }
         garantirPaginaDaAba(id)
         val pagina = paginas[id] ?: return
         if (gestao.idDaAbaAtiva != id) {
@@ -2224,6 +2230,79 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
             vista.onPause()
             vista.translationX = 0f
         }
+    }
+
+    /**
+     * Sem aba do site aberta: carrega numa página avulsa (fora da barra de abas), fora da tela e com
+     * prioridade alta. Quando a pessoa abrir o site em qualquer aba, a página pronta entra nela.
+     */
+    private var vistaPreCarregadaAvulsa: SuperficieDaPaginaNoMotorDoFirefox? = null
+    private var modoDaPaginaAvulsa: ModoDeApresentacaoDoSite? = null
+    private val adormecerPaginaAvulsa = Runnable {
+        vistaPreCarregadaAvulsa?.let { vista ->
+            // Prazo acabou sem uso: segue guardada, mas parada e sem prioridade.
+            vista.definirPrioridadeAlta(false)
+            vista.visibility = View.GONE
+            vista.onPause()
+        }
+    }
+
+    private fun preCarregarPaginaAvulsa(endereco: String) {
+        val vista = SuperficieDaPaginaNoMotorDoFirefox(this)
+        vista.layoutParams = FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.MATCH_PARENT,
+            FrameLayout.LayoutParams.MATCH_PARENT,
+        )
+        vista.setBackgroundColor(paletaAtual().fundoDaPagina)
+        vista.definirProtecaoContraRastreamento(preferencias.bloquearAnuncios)
+        // Mesmo modo (computador/celular) que uma aba nova teria; senão o site monta o layout errado.
+        val modo = preferencias.modoDeSite
+        vista.aplicarModo(modo)
+        vista.settings.loadWithOverviewMode = AgenteDeUsuarioDoNavegadorChromebrothers.encolherParaCaberNaTela(modo)
+        modoDaPaginaAvulsa = modo
+        vista.translationX = maxOf(areaDasPaginas.width, resources.displayMetrics.widthPixels).toFloat() * 2f
+        areaDasPaginas.addView(vista, 0)
+        vista.onResume()
+        vista.definirPrioridadeAlta(true)
+        vista.loadUrl(endereco)
+        vistaPreCarregadaAvulsa = vista
+        manipuladorDasAbasSalvas.postDelayed(
+            adormecerPaginaAvulsa,
+            com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.DURACAO_DA_PRIORIDADE_ALTA_MS,
+        )
+        android.util.Log.i("ChromeBrothersAbas", "pré-carregando $endereco em página avulsa")
+    }
+
+    /** Abrir o site com a página avulsa pronta: ela substitui a página da aba, sem carregar de novo. */
+    private fun adotarPaginaAvulsaSePossivel(id: Long, endereco: String): Boolean {
+        val vista = vistaPreCarregadaAvulsa ?: return false
+        if (!com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
+                .deveIrParaAbaPreCarregada(endereco, vista.url)
+        ) return false
+        val antiga = paginas[id] ?: return false
+        // Aba com modo forçado diferente (ex.: celular): a página pronta não serve, carrega normal.
+        if ((antiga.modoForcado ?: preferencias.modoDeSite) != modoDaPaginaAvulsa) return false
+        vistaPreCarregadaAvulsa = null
+        manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
+        val nova = PaginaDeUmaAbaDoNavegadorChromebrothers(id, vista)
+        nova.agenteOriginal = vista.settings.userAgentString
+        paginas[id] = nova
+        prepararNavegador(vista, id)
+        aplicarModoDeSite(nova)
+        // A página de antes sai da aba (o "voltar" da aba começa no site novo).
+        encerrarVideo(id)
+        antiga.liberarMiniatura()
+        areaDasPaginas.removeView(antiga.webView)
+        antiga.webView.stopLoading()
+        antiga.webView.destroy()
+        vista.translationX = 0f
+        vista.visibility = View.VISIBLE
+        mostrarAba(id)
+        // O que o app faz ao fim de cada carregamento (scripts de vídeo/arraste, histórico, barra, título).
+        vista.aoTerminarPagina?.invoke(vista.url.orEmpty(), true)
+        manipuladorDasAbasSalvas.postDelayed({ vista.definirPrioridadeAlta(false) }, 10_000L)
+        android.util.Log.i("ChromeBrothersAbas", "página avulsa pré-carregada adotada pela aba $id")
+        return true
     }
 
     /** Abrir o site pesado com a aba dele pré-carregada e ainda não vista: mostra essa aba. */
@@ -3057,6 +3136,11 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
+        vistaPreCarregadaAvulsa?.let { avulsa ->
+            vistaPreCarregadaAvulsa = null
+            runCatching { avulsa.destroy() }
+        }
         runCatching { contentResolver.unregisterContentObserver(observadorDeMidiaNovaNoAparelho) }
         window?.decorView?.removeCallbacks(avisoDeMidiaNovaNoAparelho)
         if (::painelDeExtensoes.isInitialized) painelDeExtensoes.fecharPopup()
@@ -4457,6 +4541,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         if (endereco.isEmpty()) return
         if (gestao.idDaAbaAtiva == id) esconderTeclado()
         if (pularParaAbaPreCarregadaSePossivel(id, endereco)) return
+        if (adotarPaginaAvulsaSePossivel(id, endereco)) return
         encerrarVideo(id)
         // Endereço digitado na aba Visor: ela vira aba comum já, antes de a página carregar.
         converterAbaDoVisorEmAbaComumSePreciso(id, endereco)

@@ -10,6 +10,9 @@ import java.net.URI
 object PreCarregamentoDeSitePesadoNaAbertura {
     private val sites = listOf("higgsfield.ai")
 
+    /** Sem aba do site aberta, é este endereço que fica pronto numa página avulsa. */
+    const val ENDERECO_PADRAO = "https://higgsfield.ai/"
+
     /** Tempo de prioridade alta da aba escondida: depois disso a página já sossegou. */
     const val DURACAO_DA_PRIORIDADE_ALTA_MS = 120_000L
 
