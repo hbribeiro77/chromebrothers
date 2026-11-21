@@ -6,7 +6,7 @@ import java.net.URI
  * Sites pesados (higgsfield) levam ~1 min de processamento no Gecko deste tablet depois de abrir.
  * O app mantém uma "reserva": uma página do site carregando escondida (fora da barra de abas, com
  * prioridade alta, senão o Android a prende nos núcleos lentos). Quem abre o site numa aba recebe a
- * reserva pronta, e outra começa a ser preparada para a próxima vez.
+ * reserva pronta; quando a página sai da aba (aba fechada ou outro site) ela volta a ser a reserva.
  * Abas do site reabertas na partida também carregam escondidas, para estarem prontas quando abertas.
  */
 object PreCarregamentoDeSitePesadoNaAbertura {
@@ -21,8 +21,13 @@ object PreCarregamentoDeSitePesadoNaAbertura {
     /** Espera para preparar a reserva quando o processador já está ocupado com o mesmo site. */
     const val ATRASO_DA_RESERVA_COM_O_SITE_CARREGANDO_MS = 30_000L
 
-    /** Espera para repor a reserva depois que ela foi usada (deixa a página recém-aberta assentar). */
-    const val ATRASO_PARA_REPOR_A_RESERVA_MS = 10_000L
+    /**
+     * Página devolvida fora da inicial clica no "Home" do próprio site (o link para "/"), o caminho
+     * normal dele. Se não chegar à inicial neste prazo, é descartada.
+     */
+    const val SCRIPT_DE_VOLTAR_A_PAGINA_INICIAL =
+        "(function(){var a=document.querySelector('a[href=\"/\"]');if(!a)return 'sem-link';a.click();return 'ok';})()"
+    const val PRAZO_PARA_VOLTAR_A_PAGINA_INICIAL_MS = 3_000L
 
     /** Prioridade alta da reserva: carregar (~1 min) e aquecer a página inteira. */
     const val DURACAO_DA_RESERVA_MS = 180_000L

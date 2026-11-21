@@ -2331,12 +2331,14 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
     }
 
     /**
-     * Aba fechada na página inicial do site pesado: a página dela (pronta) vira a reserva, no lugar
-     * de uma reserva ainda em preparo. Reabrir o site em seguida é instantâneo.
+     * Página do site pesado que sai de uma aba (aba fechada, ou a aba foi para outro site): é
+     * "devolvida" e vira a reserva, no lugar de uma reserva em preparo. Reabrir o site em seguida é
+     * instantâneo, sem carregar nada em segundo plano. Fora da página inicial, ela clica no "Home"
+     * do próprio site (o caminho normal dele) e só fica se chegar lá.
      */
     private fun guardarComoReservaSePossivel(pagina: PaginaDeUmaAbaDoNavegadorChromebrothers): Boolean {
         val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
-        if (isFinishing || isDestroyed || !regra.estaNaPaginaInicial(pagina.webView.url)) return false
+        if (isFinishing || isDestroyed || !regra.ehSitePesado(pagina.webView.url)) return false
         manipuladorDasAbasSalvas.removeCallbacks(prepararReserva)
         manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
         vistaPreCarregadaAvulsa?.let { emPreparo ->
@@ -2353,7 +2355,50 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         vistaPreCarregadaAvulsa = vista
         reservaEmPreparo = false
         modoDaPaginaAvulsa = pagina.modoForcado ?: preferencias.modoDeSite
-        android.util.Log.i("ChromeBrothersAbas", "aba ${pagina.id} fechada: página guardada como reserva")
+        if (!regra.estaNaPaginaInicial(vista.url)) {
+            vista.evaluateJavascript(regra.SCRIPT_DE_VOLTAR_A_PAGINA_INICIAL, null)
+            vista.postDelayed({
+                if (vistaPreCarregadaAvulsa === vista && !regra.estaNaPaginaInicial(vista.url)) {
+                    android.util.Log.i("ChromeBrothersAbas", "reserva não voltou à página inicial (${vista.url}): descartada")
+                    descartarReserva()
+                }
+            }, regra.PRAZO_PARA_VOLTAR_A_PAGINA_INICIAL_MS)
+        }
+        android.util.Log.i("ChromeBrothersAbas", "página da aba ${pagina.id} devolvida como reserva (${vista.url})")
+        return true
+    }
+
+    private fun descartarReserva() {
+        val reserva = vistaPreCarregadaAvulsa ?: return
+        vistaPreCarregadaAvulsa = null
+        reservaEmPreparo = false
+        manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
+        areaDasPaginas.removeView(reserva)
+        reserva.stopLoading()
+        reserva.destroy()
+    }
+
+    /**
+     * Aba do site pesado indo para outro site: a página do site é devolvida como reserva e a aba
+     * recebe uma página nova para o destino (o "voltar" da aba não volta ao site; reabri-lo é instantâneo).
+     */
+    private fun devolverPaginaDoSiteAoSairSePossivel(id: Long, destino: String): Boolean {
+        val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
+        val antiga = paginas[id] ?: return false
+        if (!regra.ehSitePesado(antiga.webView.url) || regra.ehSitePesado(destino)) return false
+        paginas.remove(id)
+        inicioDaCapturaPorAba.remove(id)?.remove()
+        inicioDoCampoDeTextoPorAba.remove(id)?.remove()
+        encerrarVideo(id)
+        antiga.liberarMiniatura()
+        if (!guardarComoReservaSePossivel(antiga)) {
+            areaDasPaginas.removeView(antiga.webView)
+            antiga.webView.stopLoading()
+            antiga.webView.destroy()
+        }
+        criarPagina(id, "")
+        paginas[id]?.let { aplicarModoDeSite(it) }
+        mostrarAba(id)
         return true
     }
 
@@ -2392,8 +2437,6 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         }
         manipuladorDasAbasSalvas.postDelayed({ vista.definirPrioridadeAlta(false) }, 10_000L)
         android.util.Log.i("ChromeBrothersAbas", "página avulsa pré-carregada adotada pela aba $id")
-        // Repõe a reserva para a próxima aba, depois que esta assentar.
-        agendarReserva(com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura.ATRASO_PARA_REPOR_A_RESERVA_MS)
         return true
     }
 
@@ -4620,10 +4663,12 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         if (endereco.isEmpty()) return
         if (gestao.idDaAbaAtiva == id) esconderTeclado()
         if (adotarPaginaAvulsaSePossivel(id, endereco)) return
+        devolverPaginaDoSiteAoSairSePossivel(id, endereco)
+        val paginaDoDestino = paginas[id] ?: pagina
         encerrarVideo(id)
         // Endereço digitado na aba Visor: ela vira aba comum já, antes de a página carregar.
         converterAbaDoVisorEmAbaComumSePreciso(id, endereco)
-        carregarEnderecoNaPagina(pagina, endereco)
+        carregarEnderecoNaPagina(paginaDoDestino, endereco)
     }
 
     private fun carregarEnderecoNaPagina(pagina: PaginaDeUmaAbaDoNavegadorChromebrothers, endereco: String) {
