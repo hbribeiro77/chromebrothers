@@ -235,6 +235,22 @@ class SuperficieDaPaginaNoMotorDoFirefox(
                 return GeckoResult.fromValue(filha)
             }
         }
+        // Sem este delegado o GeckoView nega toda permissão de conteúdo, inclusive o autoplay de vídeo
+        // MUDO, que Chrome e Firefox liberam. Sites com vídeos mudos em loop (higgsfield) ficavam
+        // com dezenas de "clique para tocar" e repintando sem parar. Libera só o mudo, como o Chrome;
+        // com som, e as demais permissões, seguem negadas como antes (um toque no vídeo ainda toca).
+        sessao.permissionDelegate = object : GeckoSession.PermissionDelegate {
+            override fun onContentPermissionRequest(
+                session: GeckoSession,
+                perm: GeckoSession.PermissionDelegate.ContentPermission,
+            ): GeckoResult<Int>? {
+                return if (perm.permission == GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE) {
+                    GeckoResult.fromValue(GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW)
+                } else {
+                    GeckoResult.fromValue(GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY)
+                }
+            }
+        }
         sessao.promptDelegate = object : PromptDelegate {
             override fun onTextPrompt(
                 session: GeckoSession,
@@ -816,6 +832,18 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
         }
     }
 
+    // Preferências do motor que o GeckoRuntimeSettings não expõe, lidas pelo GeckoView na partida.
+    // image.svg.blob-image: imagem SVG (<img src=*.svg>) vira "blob" desenhado pelo WebRender fora da
+    // thread principal, só na parte visível. Sem isso o Gecko rasteriza o SVG inteiro na thread da
+    // página, no tamanho exibido: no banner animado da higgsfield (SVG com blur, em zoom) eram imagens
+    // de 13480x3889 px refeitas a cada quadro — até 16 s de 25 s de thread ocupada; com isso, 4 ms.
+    private fun escreverConfiguracaoDoMotor(aplicativo: Context): String {
+        val arquivo = File(aplicativo.filesDir, "geckoview-config.yaml")
+        val conteudo = "prefs:\n  image.svg.blob-image: true\n"
+        if (!arquivo.exists() || arquivo.readText() != conteudo) arquivo.writeText(conteudo)
+        return arquivo.absolutePath
+    }
+
     fun obter(context: Context): GeckoRuntime {
         val existente = runtime
         if (existente != null) return existente
@@ -830,6 +858,7 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
         val ajustes = GeckoRuntimeSettings.Builder()
             .preferredColorScheme(esquemaDeCorPreferido(escura))
             .remoteDebuggingEnabled(depuravel)
+            .configFilePath(escreverConfiguracaoDoMotor(aplicativo))
             .build()
         val criado = GeckoRuntime.create(aplicativo, ajustes)
         runtime = criado
