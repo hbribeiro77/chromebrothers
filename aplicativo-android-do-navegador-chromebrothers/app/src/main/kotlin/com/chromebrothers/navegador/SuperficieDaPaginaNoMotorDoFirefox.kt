@@ -12,6 +12,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.FrameLayout
 import com.chromebrothers.navegador.regras.ModoDeApresentacaoDoSite
+import com.chromebrothers.navegador.regras.TipoDeErroDeCarregamento
 import com.chromebrothers.navegador.regras.RoteamentoDosComandosDoVideoParaOQuadroDeOrigemNaPagina
 import org.json.JSONArray
 import org.json.JSONObject
@@ -199,6 +200,21 @@ class SuperficieDaPaginaNoMotorDoFirefox(
             override fun onCanGoForward(session: GeckoSession, canGoForward: Boolean) {
                 podeAvancar = canGoForward
                 post { aoHistorico?.invoke() }
+            }
+
+            // Sem isto o Gecko não mostra nada quando o carregamento falha: a aba ficava em branco
+            // (certificado inválido) ou na página anterior com o endereço novo na barra (site inexistente).
+            override fun onLoadError(
+                session: GeckoSession,
+                uri: String?,
+                error: org.mozilla.geckoview.WebRequestError,
+            ): GeckoResult<String>? {
+                val tipo = tipoDoErro(error)
+                Log.i(TAG_SUPERFICIE, "falha ao carregar ($tipo, código ${error.code}): $uri")
+                val escura = PreferenciasVisuaisEDeNavegacaoDoChromebrothers(context).aparenciaEscura
+                return GeckoResult.fromValue(
+                    com.chromebrothers.navegador.regras.PaginaDeErroDeCarregamentoDoNavegador.enderecoDaPagina(tipo, uri, escura),
+                )
             }
 
             override fun onLoadRequest(
@@ -428,6 +444,43 @@ class SuperficieDaPaginaNoMotorDoFirefox(
      * Aba escondida vai para o cgroup "background" do Android (só os 4 núcleos lentos, 1,78 GHz).
      * Com prioridade alta o processo dela continua com os núcleos rápidos mesmo invisível.
      */
+    private fun tipoDoErro(erro: org.mozilla.geckoview.WebRequestError): TipoDeErroDeCarregamento {
+        val e = org.mozilla.geckoview.WebRequestError::class.java
+        fun c(nome: String) = runCatching { e.getField(nome).getInt(null) }.getOrDefault(Int.MIN_VALUE)
+        return when (erro.code) {
+            org.mozilla.geckoview.WebRequestError.ERROR_OFFLINE -> TipoDeErroDeCarregamento.SEM_INTERNET
+            org.mozilla.geckoview.WebRequestError.ERROR_UNKNOWN_HOST -> TipoDeErroDeCarregamento.ENDERECO_NAO_ENCONTRADO
+            org.mozilla.geckoview.WebRequestError.ERROR_CONNECTION_REFUSED -> TipoDeErroDeCarregamento.CONEXAO_RECUSADA
+            org.mozilla.geckoview.WebRequestError.ERROR_NET_TIMEOUT -> TipoDeErroDeCarregamento.TEMPO_ESGOTADO
+            org.mozilla.geckoview.WebRequestError.ERROR_NET_INTERRUPT,
+            org.mozilla.geckoview.WebRequestError.ERROR_NET_RESET -> TipoDeErroDeCarregamento.CONEXAO_INTERROMPIDA
+            org.mozilla.geckoview.WebRequestError.ERROR_SECURITY_BAD_CERT,
+            org.mozilla.geckoview.WebRequestError.ERROR_BAD_HSTS_CERT -> TipoDeErroDeCarregamento.CERTIFICADO_INVALIDO
+            org.mozilla.geckoview.WebRequestError.ERROR_SECURITY_SSL -> TipoDeErroDeCarregamento.CONEXAO_INSEGURA
+            org.mozilla.geckoview.WebRequestError.ERROR_HTTPS_ONLY -> TipoDeErroDeCarregamento.SO_HTTPS
+            org.mozilla.geckoview.WebRequestError.ERROR_MALFORMED_URI,
+            org.mozilla.geckoview.WebRequestError.ERROR_DATA_URI_TOO_LONG -> TipoDeErroDeCarregamento.ENDERECO_INVALIDO
+            org.mozilla.geckoview.WebRequestError.ERROR_UNKNOWN_PROTOCOL,
+            org.mozilla.geckoview.WebRequestError.ERROR_UNKNOWN_SOCKET_TYPE -> TipoDeErroDeCarregamento.PROTOCOLO_DESCONHECIDO
+            org.mozilla.geckoview.WebRequestError.ERROR_FILE_NOT_FOUND,
+            org.mozilla.geckoview.WebRequestError.ERROR_FILE_ACCESS_DENIED -> TipoDeErroDeCarregamento.ARQUIVO_NAO_ENCONTRADO
+            org.mozilla.geckoview.WebRequestError.ERROR_REDIRECT_LOOP -> TipoDeErroDeCarregamento.REDIRECIONAMENTO_EM_LOOP
+            org.mozilla.geckoview.WebRequestError.ERROR_CORRUPTED_CONTENT,
+            org.mozilla.geckoview.WebRequestError.ERROR_INVALID_CONTENT_ENCODING,
+            org.mozilla.geckoview.WebRequestError.ERROR_UNSAFE_CONTENT_TYPE,
+            org.mozilla.geckoview.WebRequestError.ERROR_CONTENT_CRASHED -> TipoDeErroDeCarregamento.CONTEUDO_COM_DEFEITO
+            org.mozilla.geckoview.WebRequestError.ERROR_SAFEBROWSING_MALWARE_URI,
+            org.mozilla.geckoview.WebRequestError.ERROR_SAFEBROWSING_UNWANTED_URI,
+            org.mozilla.geckoview.WebRequestError.ERROR_SAFEBROWSING_HARMFUL_URI,
+            org.mozilla.geckoview.WebRequestError.ERROR_SAFEBROWSING_PHISHING_URI -> TipoDeErroDeCarregamento.SITE_PERIGOSO
+            org.mozilla.geckoview.WebRequestError.ERROR_PROXY_CONNECTION_REFUSED,
+            org.mozilla.geckoview.WebRequestError.ERROR_UNKNOWN_PROXY_HOST -> TipoDeErroDeCarregamento.PROXY
+            org.mozilla.geckoview.WebRequestError.ERROR_PORT_BLOCKED -> TipoDeErroDeCarregamento.PORTA_BLOQUEADA
+            c("ERROR_HARMFULADDON_URI") -> TipoDeErroDeCarregamento.SITE_PERIGOSO
+            else -> TipoDeErroDeCarregamento.DESCONHECIDO
+        }
+    }
+
     fun definirPrioridadeAlta(alta: Boolean) {
         prioridadeAlta = alta
         sessao.setPriorityHint(if (alta) GeckoSession.PRIORITY_HIGH else GeckoSession.PRIORITY_DEFAULT)
