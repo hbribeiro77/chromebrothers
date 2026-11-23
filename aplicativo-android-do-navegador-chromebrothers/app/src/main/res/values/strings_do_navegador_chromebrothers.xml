@@ -161,6 +161,8 @@
     <string name="sites_como_computador">Sites como computador.</string>
     <string name="pre_carregar_paineis_da_colecao_no_menu">Pré-carregar painéis</string>
     <string name="manter_higgsfield_pronto_no_menu">Manter Higgsfield pronto</string>
+    <string name="acessibilidade_das_paginas_no_menu">Acessibilidade das páginas (leitor de tela)</string>
+    <string name="acessibilidade_vale_ao_reabrir">Vale ao reabrir o navegador</string>
     <string name="aparencia_do_navegador_no_menu">Aparência</string>
     <string name="motor_de_busca_do_navegador_no_menu">Busca</string>
     <string name="apresentacao_dos_sites_do_navegador_no_menu">Sites (user agent)</string>

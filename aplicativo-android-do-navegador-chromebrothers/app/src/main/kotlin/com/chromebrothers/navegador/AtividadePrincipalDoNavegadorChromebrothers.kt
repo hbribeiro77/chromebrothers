@@ -2714,6 +2714,11 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
                 isCheckable = true
                 isChecked = preferencias.manterHiggsfieldPronto
             }
+            val idAcessibilidade = View.generateViewId()
+            menu.add(0, idAcessibilidade, 0, R.string.acessibilidade_das_paginas_no_menu).apply {
+                isCheckable = true
+                isChecked = preferencias.acessibilidadeDasPaginas
+            }
             val idAtualizarModelos = View.generateViewId()
             menu.add(0, idAtualizarModelos, 0, R.string.atualizar_listas_de_modelos_no_menu)
             val idSugestoesOnline = View.generateViewId()
@@ -2784,6 +2789,10 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
                     }
                     idRestaurarAbas -> alternarRestaurarAbasAoAbrir()
                     idManterHiggsfieldPronto -> alternarManterHiggsfieldPronto()
+                    idAcessibilidade -> {
+                        preferencias.acessibilidadeDasPaginas = !preferencias.acessibilidadeDasPaginas
+                        Toast.makeText(this@AtividadePrincipalDoNavegadorChromebrothers, R.string.acessibilidade_vale_ao_reabrir, Toast.LENGTH_SHORT).show()
+                    }
                     idModoImersivo -> {
                         preferencias.modoImersivo = !preferencias.modoImersivo
                         aplicarModoImersivo()

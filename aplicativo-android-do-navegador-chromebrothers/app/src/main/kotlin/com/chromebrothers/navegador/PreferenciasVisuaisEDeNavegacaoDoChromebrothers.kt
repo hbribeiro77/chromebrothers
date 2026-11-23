@@ -165,6 +165,16 @@ class PreferenciasVisuaisEDeNavegacaoDoChromebrothers(context: Context) {
             prefs.edit().putBoolean(CHAVE_MANTER_HIGGSFIELD_PRONTO, valor).apply()
         }
 
+    /**
+     * Acessibilidade das páginas no motor (o que leitores de tela como o TalkBack usam). Desligar
+     * economiza processamento em páginas grandes quando há serviço de acessibilidade ativo.
+     */
+    var acessibilidadeDasPaginas: Boolean
+        get() = prefs.getBoolean(CHAVE_ACESSIBILIDADE_DAS_PAGINAS, true)
+        set(valor) {
+            prefs.edit().putBoolean(CHAVE_ACESSIBILIDADE_DAS_PAGINAS, valor).apply()
+        }
+
     /** Reabrir as abas da última vez ao abrir o navegador (como o Chrome). */
     var restaurarAbasAoAbrir: Boolean
         get() = prefs.getBoolean(CHAVE_RESTAURAR_ABAS_AO_ABRIR, true)
@@ -292,6 +302,7 @@ class PreferenciasVisuaisEDeNavegacaoDoChromebrothers(context: Context) {
         private const val CHAVE_MODOS_DO_TECLADO_POR_SITE = "modos_do_teclado_por_site"
         private const val CHAVE_RESTAURAR_ABAS_AO_ABRIR = "restaurar_abas_ao_abrir"
         private const val CHAVE_MANTER_HIGGSFIELD_PRONTO = "manter_higgsfield_pronto"
+        private const val CHAVE_ACESSIBILIDADE_DAS_PAGINAS = "acessibilidade_das_paginas"
         private const val CHAVE_MODO_IMERSIVO = "modo_imersivo"
         private const val CHAVE_SUGESTOES_DE_PESQUISA_ONLINE = "sugestoes_de_pesquisa_online"
     }

@@ -917,9 +917,15 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
     // thread principal, só na parte visível. Sem isso o Gecko rasteriza o SVG inteiro na thread da
     // página, no tamanho exibido: no banner animado da higgsfield (SVG com blur, em zoom) eram imagens
     // de 13480x3889 px refeitas a cada quadro — até 16 s de 25 s de thread ocupada; com isso, 4 ms.
+    // accessibility.force_disabled: com qualquer serviço de acessibilidade ligado (ex.: AirDroid) o
+    // Gecko mantém a árvore de acessibilidade de cada página e a atualiza a cada mudança no DOM; quem
+    // não usa leitor de tela pode desligar no menu. Vale ao reabrir o app (o motor lê ao iniciar).
+    // Escrito sempre (1 ou 0): o valor fica gravado no perfil do motor e precisa ser revertido também.
     private fun escreverConfiguracaoDoMotor(aplicativo: Context): String {
         val arquivo = File(aplicativo.filesDir, "geckoview-config.yaml")
-        val conteudo = "prefs:\n  image.svg.blob-image: true\n"
+        val acessibilidade = PreferenciasVisuaisEDeNavegacaoDoChromebrothers(aplicativo).acessibilidadeDasPaginas
+        val conteudo = "prefs:\n  image.svg.blob-image: true\n" +
+            "  accessibility.force_disabled: ${if (acessibilidade) 0 else 1}\n"
         if (!arquivo.exists() || arquivo.readText() != conteudo) arquivo.writeText(conteudo)
         return arquivo.absolutePath
     }
