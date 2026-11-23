@@ -750,6 +750,11 @@ class SuperficieDaPaginaNoMotorDoFirefox(
             is String -> runCatching { JSONObject(message) }.getOrNull()
             else -> null
         } ?: return
+        if (json.has("pedirPacote")) {
+            MotorDoFirefoxDoNavegadorChromebrothers.respostaDoPacoteDeBloqueio(json.optInt("pedirPacote", -1))
+                ?.let { resposta -> runCatching { porta.postMessage(JSONObject().put("cbPacote", resposta)) } }
+            return
+        }
         if (json.has("aviso")) {
             val argumentos = when (val bruto = json.opt("argumentos")) {
                 is JSONArray -> bruto
@@ -826,7 +831,6 @@ class SuperficieDaPaginaNoMotorDoFirefox(
 object MotorDoFirefoxDoNavegadorChromebrothers {
     private const val TAG_EXTENSAO = "ChromeBrothersExt"
     private const val ID_DA_EXTENSAO = "chromebrothers@navegador"
-    private const val APLICATIVO_NATIVO_DO_BLOQUEIO = "chromebrothers-anuncios"
     private const val CAMINHO_DA_EXTENSAO =
         "resource://android/assets/extensao-embutida-de-injecao-do-chromebrothers/"
     private val principal = Handler(Looper.getMainLooper())
@@ -834,8 +838,8 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
     private var appContext: Context? = null
     private var extensao: WebExtension? = null
     private val quandoPronta = mutableListOf<(WebExtension) -> Unit>()
-    private var portaDoBloqueio: WebExtension.Port? = null
     private var pacoteDeBloqueio: JSONObject? = null
+    private var versaoDoPacoteDeBloqueio = 0
     private var aoPedirPermissaoDeExtensao: ((String, List<String>, (Boolean) -> Unit) -> Unit)? = null
     private var aoAcaoDeExtensao: ((String, String, WebExtension.Action?, android.graphics.Bitmap?) -> Unit)? = null
     private var aoPopupDeExtensao: ((GeckoSession) -> Unit)? = null
@@ -904,12 +908,26 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
     }
 
     fun publicarPacoteDeBloqueio(json: String) {
-        val mensagem = JSONObject().put("pacote", JSONObject(json))
+        val novo = JSONObject(json)
         principal.post {
-            pacoteDeBloqueio = mensagem
-            val porta = portaDoBloqueio ?: return@post
-            runCatching { porta.postMessage(mensagem) }
+            pacoteDeBloqueio = novo
+            versaoDoPacoteDeBloqueio++
         }
+    }
+
+    /**
+     * A extensão pergunta pela lista (sendNativeMessage) e o app responde. A lista só vai junto se a
+     * versão que ela tem estiver velha; sem lista pronta, responde vazio e ela pergunta de novo.
+     */
+    /**
+     * Resposta à ponte da página sobre a lista de bloqueio: só com a lista se a versão da extensão
+     * for outra; null quando ela já está em dia ou o app ainda não tem lista.
+     */
+    fun respostaDoPacoteDeBloqueio(versaoDaExtensao: Int): JSONObject? {
+        val atual = pacoteDeBloqueio ?: return null
+        if (versaoDaExtensao == versaoDoPacoteDeBloqueio) return null
+        Log.i("ChromeBrothersBloqueio", "lista de bloqueio entregue à extensão (versão $versaoDoPacoteDeBloqueio)")
+        return JSONObject().put("versao", versaoDoPacoteDeBloqueio).put("pacote", atual)
     }
 
     // Preferências do motor que o GeckoRuntimeSettings não expõe, lidas pelo GeckoView na partida.
@@ -944,6 +962,8 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
         val ajustes = GeckoRuntimeSettings.Builder()
             .preferredColorScheme(esquemaDeCorPreferido(escura))
             .remoteDebuggingEnabled(depuravel)
+            // console.log de páginas e da extensão embutida no logcat (só no build de teste).
+            .consoleOutput(depuravel)
             .configFilePath(escreverConfiguracaoDoMotor(aplicativo))
             .build()
         val criado = GeckoRuntime.create(aplicativo, ajustes)
@@ -955,22 +975,6 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
             .then({ instalada ->
                 if (instalada != null) {
                     extensao = instalada
-                    instalada.setMessageDelegate(
-                        object : WebExtension.MessageDelegate {
-                            override fun onConnect(port: WebExtension.Port) {
-                                port.setDelegate(object : WebExtension.PortDelegate {
-                                    override fun onDisconnect(port: WebExtension.Port) {
-                                        principal.post { if (portaDoBloqueio === port) portaDoBloqueio = null }
-                                    }
-                                })
-                                principal.post {
-                                    portaDoBloqueio = port
-                                    pacoteDeBloqueio?.let { runCatching { port.postMessage(it) } }
-                                }
-                            }
-                        },
-                        APLICATIVO_NATIVO_DO_BLOQUEIO,
-                    )
                     val pendentes = quandoPronta.toList()
                     quandoPronta.clear()
                     pendentes.forEach { it(instalada) }

@@ -49,6 +49,16 @@
     return true;
   }
 
+  // Lista de bloqueio: o fundo da extensão não fala direto com o app; a ponte do quadro principal
+  // pergunta a versão que ele tem e o app só responde com a lista se a dele for outra.
+  function sincronizarPacoteDeBloqueio() {
+    if (window !== window.top || !porta) return;
+    browser.runtime.sendMessage({ cb: "versaoDoPacote" }).then(function (resposta) {
+      var versao = resposta && typeof resposta.versao === "number" ? resposta.versao : -1;
+      if (porta) { try { porta.postMessage({ pedirPacote: versao }); } catch (erro) {} }
+    }, function () {});
+  }
+
   function ligar() {
     try {
       porta = browser.runtime.connectNative("chromebrothers");
@@ -57,6 +67,10 @@
       return;
     }
     porta.onMessage.addListener(function (mensagem) {
+      if (mensagem && mensagem.cbPacote) {
+        browser.runtime.sendMessage({ cb: "pacote", versao: mensagem.cbPacote.versao, pacote: mensagem.cbPacote.pacote }).catch(function () {});
+        return;
+      }
       if (executarNoIsolado(mensagem)) return;
       // Fallback legado: dispara para o MAIN world (se ainda existir listener).
       var texto;
@@ -67,6 +81,7 @@
       porta = null;
       setTimeout(ligar, 400);
     });
+    sincronizarPacoteDeBloqueio();
   }
 
   document.addEventListener("chromebrothers-resultado", function (evento) {
