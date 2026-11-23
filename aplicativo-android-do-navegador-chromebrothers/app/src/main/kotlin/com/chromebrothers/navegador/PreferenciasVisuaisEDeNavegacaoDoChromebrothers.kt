@@ -154,6 +154,17 @@ class PreferenciasVisuaisEDeNavegacaoDoChromebrothers(context: Context) {
             prefs.edit().putBoolean(CHAVE_MODO_IMERSIVO, valor).apply()
         }
 
+    /**
+     * Manter o Higgsfield pronto: ao abrir o app carrega (e aquece) uma página do site escondida, que
+     * aparece pronta ao abrir o site numa aba e volta a ser guardada ao fechar a aba ou sair do site.
+     * Custa memória e processamento em segundo plano; vem desligado.
+     */
+    var manterHiggsfieldPronto: Boolean
+        get() = prefs.getBoolean(CHAVE_MANTER_HIGGSFIELD_PRONTO, false)
+        set(valor) {
+            prefs.edit().putBoolean(CHAVE_MANTER_HIGGSFIELD_PRONTO, valor).apply()
+        }
+
     /** Reabrir as abas da última vez ao abrir o navegador (como o Chrome). */
     var restaurarAbasAoAbrir: Boolean
         get() = prefs.getBoolean(CHAVE_RESTAURAR_ABAS_AO_ABRIR, true)
@@ -280,6 +291,7 @@ class PreferenciasVisuaisEDeNavegacaoDoChromebrothers(context: Context) {
         private const val CHAVE_HISTORICO_DE_PAGINAS = "historico_de_paginas_visitadas"
         private const val CHAVE_MODOS_DO_TECLADO_POR_SITE = "modos_do_teclado_por_site"
         private const val CHAVE_RESTAURAR_ABAS_AO_ABRIR = "restaurar_abas_ao_abrir"
+        private const val CHAVE_MANTER_HIGGSFIELD_PRONTO = "manter_higgsfield_pronto"
         private const val CHAVE_MODO_IMERSIVO = "modo_imersivo"
         private const val CHAVE_SUGESTOES_DE_PESQUISA_ONLINE = "sugestoes_de_pesquisa_online"
     }

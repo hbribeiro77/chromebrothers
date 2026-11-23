@@ -2184,8 +2184,21 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         return ativa
     }
 
+    private fun alternarManterHiggsfieldPronto() {
+        val ligar = !preferencias.manterHiggsfieldPronto
+        preferencias.manterHiggsfieldPronto = ligar
+        if (ligar) {
+            manipuladorDasAbasSalvas.post { preCarregarSitePesado() }
+        } else {
+            // Desligado: solta tudo agora (memória e processamento), as abas seguem como estão.
+            manipuladorDasAbasSalvas.removeCallbacks(prepararReserva)
+            descartarReserva()
+            encerrarPreCarregamento()
+        }
+    }
+
     private fun preCarregarSitePesado() {
-        if (isFinishing || isDestroyed) return
+        if (isFinishing || isDestroyed || !preferencias.manterHiggsfieldPronto) return
         val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
         val naoCarregadas = gestao.listar()
             .filter { abasAindaNaoCarregadas.containsKey(it.id) }
@@ -2220,7 +2233,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
     }
 
     private val prepararReserva = Runnable {
-        if (isFinishing || isDestroyed || vistaPreCarregadaAvulsa != null) return@Runnable
+        if (isFinishing || isDestroyed || vistaPreCarregadaAvulsa != null || !preferencias.manterHiggsfieldPronto) return@Runnable
         // Preparar a reserva com a pessoa usando o site disputa CPU/GPU com a página visível
         // (ela engasga e fica preta ao rolar): espera a pessoa sair do site.
         if (abaAtivaEstaNoSitePesado()) {
@@ -2338,7 +2351,8 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
      */
     private fun guardarComoReservaSePossivel(pagina: PaginaDeUmaAbaDoNavegadorChromebrothers): Boolean {
         val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
-        if (isFinishing || isDestroyed || !regra.ehSitePesado(pagina.webView.url)) return false
+        if (isFinishing || isDestroyed || !preferencias.manterHiggsfieldPronto) return false
+        if (!regra.ehSitePesado(pagina.webView.url)) return false
         manipuladorDasAbasSalvas.removeCallbacks(prepararReserva)
         manipuladorDasAbasSalvas.removeCallbacks(adormecerPaginaAvulsa)
         vistaPreCarregadaAvulsa?.let { emPreparo ->
@@ -2384,6 +2398,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
      */
     private fun devolverPaginaDoSiteAoSairSePossivel(id: Long, destino: String): Boolean {
         val regra = com.chromebrothers.navegador.regras.PreCarregamentoDeSitePesadoNaAbertura
+        if (!preferencias.manterHiggsfieldPronto) return false
         val antiga = paginas[id] ?: return false
         if (!regra.ehSitePesado(antiga.webView.url) || regra.ehSitePesado(destino)) return false
         paginas.remove(id)
@@ -2694,6 +2709,11 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
                 isCheckable = true
                 isChecked = preferencias.restaurarAbasAoAbrir
             }
+            val idManterHiggsfieldPronto = View.generateViewId()
+            menu.add(0, idManterHiggsfieldPronto, 0, R.string.manter_higgsfield_pronto_no_menu).apply {
+                isCheckable = true
+                isChecked = preferencias.manterHiggsfieldPronto
+            }
             val idAtualizarModelos = View.generateViewId()
             menu.add(0, idAtualizarModelos, 0, R.string.atualizar_listas_de_modelos_no_menu)
             val idSugestoesOnline = View.generateViewId()
@@ -2763,6 +2783,7 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
                         preferencias.abrirEFecharChatPorGestoDeBorda = !preferencias.abrirEFecharChatPorGestoDeBorda
                     }
                     idRestaurarAbas -> alternarRestaurarAbasAoAbrir()
+                    idManterHiggsfieldPronto -> alternarManterHiggsfieldPronto()
                     idModoImersivo -> {
                         preferencias.modoImersivo = !preferencias.modoImersivo
                         aplicarModoImersivo()
