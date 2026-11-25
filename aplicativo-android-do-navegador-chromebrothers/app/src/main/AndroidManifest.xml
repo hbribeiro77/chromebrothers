@@ -6,6 +6,15 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Pedidas na hora, quando um site quer usar. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+
     <queries>
         <intent>
             <action android:name="android.media.action.IMAGE_CAPTURE" />
@@ -158,10 +167,11 @@
                 android:resource="@xml/caminhos_de_arquivo_do_quadro_copiado_chromebrothers" />
         </provider>
 
-        <!-- exported=true: adb shell am broadcast (UID shell) precisa alcançar o receptor de diagnóstico. -->
+        <!-- Gera mídia (gasta crédito). permission=DUMP: o shell do adb tem, apps comuns não. -->
         <receiver
             android:name=".ReceptorDeDiagnosticoDoHiggsfieldMcpNoChromebrothers"
-            android:exported="true">
+            android:exported="true"
+            android:permission="android.permission.DUMP">
             <intent-filter>
                 <action android:name="com.chromebrothers.navegador.DIAGNOSTICO_HIGGSFIELD_MCP" />
             </intent-filter>

@@ -43,6 +43,16 @@ class SuperficieDaPaginaNoMotorDoFirefox(
     }
     private val sessaoJaAberta = sessaoExistente != null
     private val visor = GeckoView(context)
+    private val dialogos = DialogosDaPaginaNoMotorDoFirefox(this)
+    private val permissoes = PermissoesDaPaginaNoMotorDoFirefox(this)
+
+    /** A atividade, só se a página está mesmo à vista (a reserva fica "visível" fora da tela). */
+    fun atividadeParaDialogos(): android.app.Activity? {
+        val atividade = context as? android.app.Activity ?: return null
+        val aVista = isShown && getGlobalVisibleRect(android.graphics.Rect())
+        return atividade.takeIf { !destruida && aVista && !it.isFinishing && !it.isDestroyed }
+    }
+
     var url: String? = null
         private set
     var title: String? = null
@@ -104,6 +114,8 @@ class SuperficieDaPaginaNoMotorDoFirefox(
         addView(visor)
         sessao.progressDelegate = object : ProgressDelegate {
             override fun onPageStart(session: GeckoSession, urlPagina: String) {
+                dialogos.aoComecarPagina()
+                permissoes.aoComecarPagina()
                 if (!urlPagina.startsWith("data:") && urlPagina != "about:blank") url = urlPagina
                 val atual = url.orEmpty()
                 reaplicarPrioridade()
@@ -253,49 +265,8 @@ class SuperficieDaPaginaNoMotorDoFirefox(
                 return GeckoResult.fromValue(filha)
             }
         }
-        // Sem este delegado o GeckoView nega toda permissão de conteúdo, inclusive o autoplay de vídeo
-        // MUDO, que Chrome e Firefox liberam. Sites com vídeos mudos em loop (higgsfield) ficavam
-        // com dezenas de "clique para tocar" e repintando sem parar. Libera só o mudo, como o Chrome;
-        // com som, e as demais permissões, seguem negadas como antes (um toque no vídeo ainda toca).
-        sessao.permissionDelegate = object : GeckoSession.PermissionDelegate {
-            override fun onContentPermissionRequest(
-                session: GeckoSession,
-                perm: GeckoSession.PermissionDelegate.ContentPermission,
-            ): GeckoResult<Int>? {
-                return if (perm.permission == GeckoSession.PermissionDelegate.PERMISSION_AUTOPLAY_INAUDIBLE) {
-                    GeckoResult.fromValue(GeckoSession.PermissionDelegate.ContentPermission.VALUE_ALLOW)
-                } else {
-                    GeckoResult.fromValue(GeckoSession.PermissionDelegate.ContentPermission.VALUE_DENY)
-                }
-            }
-        }
-        sessao.promptDelegate = object : PromptDelegate {
-            override fun onTextPrompt(
-                session: GeckoSession,
-                prompt: PromptDelegate.TextPrompt,
-            ): GeckoResult<PromptDelegate.PromptResponse> {
-                val mensagem = prompt.message.orEmpty()
-                val resposta = aoPromptDaPagina?.invoke(mensagem)
-                val resultado = if (resposta != null) prompt.confirm(resposta) else prompt.dismiss()
-                return GeckoResult.fromValue(resultado)
-            }
-
-            override fun onFilePrompt(
-                session: GeckoSession,
-                prompt: PromptDelegate.FilePrompt,
-            ): GeckoResult<PromptDelegate.PromptResponse> {
-                val pendente = GeckoResult<PromptDelegate.PromptResponse>()
-                val tipos = com.chromebrothers.navegador.regras.TraducaoDoPedidoDeArquivoDoFirefox.tipos(prompt.mimeTypes)
-                val pasta = com.chromebrothers.navegador.regras.TraducaoDoPedidoDeArquivoDoFirefox.escolhePasta(prompt.type)
-                val varios = com.chromebrothers.navegador.regras.TraducaoDoPedidoDeArquivoDoFirefox.variosArquivos(prompt.type)
-                post {
-                    val tratado = aoPedidoDeArquivo
-                    if (tratado == null) pendente.complete(prompt.dismiss())
-                    else tratado(tipos, pasta, varios, prompt, pendente)
-                }
-                return pendente
-            }
-        }
+        sessao.permissionDelegate = permissoes
+        sessao.promptDelegate = dialogos
         val motor = MotorDoFirefoxDoNavegadorChromebrothers.obter(context)
         if (!sessaoJaAberta) sessao.open(motor)
         visor.setSession(sessao)
@@ -531,6 +502,8 @@ class SuperficieDaPaginaNoMotorDoFirefox(
 
     fun destroy() {
         destruida = true
+        dialogos.fecharTudo()
+        permissoes.fecharTudo()
         removeCallbacks(descobrirCapaSePresa)
         MotorDoFirefoxDoNavegadorChromebrothers.esquecerSessao(sessao)
         visor.releaseSession()
@@ -968,6 +941,7 @@ object MotorDoFirefoxDoNavegadorChromebrothers {
             .build()
         val criado = GeckoRuntime.create(aplicativo, ajustes)
         runtime = criado
+        PermissoesDaPaginaNoMotorDoFirefox.desfazerNegadasAutomaticasUmaVez(aplicativo, criado)
         criado.webExtensionController.enableExtensionProcessSpawning()
         criado.webExtensionController.promptDelegate = delegadoDePromptDeExtensao()
         criado.webExtensionController

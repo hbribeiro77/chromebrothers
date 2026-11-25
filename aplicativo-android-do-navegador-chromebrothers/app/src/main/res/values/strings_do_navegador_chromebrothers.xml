@@ -760,4 +760,5 @@
     <string name="fechar_lista_de_modelos_do_chat">✕</string>
     <string name="fechar_lista_de_modelos_do_chat_descricao">Fechar a lista e manter o modelo atual</string>
     <string name="chat_lendo_em_segundo_plano">Lendo a página em segundo plano…</string>
+    <string name="permissoes_deste_site_no_menu">Permissões deste site</string>
 </resources>

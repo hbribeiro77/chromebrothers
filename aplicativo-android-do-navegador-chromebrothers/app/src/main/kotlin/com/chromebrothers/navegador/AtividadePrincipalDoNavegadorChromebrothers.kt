@@ -178,7 +178,7 @@ import com.chromebrothers.navegador.regras.ModoDaBarraDoNavegadorPorLargura
 import com.chromebrothers.navegador.regras.MontagemDaIdentidadeDoVideoNaBiblioteca
 import androidx.appcompat.widget.PopupMenu
 
-open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
+open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity(), PedidorDePermissoesDoAndroid {
     private val gestao = GestaoDeAbasDoNavegadorChromebrothers()
     private lateinit var gravacaoDasAbas: GravacaoDasAbasAbertasDoNavegador
 
@@ -381,6 +381,33 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
     private var uriDaFotoCapturadaPelaPagina: Uri? = null
     private var uriDoVideoCapturadoPelaPagina: Uri? = null
     private val arquivosEntreguesAPagina = mutableListOf<File>()
+    private val filaDePermissoesDoAndroid = ArrayDeque<Pair<List<String>, (Map<String, Boolean>) -> Unit>>()
+    private val pedidoDePermissoesDoAndroid =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            // Atividade recriada no meio do pedido: a fila antiga já não existe.
+            filaDePermissoesDoAndroid.removeFirstOrNull()?.let { (lista, responder) ->
+                responder(lista.associateWith { permissaoConcedida(it) })
+            }
+            if (filaDePermissoesDoAndroid.isNotEmpty()) abrirPedidoDePermissoesDoAndroid()
+        }
+
+    private fun permissaoConcedida(permissao: String): Boolean =
+        checkSelfPermission(permissao) == PackageManager.PERMISSION_GRANTED
+
+    private fun abrirPedidoDePermissoesDoAndroid() {
+        pedidoDePermissoesDoAndroid.launch(filaDePermissoesDoAndroid.first().first.toTypedArray())
+    }
+
+    /** Um pedido do Android por vez (os seguintes esperam); já concedidas respondem na hora. */
+    override fun pedirPermissoesDoAndroid(permissoes: List<String>, aoResponder: (Map<String, Boolean>) -> Unit) {
+        if (permissoes.all { permissaoConcedida(it) }) {
+            aoResponder(permissoes.associateWith { true })
+            return
+        }
+        filaDePermissoesDoAndroid.addLast(permissoes to aoResponder)
+        if (filaDePermissoesDoAndroid.size == 1) abrirPedidoDePermissoesDoAndroid()
+    }
+
     private val retornoDoSeletorDeArquivoDaPagina = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
     ) { resultado -> entregarArquivoEscolhidoPelaPagina(resultado) }
@@ -2689,6 +2716,10 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
                 R.string.abrir_biblioteca_de_videos,
             )
             menu.add(0, idTecladoNesteSite, 0, R.string.teclado_neste_site_do_navegador)
+            val idPermissoesDoSite = View.generateViewId()
+            if (paginaAtualPermiteFixarAtalho()) {
+                menu.add(0, idPermissoesDoSite, 0, R.string.permissoes_deste_site_no_menu)
+            }
             val idPreCarregarPaineis = View.generateViewId()
             menu.add(0, idPreCarregarPaineis, 0, R.string.pre_carregar_paineis_da_colecao_no_menu).apply {
                 isCheckable = true
@@ -2764,6 +2795,10 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
             setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     idAvancar -> avancarNaPagina()
+                    idPermissoesDoSite -> PermissoesDaPaginaNoMotorDoFirefox.mostrarDoSite(
+                        this@AtividadePrincipalDoNavegadorChromebrothers,
+                        paginas[gestao.idDaAbaAtiva]?.webView?.url.orEmpty(),
+                    )
                     idRecarregar -> recarregarPagina()
                     idInicio -> irParaPaginaInicial()
                     idNovaAba -> abrirNovaAba()
@@ -3944,11 +3979,31 @@ open class AtividadePrincipalDoNavegadorChromebrothers : AppCompatActivity() {
         prompt: org.mozilla.geckoview.GeckoSession.PromptDelegate.FilePrompt,
         pendente: org.mozilla.geckoview.GeckoResult<org.mozilla.geckoview.GeckoSession.PromptDelegate.PromptResponse>,
     ): Boolean {
+        val cameras = PedidoDeArquivoDaPaginaDoNavegador.cameras(tipos, escolhePasta)
+        // CAMERA no manifesto obriga a tê-la para abrir o app de câmera; sem ela o seletor vem só com arquivos.
+        if (cameras.isEmpty() || permissaoConcedida(android.Manifest.permission.CAMERA)) {
+            return abrirSeletorDeArquivoDaPagina(idDaAba, tipos, escolhePasta, varios, prompt, pendente, cameras)
+        }
+        pedirPermissoesDoAndroid(listOf(android.Manifest.permission.CAMERA)) { resposta ->
+            val permitidas = cameras.filter { resposta.values.all { concedida -> concedida } }
+            abrirSeletorDeArquivoDaPagina(idDaAba, tipos, escolhePasta, varios, prompt, pendente, permitidas)
+        }
+        return true
+    }
+
+    private fun abrirSeletorDeArquivoDaPagina(
+        idDaAba: Long,
+        tipos: List<String>,
+        escolhePasta: Boolean,
+        varios: Boolean,
+        prompt: org.mozilla.geckoview.GeckoSession.PromptDelegate.FilePrompt,
+        pendente: org.mozilla.geckoview.GeckoResult<org.mozilla.geckoview.GeckoSession.PromptDelegate.PromptResponse>,
+        cameras: Collection<CameraDoPedidoDeArquivoDaPagina>,
+    ): Boolean {
         encerrarPromptDeArquivoAberto()
         limparCapturasAnterioresDaCamera()
         limparArquivosEntreguesAPagina()
         val pasta = intentDoSeletorDeArquivo(tipos, escolhePasta, varios)
-        val cameras = PedidoDeArquivoDaPaginaDoNavegador.cameras(tipos, escolhePasta)
         val iniciais = mutableListOf<Intent>()
         if (CameraDoPedidoDeArquivoDaPagina.FOTO in cameras) {
             intentDaCamera(MediaStore.ACTION_IMAGE_CAPTURE, "jpg")?.let { iniciais += it }

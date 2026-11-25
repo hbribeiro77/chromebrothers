@@ -1,0 +1,28 @@
+<!doctype html><html lang="pt-BR"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Teste de diálogos e permissões</title>
+<style>body{font:17px sans-serif;max-width:640px;margin:24px auto;padding:0 16px}button,select,input{font:inherit;padding:8px;margin:4px 0}#r{position:sticky;top:0;background:#ffe9a8;padding:12px}video{width:200px}</style>
+<p id="r">Resultado aparece aqui</p>
+<h3>Caixas</h3>
+<button onclick="alert('Olá');d('alert fechado')">alert</button>
+<button onclick="d('confirm: '+confirm('Confirma?'))">confirm</button>
+<button onclick="d('prompt: '+prompt('Seu nome?','Fulano'))">prompt</button>
+<button onclick="for(let i=1;i<=5;i++)alert('Aviso '+i);d('fim dos 5 alertas')">5 alertas (Parar no 3º)</button>
+<button onclick="onbeforeunload=e=>e.preventDefault();d('agora recarregue')">avisar ao sair</button>
+<h3>Campos</h3>
+<select onchange="d('select: '+value)"><option>Um</option><option selected>Dois</option><option disabled>Bloqueada</option><optgroup label="Grupo"><option>Três</option><option>Quatro</option></optgroup></select><br>
+<select multiple size="3" onchange="d('vários: '+[...selectedOptions].map(o=>o.value))"><option>A</option><option>B</option><option>C</option></select><br>
+date <input type="date" min="2026-01-01" onchange="d(value)"> hora <input type="time" onchange="d(value)"><br>
+mês <input type="month" onchange="d(value)"> semana <input type="week" onchange="d(value)"><br>
+data e hora <input type="datetime-local" onchange="d(value)"> cor <input type="color" value="#3366cc" onchange="d(value)"><br>
+foto <input type="file" accept="image/*" onchange="d(files[0]?.name)">
+<h3>Permissões</h3>
+<button onclick="m({video:true})">câmera</button>
+<button onclick="m({audio:true})">microfone</button>
+<button onclick="m({video:true,audio:true})">os dois</button>
+<button onclick="navigator.geolocation.getCurrentPosition(p=>d('local: '+p.coords.latitude.toFixed(2)),e=>d('local negado: '+e.message))">localização</button>
+<button onclick="navigator.share({title:'t',text:'oi',url:location.href}).then(()=>d('compartilhado'),e=>d(e))">compartilhar</button><br>
+<video id="v" autoplay muted playsinline></video>
+<script>
+function d(x){r.textContent=x}
+async function m(c){try{v.srcObject=await navigator.mediaDevices.getUserMedia(c);d('liberado: '+v.srcObject.getTracks().map(t=>t.label))}catch(e){d('recusado: '+e.name)}}
+</script></html>
